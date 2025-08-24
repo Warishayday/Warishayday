@@ -1,59 +1,58 @@
 // netlify/functions/data.js
 
-const faunadb = require('faunadb');
-const q = faunadb.query;
+const { Pool } = require('pg');
 
-// อย่าลืม! คุณต้องไปตั้งค่า FAUNADB_SECRET ในหน้าตั้งค่าของเว็บคุณบน Netlify
-const client = new faunadb.Client({ secret: process.env.FAUNADB_SECRET });
+// สร้างการเชื่อมต่อโดยใช้ connection string จาก Environment Variable
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-const COLLECTION_NAME = 'shop_data';
-// เราจะใช้ ID เดียวสำหรับร้านค้าเดียว เพื่อให้ง่ายต่อการจัดการ
-const DOCUMENT_ID = 'main_store_data'; 
+const TABLE_NAME = 'shop_data';
+const ROW_ID = 1; // เราจะใช้แค่แถวเดียวเพื่อเก็บข้อมูล JSON ทั้งหมด
 
 exports.handler = async (event, context) => {
-    if (event.httpMethod === 'GET') {
-        try {
-            const doc = await client.query(
-                q.Get(q.Ref(q.Collection(COLLECTION_NAME), DOCUMENT_ID))
+    const client = await pool.connect();
+    try {
+        // ตรวจสอบว่ามีตารางอยู่หรือไม่ ถ้าไม่มีให้สร้าง
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (
+                id INT PRIMARY KEY,
+                data JSONB
             );
-            return {
-                statusCode: 200,
-                body: JSON.stringify(doc.data),
-            };
-        } catch (error) {
-            if (error.name === 'NotFound') {
-                 return { statusCode: 404, body: JSON.stringify({ error: 'Not Found' }) };
-            }
-            return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
-        }
-    }
+        `);
 
-    if (event.httpMethod === 'POST') {
-        const data = JSON.parse(event.body);
-        try {
+        if (event.httpMethod === 'GET') {
+            const res = await client.query(`SELECT data FROM ${TABLE_NAME} WHERE id = $1`, [ROW_ID]);
+            if (res.rows.length === 0) {
+                return { statusCode: 404, body: JSON.stringify({ error: 'Not Found' }) };
+            }
+            return {
+                statusCode: 200,
+                body: JSON.stringify(res.rows[0].data),
+            };
+        }
+
+        if (event.httpMethod === 'POST') {
+            const appData = JSON.parse(event.body);
+            // ใช้คำสั่ง INSERT ... ON CONFLICT (UPSERT) เพื่อสร้างหรืออัปเดตข้อมูลในแถวเดียว
             await client.query(
-                q.Update(q.Ref(q.Collection(COLLECTION_NAME), DOCUMENT_ID), { data })
+                `INSERT INTO ${TABLE_NAME} (id, data) VALUES ($1, $2)
+                 ON CONFLICT (id) DO UPDATE SET data = $2;`,
+                [ROW_ID, appData]
             );
             return {
                 statusCode: 200,
-                body: JSON.stringify({ message: 'Data updated' }),
+                body: JSON.stringify({ message: 'Data saved successfully' }),
             };
-        } catch (error) {
-            if (error.name === 'NotFound') {
-                await client.query(
-                    q.Create(q.Ref(q.Collection(COLLECTION_NAME), DOCUMENT_ID), { data })
-                );
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify({ message: 'Data created' }),
-                };
-            }
-            return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
         }
+
+        return { statusCode: 405, body: 'Method Not Allowed' };
+
+    } catch (error) {
+        console.error('Database error:', error);
+        return { statusCode: 500, body: JSON.stringify({ error: 'Internal Server Error' }) };
+    } finally {
+        client.release(); // คืน connection กลับสู่ pool ทุกครั้งที่ทำงานเสร็จ
     }
-    
-    return {
-        statusCode: 405,
-        body: 'Method Not Allowed',
-    };
 };
+
