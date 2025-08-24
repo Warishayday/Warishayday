@@ -1,0 +1,9 @@
+[build]
+  # บอก Netlify ว่าโฟลเดอร์ที่เก็บฟังก์ชันของเราอยู่ที่ไหน
+  functions = "netlify/functions"
+
+[[redirects]]
+  # สร้าง proxy เพื่อให้ path "/.netlify/functions/" ใช้งานได้จากหน้าเว็บ
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
