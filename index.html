@@ -59,16 +59,6 @@
             background-color: var(--primary-color);
             color: white;
         }
-        body.dark-mode .tax-results {
-            background-color: #2e7d32;
-            color: #fff;
-        }
-        body.dark-mode .tax-results h3 {
-            color: #e0e0e0;
-        }
-        body.dark-mode .tax-results strong {
-            color: #fff;
-        }
         body.dark-mode .btn-secondary,
         body.dark-mode .tab {
             color: var(--text-color);
@@ -78,7 +68,8 @@
             color: white;
         }
         body.dark-mode #admin-gear-icon,
-        body.dark-mode #back-to-admin-btn {
+        body.dark-mode #back-to-admin-btn,
+        body.dark-mode #lang-toggle-btn {
             background-color: var(--surface-color);
             color: var(--text-color);
         }
@@ -112,6 +103,79 @@
             border-color: #333;
         }
         
+        /* ================================================= */
+        /* ===== START: โค้ดสำหรับหน้าจอโหลด (อัปเดตใหม่) ===== */
+        /* ================================================= */
+        #loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            font-family: 'Kanit', sans-serif;
+            backdrop-filter: blur(5px);
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .progress-bar {
+            width: 250px;
+            height: 15px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #ffc107, #dc3545, #6610f2, #007bff, #28a745, #ffc107);
+            background-size: 200% 100%;
+            animation: running-progress 3s linear infinite;
+        }
+
+        @keyframes running-progress {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+        /* ================================================= */
+        /* ===== END: โค้ดสำหรับหน้าจอโหลด (อัปเดตใหม่) ===== */
+        /* ================================================= */
 
         * {
             box-sizing: border-box;
@@ -125,6 +189,19 @@
             color: var(--text-color);
             line-height: 1.6;
             transition: background-color 0.3s, color 0.3s;
+        }
+
+        #background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: opacity 0.5s ease;
         }
 
         .container {
@@ -295,17 +372,29 @@
         .quantity-display { font-weight: 600; min-width: 30px; text-align: center; }
 
         #order-summary {
-            margin-top: 20px;
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            width: 100%;
             padding: 20px;
             text-align: center;
             display: flex;
             flex-direction: column;
             gap: 15px;
+            background-color: var(--surface-color);
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -4px 8px rgba(0,0,0,0.05);
+            z-index: 100;
+            margin-top: 20px;
         }
         #order-validation-message {
             color: var(--danger-color);
             font-weight: 500;
             min-height: 24px;
+        }
+        #order-validation-message .nav-btn {
+            margin-left: 10px;
+            padding: 2px 8px;
         }
         .order-buttons {
             display: flex;
@@ -357,6 +446,92 @@
             color: #aaa;
         }
         .modal .close-btn:hover { color: #555; }
+        
+        /* UPDATE: Styles for Copy Success Modal */
+        .copy-success-content {
+            background-color: var(--surface-color);
+            padding: 40px 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 300px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .copy-success-content p {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 4;
+            stroke: var(--primary-color);
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px var(--primary-color);
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 3;
+            stroke-miterlimit: 10;
+            stroke: var(--primary-color);
+            fill: none;
+            animation: stroke .6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.65, 0, 0.45, 1) .8s forwards;
+        }
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+        @keyframes scale {
+            0%, 100% {
+                transform: none;
+            }
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0px 0px 0px 40px var(--primary-color);
+            }
+        }
+        body.dark-mode .copy-success-content {
+            background-color: #2a2a2a;
+        }
+        body.dark-mode .checkmark {
+            stroke: #fff;
+        }
+        body.dark-mode .checkmark__circle {
+            stroke: #fff;
+        }
+        @keyframes fill-dark {
+            100% {
+                box-shadow: inset 0px 0px 0px 40px #fff;
+            }
+        }
+        body.dark-mode .checkmark {
+            animation: fill-dark .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+        body.dark-mode .checkmark__check {
+            stroke: var(--primary-color);
+        }
+        /* End of Copy Success Modal Styles */
+
         .reset-btn-container {
             position: absolute;
             top: 20px;
@@ -414,7 +589,7 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
         
-        .icon-preview {
+        .icon-preview, .bg-preview {
             display: block;
             width: 50px;
             height: 50px;
@@ -423,6 +598,10 @@
             background-size: cover;
             background-position: center;
             border: 1px solid var(--border-color);
+        }
+        .bg-preview {
+            width: 150px;
+            height: 80px;
         }
         
         .logo-preview-container {
@@ -566,7 +745,7 @@
             gap: 10px;
         }
 
-        #admin-gear-icon, #back-to-admin-btn, #theme-toggle-btn {
+        #admin-gear-icon, #back-to-admin-btn, #theme-toggle-btn, #lang-toggle-btn {
             background: none;
             border: none;
             font-size: 1.5rem;
@@ -587,7 +766,7 @@
             transform: rotate(30deg);
             color: var(--primary-color);
         }
-        #admin-gear-icon:active, #back-to-admin-btn:active, #theme-toggle-btn:active {
+        #admin-gear-icon:active, #back-to-admin-btn:active, #theme-toggle-btn:active, #lang-toggle-btn:active {
             transform: scale(0.95);
         }
 
@@ -681,30 +860,7 @@
             background-color: #f8f9fa;
             padding: 8px;
             border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .tax-results {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f1f8e9;
-            border-left: 5px solid #66bb6a;
-            border-radius: 8px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .tax-results h3 {
-            color: #2e7d32;
-            margin-top: 0;
-            margin-bottom: 10px;
-            text-align: left;
-            transition: color 0.3s;
-        }
-        .tax-results p {
-            margin: 5px 0;
-        }
-        .tax-results strong {
-            color: #1b5e20;
-            transition: color 0.3s;
+            transition: background-color: 0.3s;
         }
 
         .reorder-list {
@@ -734,48 +890,6 @@
         }
         .menu-btn {
             flex-shrink: 0;
-        }
-
-        .search-input-container {
-            position: relative;
-            display: flex;
-        }
-        .search-input-container input {
-            padding-right: 45px;
-        }
-        .search-input-container .search-btn {
-            position: absolute;
-            right: 1px;
-            top: 1px;
-            bottom: 11px;
-            width: 40px;
-            border: none;
-            background: #e9ecef;
-            cursor: pointer;
-            border-radius: 0 8px 8px 0;
-            font-size: 1.2rem;
-            color: #6c757d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #search-modal-results {
-            max-height: 40vh;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-        .search-modal-result-item {
-            padding: 10px;
-            cursor: pointer;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .search-modal-result-item:last-child {
-            border-bottom: none;
-        }
-        .search-modal-result-item:hover {
-            background-color: #f8f9fa;
         }
 
         .effect-controls {
@@ -847,6 +961,24 @@
         .performance-bar-inner.good { background-color: var(--success-color); }
         .performance-bar-inner.bad { background-color: var(--danger-color); }
 
+        /* UPDATE: Styles for unavailable products */
+        .product-row.product-unavailable {
+            opacity: 0.6;
+            background-color: #f8f9fa;
+        }
+        body.dark-mode .product-row.product-unavailable {
+            background-color: #2a2a2a;
+        }
+        .product-row.product-unavailable .quantity-controls button {
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+        .status-cell {
+            text-align: center;
+            font-weight: 500;
+            color: var(--danger-color);
+        }
+
         @media (max-width: 768px) {
             .container { padding: 10px; }
             h1 { font-size: 2rem; }
@@ -859,7 +991,7 @@
                 right: 10px;
                 gap: 5px;
             }
-            #admin-gear-icon, #back-to-admin-btn, #theme-toggle-btn {
+            #admin-gear-icon, #back-to-admin-btn, #theme-toggle-btn, #lang-toggle-btn {
                 width: 35px;
                 height: 35px;
                 font-size: 1.2rem;
@@ -876,18 +1008,29 @@
             #category-tabs, .admin-menu {
                 justify-content: center;
             }
+            #order-summary {
+                padding: 15px;
+            }
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
+    <div id="loader-overlay">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p>กำลังโหลดข้อมูลล่าสุด...</p>
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+    <div id="background-overlay"></div>
 
-    <!-- โครงสร้าง HTML ทั้งหมดของคุณจะอยู่ที่นี่ (ไม่มีการเปลี่ยนแปลง) -->
     <div class="floating-buttons-container">
         <button id="admin-gear-icon" style="display: block;">⚙️</button>
         <button id="back-to-admin-btn" style="display: none;">⚙️</button>
         <button id="theme-toggle-btn" style="display: none;">☀️</button>
+        <button id="lang-toggle-btn" style="display: none;">🌐</button>
     </div>
 
     <div class="container">
@@ -904,18 +1047,18 @@
             
             <main>
                 <div id="category-tabs" class="card"></div>
-                <input type="text" id="search-box" placeholder="ค้นหาสินค้า...">
+                <input type="text" id="search-box" data-translate-key="searchPlaceholder" placeholder="ค้นหาสินค้า...">
                 <div id="product-list-container" class="card">
                     <button id="reset-cart-btn" class="customer-reset-btn">🗑️</button>
-                    <h2 id="current-category-name"></h2>
+                    <h2 id="current-category-name" data-translate-key="itemsListTitle"></h2>
                     <div class="table-wrapper">
                         <table id="product-table">
                             <thead>
                                 <tr>
-                                    <th>สินค้า</th>
-                                    <th>เลเวล</th>
-                                    <th>จำนวน</th>
-                                    <th>จัดการ</th>
+                                    <th data-translate-key="tableHeaderItem">สินค้า</th>
+                                    <th data-translate-key="tableHeaderLevel">เลเวล</th>
+                                    <th data-translate-key="tableHeaderQuantity">จำนวน</th>
+                                    <th data-translate-key="tableHeaderManage">จัดการ</th>
                                 </tr>
                             </thead>
                             <tbody id="product-table-body"></tbody>
@@ -923,11 +1066,11 @@
                     </div>
                 </div>
 
-                <div id="order-summary" class="card">
+                <div id="order-summary">
                     <div id="order-validation-message"></div>
                     <div class="order-buttons">
-                        <button id="view-order-btn" class="btn btn-secondary">รายการสั่งซื้อ</button>
-                        <button id="confirm-order-btn" class="btn btn-primary">ยืนยันสั่งซื้อ</button>
+                        <button id="view-order-btn" class="btn btn-secondary" data-translate-key="viewOrderBtn">รายการสั่งซื้อ</button>
+                        <button id="confirm-order-btn" class="btn btn-primary" data-translate-key="confirmOrderBtn">ยืนยันสั่งซื้อ</button>
                     </div>
                 </div>
             </main>
@@ -935,22 +1078,23 @@
 
         <div id="admin-login-view" class="view">
             <div class="card">
-                <h2>เข้าสู่ระบบหลังบ้าน</h2>
+                <h2 data-translate-key="adminLoginTitle">เข้าสู่ระบบหลังบ้าน</h2>
                 <div class="form-group">
-                    <label for="pin-input">PIN</label>
+                    <label for="pin-input" data-translate-key="pinLabel">PIN</label>
                     <input type="password" id="pin-input" placeholder="กรอกรหัส PIN">
                 </div>
-                <button id="login-btn" class="btn btn-primary">เข้าสู่ระบบ</button>
+                <button id="login-btn" class="btn btn-primary" data-translate-key="loginBtn">เข้าสู่ระบบ</button>
                 <p id="login-error" style="color: var(--danger-color); margin-top: 10px;"></p>
+                <button id="back-to-customer-view-btn" class="btn btn-secondary" style="margin-top: 15px;" data-translate-key="backToShopBtn">กลับหน้าหลักสั่งสินค้า</button>
             </div>
         </div>
         
         <div id="admin-panel-view" class="view">
             <div class="admin-header">
-                <h2>Admin Panel</h2>
+                <h2 data-translate-key="adminPanelTitle">Admin Panel</h2>
                 <div style="display:flex; gap: 10px;">
-                    <button id="view-shop-btn" class="btn btn-secondary">มุมมองหน้าร้าน</button>
-                    <button id="logout-btn" class="btn btn-danger">ออกจากระบบ</button>
+                    <button id="view-shop-btn" class="btn btn-secondary" data-translate-key="viewShopBtn">มุมมองหน้าร้าน</button>
+                    <button id="logout-btn" class="btn btn-danger" data-translate-key="logoutBtn">ออกจากระบบ</button>
                 </div>
             </div>
             <div class="admin-menu">
@@ -958,46 +1102,46 @@
 
             <div id="admin-menu-admin" class="admin-menu-content">
                 <div class="card admin-section">
-                    <h2>ตั้งค่าทั่วไป</h2>
+                    <h2 data-translate-key="generalSettingsTitle">ตั้งค่าทั่วไป</h2>
                     <div class="form-group">
-                        <label for="shop-name">ชื่อร้านค้า</label>
+                        <label for="shop-name" data-translate-key="shopNameLabel">ชื่อร้านค้า</label>
                         <input type="text" id="shop-name" placeholder="WARISHAYDAY">
                     </div>
                     <div class="form-group">
-                        <label for="shop-slogan">สโลแกนร้าน</label>
+                        <label for="shop-slogan" data-translate-key="shopSloganLabel">สโลแกนร้าน</label>
                         <input type="text" id="shop-slogan" placeholder="เช่น บริการไว ใส่ใจทุกออเดอร์">
                     </div>
                      <div class="form-group">
-                        <label for="shop-global-font">ฟอนต์ระบบทั้งหมด</label>
+                        <label for="shop-global-font" data-translate-key="globalFontLabel">ฟอนต์ระบบทั้งหมด</label>
                         <select id="shop-global-font"></select>
                     </div>
                     <div class="form-group">
-                        <label for="shop-font">ฟอนต์ชื่อร้าน</label>
+                        <label for="shop-font" data-translate-key="shopNameFontLabel">ฟอนต์ชื่อร้าน</label>
                         <select id="shop-font"></select>
                         <div id="font-preview" style="font-family: 'Kanit', sans-serif;">WARISHAYDAY</div>
                     </div>
 
                     <div class="form-group">
                         <div class="toggle-switch-container">
-                            <label>เปิดใช้เอฟเฟกต์ชื่อร้าน</label>
+                            <label data-translate-key="enableEffectLabel">เปิดใช้เอฟเฟกต์ชื่อร้าน</label>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="effect-toggle">
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="effect-controls" id="effect-controls-container" style="display: none;">
-                            <label>เงาแนวนอน (X) <input type="range" id="effect-offset-x" min="-10" max="10" value="2"></label>
-                            <label>เงาแนวตั้ง (Y) <input type="range" id="effect-offset-y" min="-10" max="10" value="2"></label>
-                            <label>ความเบลอ <input type="range" id="effect-blur" min="0" max="20" value="4"></label>
+                            <label><span data-translate-key="effectOffsetX">เงาแนวนอน (X)</span> <input type="range" id="effect-offset-x" min="-10" max="10" value="2"></label>
+                            <label><span data-translate-key="effectOffsetY">เงาแนวตั้ง (Y)</span> <input type="range" id="effect-offset-y" min="-10" max="10" value="2"></label>
+                            <label><span data-translate-key="effectBlur">ความเบลอ</span> <input type="range" id="effect-blur" min="0" max="20" value="4"></label>
                             <div class="effect-control-item">
-                                <label for="effect-color">สีเงา</label>
+                                <label for="effect-color" data-translate-key="effectColor">สีเงา</label>
                                 <input type="color" id="effect-color" value="#000000">
                             </div>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="order-format-select">รูปแบบเลขที่ออเดอร์</label>
+                        <label for="order-format-select" data-translate-key="orderFormatLabel">รูปแบบเลขที่ออเดอร์</label>
                         <select id="order-format-select">
                             <option value="format1">ตัวอย่าง: WHD68/08/0001</option>
                             <option value="format2">ตัวอย่าง: WHD-20250820-0001</option>
@@ -1007,20 +1151,34 @@
 
                     <div class="form-group">
                         <div class="toggle-switch-container">
-                            <label>ใช้โลโก้</label>
+                            <label data-translate-key="useLogoLabel">ใช้โลโก้</label>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="logo-toggle">
                                 <span class="slider"></span>
                             </label>
                         </div>
-                        <label for="logo-upload">อัปโหลดโลโก้ (PNG)</label>
+                        <label for="logo-upload" data-translate-key="uploadLogoLabel">อัปโหลดโลโก้ (PNG)</label>
                         <input type="file" id="logo-upload" accept="image/png">
                         <div class="logo-preview-container">
                             <img id="logo-preview" src="" alt="พรีวิวโลโก้" style="display: none;">
                         </div>
                     </div>
+
                     <div class="form-group">
-                        <label>ธีมสี (Theme)</label>
+                        <h3 style="margin-bottom: 10px;" data-translate-key="backgroundSettingsTitle">ตั้งค่าพื้นหลัง</h3>
+                        <label for="bg-upload" data-translate-key="uploadBgLabel">อัปโหลดภาพพื้นหลัง</label>
+                        <input type="file" id="bg-upload" accept="image/*">
+                        <div id="bg-preview" class="bg-preview" style="display: none;"></div>
+                        <label for="bg-opacity" data-translate-key="bgOpacityLabel">ความโปร่งใส (จาง-ชัด)</label>
+                        <input type="range" id="bg-opacity" min="0.1" max="1" step="0.05" value="1">
+                        <div class="btn-group" style="margin-top: 10px;">
+                            <button type="button" id="remove-bg-btn" class="btn btn-danger btn-small" data-translate-key="removeBgBtn">ลบพื้นหลัง</button>
+                            <button type="button" id="preview-bg-btn" class="btn btn-info btn-small" data-translate-key="previewBgBtn">ดูตัวอย่าง</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-translate-key="themeColorLabel">ธีมสี (Theme)</label>
                         <div class="color-palette">
                             <button class="btn btn-small color-btn" data-color="#28a745" style="background-color:#28a745;"></button>
                             <button class="btn btn-small color-btn" data-color="#007bff" style="background-color:#007bff;"></button>
@@ -1037,148 +1195,100 @@
                         </div>
                     </div>
 
-                    <div class="form-group" id="license-key-section" style="display: none;">
-                        <label for="license-key-display">License Key</label>
-                        <input type="text" id="license-key-display" readonly>
-                        <p id="license-expiry-display"></p>
-                    </div>
-
-                    <button id="save-settings-btn" class="btn btn-primary">บันทึกการตั้งค่า</button>
+                    <button id="save-settings-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกการตั้งค่า</button>
                 </div>
 
                 <div class="card admin-section" id="admin-pin-section">
-                    <h2>เปลี่ยนรหัสผ่าน</h2>
+                    <h2 data-translate-key="changePinTitle">เปลี่ยนรหัสผ่าน</h2>
                     <div class="form-group">
-                        <label for="new-pin">PIN ใหม่</label>
+                        <label for="new-pin" data-translate-key="newPinLabel">PIN ใหม่</label>
                         <input type="password" id="new-pin" placeholder="กรอก PIN ใหม่อย่างน้อย 4 ตัว">
                     </div>
-                    <button id="change-pin-btn" class="btn btn-primary">บันทึก PIN ใหม่</button>
+                    <button id="change-pin-btn" class="btn btn-primary" data-translate-key="saveNewPinBtn">บันทึก PIN ใหม่</button>
                 </div>
             </div>
 
             <div id="admin-menu-stock" class="admin-menu-content" style="display: none;">
                 <div class="card admin-section">
-                    <h2>จัดการหมวดหมู่</h2>
+                    <h2 data-translate-key="manageCategoriesTitle">จัดการหมวดหมู่</h2>
                     <form id="category-form">
                         <input type="hidden" id="cat-id">
                         <div class="form-group">
-                            <label for="cat-name">ชื่อหมวดหมู่</label>
-                            <div class="search-input-container">
-                                <input type="text" id="cat-name" placeholder="คลิกปุ่มค้นหา 🔍" required>
-                                <button type="button" class="search-btn" data-type="category">🔍</button>
-                            </div>
+                            <label for="cat-name" data-translate-key="categoryNameLabel">ชื่อหมวดหมู่</label>
+                            <input type="text" id="cat-name" placeholder="ชื่อหมวดหมู่" required>
                         </div>
                         <div class="form-group">
-                            <label for="cat-icon-upload">ไอค่อนหมวดหมู่ (ไฟล์ PNG)</label>
+                            <label for="cat-icon-upload" data-translate-key="categoryIconLabel">ไอค่อนหมวดหมู่ (ไฟล์ PNG)</label>
                             <input type="file" id="cat-icon-upload" accept="image/png">
                             <div id="cat-icon-preview" class="icon-preview" style="background-image: none;"></div>
                         </div>
+                         <div class="form-group">
+                            <label for="cat-min-order" data-translate-key="minOrderLabel">จำนวนสั่งซื้อขั้นต่ำ</label>
+                            <input type="number" id="cat-min-order" value="30" min="0">
+                        </div>
                         <div class="form-group">
-                            <label>ตั้งค่าราคา</label>
+                            <label data-translate-key="setPriceLabel">ตั้งค่าราคา</label>
                             <div class="btn-group">
-                                <button type="button" id="set-per-piece-price-btn" class="btn btn-info">ตั้งราคาต่อชิ้น</button>
+                                <button type="button" id="set-per-piece-price-btn" class="btn btn-info" data-translate-key="setPerPiecePriceBtn">ตั้งราคาต่อชิ้น</button>
                             </div>
                         </div>
-                        <button type="submit" id="submit-cat-btn" class="btn btn-primary">เพิ่ม/บันทึกหมวดหมู่</button>
-                        <button type="button" id="cancel-cat-edit-btn" class="btn btn-secondary" style="display:none;">ยกเลิก</button>
+                        <button type="submit" id="submit-cat-btn" class="btn btn-primary" data-translate-key="saveCategoryBtn">เพิ่ม/บันทึกหมวดหมู่</button>
+                        <button type="button" id="cancel-cat-edit-btn" class="btn btn-secondary" style="display:none;" data-translate-key="cancelBtn">ยกเลิก</button>
                     </form>
                     <hr style="margin: 20px 0;">
-                    <h3>รายการหมวดหมู่</h3>
+                    <h3 data-translate-key="categoryListTitle">รายการหมวดหมู่</h3>
                     <div class="table-wrapper">
                         <table id="admin-cat-table">
-                            <thead><tr><th>ไอค่อน</th><th>ชื่อ</th><th>ราคา</th><th>แก้ไข/ลบ</th></tr></thead>
+                            <thead><tr><th data-translate-key="tableHeaderIcon">ไอค่อน</th><th data-translate-key="tableHeaderName">ชื่อ</th><th data-translate-key="tableHeaderMinOrder">ขั้นต่ำ</th><th data-translate-key="tableHeaderPrice">ราคา</th><th data-translate-key="tableHeaderManage">แก้ไข/ลบ</th></tr></thead>
                             <tbody id="admin-cat-list"></tbody>
                         </table>
                     </div>
                 </div>
             
                 <div class="card admin-section">
-                    <h2>จัดการสินค้า</h2>
+                    <h2 data-translate-key="manageProductsTitle">จัดการสินค้า</h2>
                     <form id="product-form">
                         <input type="hidden" id="product-id">
                         <div class="form-group">
-                            <label for="prod-name">ชื่อสินค้า</label>
-                            <div class="search-input-container">
-                                <input type="text" id="prod-name" placeholder="คลิกปุ่มค้นหา 🔍" required>
-                                <button type="button" class="search-btn" data-type="product">🔍</button>
-                            </div>
+                            <label for="prod-name" data-translate-key="productNameLabel">ชื่อสินค้า</label>
+                            <input type="text" id="prod-name" placeholder="ชื่อสินค้า" required>
                         </div>
                         <div class="form-group">
-                            <label for="prod-level">เลเวล</label>
+                            <label for="prod-level" data-translate-key="levelLabel">เลเวล</label>
                             <input type="number" id="prod-level" required>
                         </div>
                         <div class="form-group">
-                            <label for="prod-category">หมวดหมู่</label>
+                            <label for="prod-stock" data-translate-key="stockQuantityLabel">จำนวนคงเหลือ</label>
+                            <input type="number" id="prod-stock" value="-1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="prod-category" data-translate-key="categoryLabel">หมวดหมู่</label>
                             <select id="prod-category" required></select>
                         </div>
                         <div class="form-group">
-                            <label for="prod-icon-upload">ไอค่อนสินค้า (ไฟล์ PNG)</label>
+                            <label for="prod-icon-upload" data-translate-key="productIconLabel">ไอค่อนสินค้า (ไฟล์ PNG)</label>
                             <input type="file" id="prod-icon-upload" accept="image/png">
                             <div id="prod-icon-preview" class="icon-preview" style="background-image: none;"></div>
                         </div>
-                        <button type="submit" class="btn btn-primary">บันทึกสินค้า</button>
-                        <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="display:none;">ยกเลิกแก้ไข</button>
+                        <div class="form-group">
+                            <div class="toggle-switch-container">
+                                <label data-translate-key="productAvailableLabel">เปิดขายสินค้านี้</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="prod-available" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" data-translate-key="saveProductBtn">บันทึกสินค้า</button>
+                        <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="display:none;" data-translate-key="cancelEditBtn">ยกเลิกแก้ไข</button>
                     </form>
                     <hr style="margin: 20px 0;">
                     <div id="admin-product-tabs" class="card"></div>
                     <h3 id="admin-current-category-name"></h3>
                     <div class="table-wrapper">
                         <table id="admin-prod-table">
-                            <thead><tr><th>ไอค่อน</th><th>ชื่อ</th><th>เลเวล</th><th>แก้ไข/ลบ</th></tr></thead>
+                            <thead><tr><th data-translate-key="tableHeaderIcon">ไอค่อน</th><th data-translate-key="tableHeaderName">ชื่อ</th><th data-translate-key="tableHeaderLevel">เลเวล</th><th data-translate-key="tableHeaderStock">คงเหลือ</th><th data-translate-key="tableHeaderStatus">สถานะ</th><th data-translate-key="tableHeaderManage">แก้ไข/ลบ</th></tr></thead>
                             <tbody id="admin-prod-list"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="admin-menu-database" class="admin-menu-content" style="display: none;">
-                <div class="card admin-section">
-                    <h2>จัดการหมวดหมู่ (ฐานข้อมูล)</h2>
-                    <form id="db-category-form">
-                        <input type="hidden" id="db-cat-id">
-                        <div class="form-group">
-                            <label for="db-cat-name">ชื่อหมวดหมู่</label>
-                            <input type="text" id="db-cat-name" placeholder="เช่น เครื่องมือ, ขยาย, อื่นๆ" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">บันทึกหมวดหมู่</button>
-                        <button type="button" id="cancel-db-cat-edit-btn" class="btn btn-secondary" style="display:none;">ยกเลิก</button>
-                    </form>
-                    <hr style="margin: 20px 0;">
-                    <h3>รายการหมวดหมู่ (ฐานข้อมูล)</h3>
-                    <div class="table-wrapper">
-                        <table id="db-cat-table">
-                            <thead><tr><th>ชื่อ</th><th>จำนวนสินค้า</th><th>จัดการ</th></tr></thead>
-                            <tbody id="db-cat-list"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card admin-section">
-                    <h2>จัดการสินค้า (ฐานข้อมูล)</h2>
-                    <div id="db-item-tabs" class="card tab-group-container"></div>
-                    <form id="db-item-form" style="display: none;">
-                        <input type="hidden" id="db-item-id">
-                        <div class="form-group">
-                            <label for="db-item-name">ชื่อสินค้า</label>
-                            <input type="text" id="db-item-name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="db-item-level">เลเวล</label>
-                            <input type="number" id="db-item-level" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="db-item-quantity">จำนวนสินค้าคงคลัง</label>
-                            <input type="number" id="db-item-quantity" value="0" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">บันทึกสินค้า</button>
-                        <button type="button" id="cancel-db-item-edit-btn" class="btn btn-secondary" style="display:none;">ยกเลิก</button>
-                    </form>
-                    <hr id="db-item-hr" style="margin: 20px 0; display: none;">
-                    <h3 id="db-current-category-name">กรุณาเลือกหมวดหมู่</h3>
-                    <div class="table-wrapper">
-                        <table id="db-item-table">
-                            <thead><tr><th>ชื่อ</th><th>เลเวล</th><th>จำนวน</th><th>จัดการ</th></tr></thead>
-                            <tbody id="db-item-list"></tbody>
                         </table>
                     </div>
                 </div>
@@ -1186,24 +1296,24 @@
 
             <div id="admin-menu-order-number" class="admin-menu-content" style="display: none;">
                  <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap;">
-                    <label for="order-date-picker">เลือกวันที่:</label>
+                    <label for="order-date-picker" data-translate-key="selectDateLabel">เลือกวันที่:</label>
                     <input type="text" id="order-date-picker" style="width: 150px;" placeholder="ดูออเดอร์ทั้งหมด">
-                    <button id="reset-orders-btn" class="btn btn-danger btn-small">รีเซ็ทข้อมูล</button>
+                    <button id="reset-orders-btn" class="btn btn-danger btn-small" data-translate-key="resetDataBtn">รีเซ็ทข้อมูล</button>
                 </div>
                 <div class="card admin-section">
-                    <h2>รายการออเดอร์ปัจจุบัน</h2>
+                    <h2 data-translate-key="activeOrdersTitle">รายการออเดอร์ปัจจุบัน</h2>
                     <div class="table-wrapper">
                         <table id="active-orders-table">
-                            <thead><tr><th>เลขออเดอร์</th><th>วันที่/เวลา</th><th>ยอดรวม</th><th>จัดการ</th></tr></thead>
+                            <thead><tr><th data-translate-key="tableHeaderOrderNo">เลขออเดอร์</th><th data-translate-key="tableHeaderDateTime">วันที่/เวลา</th><th data-translate-key="tableHeaderTotal">ยอดรวม</th><th data-translate-key="tableHeaderManage">จัดการ</th></tr></thead>
                             <tbody id="active-orders-list"></tbody>
                         </table>
                     </div>
                 </div>
                  <div class="card admin-section">
-                    <h2>รายการออเดอร์ที่ถูกยกเลิก</h2>
+                    <h2 data-translate-key="cancelledOrdersTitle">รายการออเดอร์ที่ถูกยกเลิก</h2>
                     <div class="table-wrapper">
                         <table id="cancelled-orders-table">
-                            <thead><tr><th>เลขออเดอร์</th><th>วันที่/เวลา</th><th>ยอดรวม</th><th>จัดการ</th></tr></thead>
+                            <thead><tr><th data-translate-key="tableHeaderOrderNo">เลขออเดอร์</th><th data-translate-key="tableHeaderDateTime">วันที่/เวลา</th><th data-translate-key="tableHeaderTotal">ยอดรวม</th><th data-translate-key="tableHeaderManage">จัดการ</th></tr></thead>
                             <tbody id="cancelled-orders-list"></tbody>
                         </table>
                     </div>
@@ -1211,63 +1321,69 @@
             </div>
 
             <div id="admin-menu-dashboard" class="admin-menu-content" style="display: none;">
-                <h2>ภาพรวมร้านค้า</h2>
+                <h2 data-translate-key="dashboardTitle">ภาพรวมร้านค้า</h2>
                 <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap;">
-                    <label for="date-picker">เลือกวันที่:</label>
+                    <label for="date-picker" data-translate-key="selectDateLabel">เลือกวันที่:</label>
                     <input type="text" id="date-picker" style="width: 150px;">
-                    <button id="reset-analytics-btn" class="btn btn-danger btn-small">รีเซ็ทข้อมูล</button>
+                    <button id="reset-analytics-btn" class="btn btn-danger btn-small" data-translate-key="resetDataBtn">รีเซ็ทข้อมูล</button>
                 </div>
                 
                 <div class="dashboard-grid">
                     <div class="stat-card" style="background-color: var(--success-color); color: white;">
-                        <h3>กำไรเดือนนี้</h3>
+                        <h3 data-translate-key="monthlyProfitTitle">กำไรเดือนนี้</h3>
                         <div class="value" id="monthly-profit">0 บาท</div>
                     </div>
                     <div class="stat-card" style="background-color: var(--info-color); color: white;">
-                        <h3>ยอดออเดอร์วันนี้</h3>
+                        <h3 data-translate-key="dailyOrdersTitle">ยอดออเดอร์วันนี้</h3>
                         <div class="value" id="daily-orders">0</div>
                     </div>
                     <div class="stat-card" style="background-color: var(--warning-color); color: #333;">
-                        <h3>ยอดออเดอร์เดือนนี้</h3>
+                        <h3 data-translate-key="monthlyOrdersTitle">ยอดออเดอร์เดือนนี้</h3>
                         <div class="value" id="monthly-orders">0</div>
                     </div>
                     <div class="stat-card">
-                        <h3>ยอดขายรวม (ปีนี้)</h3>
+                        <h3 data-translate-key="yearlySalesTitle">ยอดขายรวม (ปีนี้)</h3>
                         <div class="value" id="yearly-sales">0 บาท</div>
                     </div>
                 </div>
 
                  <div class="dashboard-grid">
                     <div class="card admin-section">
-                        <h2>สินค้าที่ต้องเติม (10 อันดับ)</h2>
-                        <p>รบกวนเติมสินค้าสำหรับรายการที่มีไฟกระพริบ</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                            <h2 data-translate-key="lowStockTitle" style="margin-bottom:0; border:0; padding:0;">สินค้าที่ต้องเติม (10 อันดับ)</h2>
+                            <div class="form-group" style="margin-bottom: 0; display: flex; align-items: center; gap: 5px;">
+                                <label for="low-stock-threshold" data-translate-key="lowStockThresholdLabel" style="margin-bottom: 0; white-space: nowrap;">แจ้งเตือนเมื่อเหลือน้อยกว่า:</label>
+                                <input type="number" id="low-stock-threshold" value="50" style="width: 80px; display: inline-block; padding: 5px; margin-bottom: 0;">
+                            </div>
+                        </div>
+                        <p data-translate-key="lowStockInfo">รบกวนเติมสินค้าสำหรับรายการที่มีไฟกระพริบ</p>
                         <ol id="low-stock-list" class="low-stock-list"></ol>
                     </div>
                     <div class="card admin-section">
-                        <h2>ยอดขายตามหมวดหมู่</h2>
+                        <h2 data-translate-key="categorySalesTitle">ยอดขายตามหมวดหมู่</h2>
                         <div class="chart-container"><canvas id="categorySalesChart"></canvas></div>
                     </div>
                 </div>
 
                 <div class="card admin-section">
-                    <h2>สินค้าขายดี (Top 5)</h2>
+                    <h2 data-translate-key="topSellingTitle">สินค้าขายดี (Top 5)</h2>
                     <div id="top-items-controls" class="btn-group" style="justify-content: center; margin-bottom: 15px;">
-                        <button class="btn btn-small" data-period="day">วันนี้</button>
-                        <button class="btn btn-small" data-period="month">เดือนนี้</button>
-                        <button class="btn btn-small" data-period="year">ปีนี้</button>
+                        <button class="btn btn-small" data-period="day" data-translate-key="periodDay">วันนี้</button>
+                        <button class="btn btn-small" data-period="month" data-translate-key="periodMonth">เดือนนี้</button>
+                        <button class="btn btn-small" data-period="year" data-translate-key="periodYear">ปีนี้</button>
                     </div>
                     <ol id="top-items-list" class="top-selling-list"></ol>
                 </div>
                 
                 <div class="card admin-section">
-                    <h2>สถิติการเข้าใช้งาน</h2>
+                    <h2 data-translate-key="trafficStatsTitle">สถิติการเข้าใช้งาน</h2>
                     <p id="most-active-day"></p>
                     <p id="most-active-time"></p>
                     <div class="chart-container"><canvas id="dailyTrafficChart"></canvas></div>
                 </div>
 
                 <div class="card admin-section">
-                    <h2>สถิติสินค้า (ตามจำนวนที่สั่ง)</h2>
+                    <h2 data-translate-key="productStatsTitle">สถิติสินค้า (ตามจำนวนที่สั่ง)</h2>
                     <p id="best-selling-product"></p>
                     <p id="least-selling-product"></p>
                     <div class="chart-container"><canvas id="productSalesChart"></canvas></div>
@@ -1276,100 +1392,58 @@
 
             <div id="admin-menu-manage-account" class="admin-menu-content" style="display: none;">
                 <div class="card admin-section">
-                    <h2>จัดการบัญชี</h2>
-                    <p>จำกัดจำนวนผู้ใช้ย่อยได้สูงสุด 20 คน</p>
+                    <h2 data-translate-key="manageAccountTitle">จัดการบัญชี</h2>
+                    <p data-translate-key="subAdminLimitInfo">จำกัดจำนวนผู้ใช้ย่อยได้สูงสุด 20 คน</p>
                     <div style="display: flex; align-items: flex-end; gap: 10px;">
                         <form id="sub-admin-form" style="flex-grow: 1;">
                             <input type="hidden" id="sub-admin-id">
                             <div class="form-group">
-                                <label for="sub-admin-name">ชื่อผู้ใช้</label>
+                                <label for="sub-admin-name" data-translate-key="usernameLabel">ชื่อผู้ใช้</label>
                                 <input type="text" id="sub-admin-name" placeholder="เช่น แอดมิน A" required>
                             </div>
                             <div class="form-group">
-                                <label for="sub-admin-pin">PIN</label>
+                                <label for="sub-admin-pin" data-translate-key="pinLabel">PIN</label>
                                 <input type="password" id="sub-admin-pin" placeholder="กรอก PIN (อย่างน้อย 4 ตัว)" required>
                             </div>
-                            <button type="submit" id="add-sub-admin-btn" class="btn btn-primary">เพิ่มผู้ใช้</button>
-                            <button type="button" id="cancel-sub-admin-edit" class="btn btn-secondary" style="display:none;">ยกเลิก</button>
+                            <button type="submit" id="add-sub-admin-btn" class="btn btn-primary" data-translate-key="addUserBtn">เพิ่มผู้ใช้</button>
+                            <button type="button" id="cancel-sub-admin-edit" class="btn btn-secondary" style="display:none;" data-translate-key="cancelBtn">ยกเลิก</button>
                         </form>
                         <button type="button" id="view-permissions-btn" class="btn btn-info" style="font-size: 1.5rem; padding: 10px; height: 50px;">
                             <span class="view-icon">👁️</span>
                         </button>
                     </div>
                     <hr style="margin: 20px 0;">
-                    <h3>รายการผู้ใช้ย่อย</h3>
+                    <h3 data-translate-key="subAdminListTitle">รายการผู้ใช้ย่อย</h3>
                     <div class="table-wrapper">
                         <table id="sub-admin-table">
-                            <thead><tr><th>ชื่อ</th><th>PIN</th><th>จัดการ</th></tr></thead>
+                            <thead><tr><th data-translate-key="tableHeaderName">ชื่อ</th><th data-translate-key="pinLabel">PIN</th><th data-translate-key="tableHeaderManage">จัดการ</th></tr></thead>
                             <tbody id="sub-admin-list"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <div id="admin-menu-tax" class="admin-menu-content" style="display: none;">
-                <div class="card admin-section">
-                    <h2>คำนวณภาษีเบื้องต้น</h2>
-                    <div class="toggle-switch-container">
-                        <label>ประเภทผู้เสียภาษี:</label>
-                        <span id="tax-type-label">บุคคลธรรมดา</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="tax-type-toggle">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <hr>
-                    <div id="tax-person-form">
-                        <h3>ข้อมูลสำหรับคำนวณ (บุคคลธรรมดา)</h3>
-                        <div class="form-group">
-                            <label for="tax-income">รายได้พึงประเมิน (ยอดขายรวมปีนี้)</label>
-                            <input type="number" id="tax-income" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="tax-expense-type">การหักค่าใช้จ่าย</label>
-                            <select id="tax-expense-type">
-                                <option value="standard">หักแบบเหมา 60% (สูงสุด 100,000 บาท)</option>
-                                <option value="actual">หักตามจริง (กรอกด้านล่าง)</option>
-                            </select>
-                            <input type="number" id="tax-actual-expense" placeholder="ระบุค่าใช้จ่ายตามจริง" style="display:none; margin-top:10px;">
-                        </div>
-                        <h4>ค่าลดหย่อน</h4>
-                        <div class="tax-grid">
-                            <div class="form-group"><label>ส่วนตัว: <strong>60,000</strong></label></div>
-                            <div class="form-group"><label for="tax-spouse">คู่สมรส (ไม่มีเงินได้):</label><input type="number" id="tax-spouse" value="0" placeholder="สูงสุด 60,000"></div>
-                            <div class="form-group"><label for="tax-child">บุตร (คนละ 30,000):</label><input type="number" id="tax-child" value="0" placeholder="จำนวนคน"></div>
-                            <div class="form-group"><label for="tax-parent">บิดามารดา (คนละ 30,000):</label><input type="number" id="tax-parent" value="0" placeholder="จำนวนคน"></div>
-                            <div class="form-group"><label for="tax-insurance">ประกันชีวิต/สุขภาพ:</label><input type="number" id="tax-insurance" value="0" placeholder="สูงสุด 100,000"></div>
-                            <div class="form-group"><label for="tax-donation">เงินบริจาค (ทั่วไป):</label><input type="number" id="tax-donation" value="0" placeholder="สูงสุด 10% ของเงินได้หลังหักลดหย่อน"></div>
-                        </div>
-                    </div>
-                     <div id="tax-juristic-form" style="display:none;">
-                        <h3>ข้อมูลสำหรับคำนวณ (นิติบุคคล)</h3>
-                        <div class="form-group">
-                            <label for="tax-juristic-income">รายได้ (ยอดขายรวมปีนี้)</label>
-                            <input type="number" id="tax-juristic-income" readonly>
-                        </div>
-                         <div class="form-group">
-                            <label for="tax-juristic-expense">รายจ่าย</label>
-                            <input type="number" id="tax-juristic-expense" placeholder="กรอกรายจ่ายทั้งหมดของบริษัท">
-                        </div>
-                    </div>
-                    <button id="calculate-tax-btn" class="btn btn-primary">คำนวณภาษี</button>
-                    <div id="tax-calculation-results"></div>
-                </div>
-            </div>
-
         </div>
     </div>
     
+    <div id="copy-success-modal" class="modal">
+        <div class="copy-success-content">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+            <p data-translate-key="copySuccessMessage">คัดลอกออเดอร์สำเร็จ</p>
+        </div>
+    </div>
+
     <div id="order-modal" class="modal">
         <div class="modal-content">
-            <h2 id="order-modal-title">สรุปออเดอร์</h2>
-            <p id="order-modal-prompt">กรุณาคัดลอกข้อความด้านล่างเพื่อส่งให้ทางร้าน</p>
+            <h2 id="order-modal-title" data-translate-key="orderSummaryTitle">สรุปออเดอร์</h2>
+            <p id="order-modal-prompt" data-translate-key="copyOrderPrompt">กรุณาคัดลอกข้อความด้านล่างเพื่อส่งให้ทางร้าน</p>
             <div id="order-details"></div>
             <div class="modal-actions">
-                <button id="copy-order-btn" class="btn btn-danger">คัดลอกออเดอร์</button>
-                <button id="close-order-modal-btn" class="btn btn-secondary">ปิด</button>
+                <button id="copy-order-btn" class="btn btn-danger" data-translate-key="copyOrderBtn">คัดลอกออเดอร์</button>
+                <button id="close-order-modal-btn" class="btn btn-secondary" data-translate-key="closeBtn">ปิด</button>
             </div>
         </div>
     </div>
@@ -1377,170 +1451,99 @@
     <div id="cart-modal" class="modal">
         <div class="modal-content">
             <div style="display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap;">
-                <h2>รายการสั่งซื้อของคุณ</h2>
+                <h2 data-translate-key="yourOrderListTitle">รายการสั่งซื้อของคุณ</h2>
             </div>
             <div id="cart-details"></div>
             <div class="modal-actions">
-                <button id="close-cart-modal-btn" class="btn btn-secondary">ปิด</button>
+                <button id="close-cart-modal-btn" class="btn btn-secondary" data-translate-key="closeBtn">ปิด</button>
             </div>
         </div>
     </div>
 
     <div id="pin-confirm-modal" class="modal">
         <div class="modal-content">
-            <h2>ยืนยันรหัส PIN</h2>
+            <h2 data-translate-key="confirmPinTitle">ยืนยันรหัส PIN</h2>
             <div class="form-group">
-                <label for="pin-confirm-input">กรอกรหัส PIN เพื่อยืนยัน</label>
+                <label for="pin-confirm-input" data-translate-key="enterPinPrompt">กรอกรหัส PIN เพื่อยืนยัน</label>
                 <input type="password" id="pin-confirm-input" placeholder="รหัส PIN">
             </div>
             <p id="pin-confirm-error" style="color: var(--danger-color); margin-bottom: 15px;"></p>
             <div class="modal-actions">
-                <button id="confirm-action-btn" class="btn btn-danger">ยืนยัน</button>
-                <button id="cancel-action-btn" class="btn btn-secondary">ยกเลิก</button>
+                <button id="confirm-action-btn" class="btn btn-danger" data-translate-key="confirmBtn">ยืนยัน</button>
+                <button id="cancel-action-btn" class="btn btn-secondary" data-translate-key="cancelBtn">ยกเลิก</button>
             </div>
         </div>
     </div>
     
     <div id="reset-confirm-modal" class="modal">
         <div class="modal-content">
-            <h2 id="reset-modal-title">ยืนยันการรีเซ็ทข้อมูล</h2>
-            <p>กรุณาเลือกช่วงเวลาที่ต้องการรีเซ็ทข้อมูล</p>
+            <h2 id="reset-modal-title" data-translate-key="confirmResetTitle">ยืนยันการรีเซ็ทข้อมูล</h2>
+            <p data-translate-key="selectResetPeriodPrompt">กรุณาเลือกช่วงเวลาที่ต้องการรีเซ็ทข้อมูล</p>
             <div class="form-group">
                 <select id="reset-period-select">
-                    <option value="day">เฉพาะวันนี้</option>
-                    <option value="week">สัปดาห์นี้</option>
-                    <option value="month">เดือนนี้</option>
-                    <option value="all">ข้อมูลทั้งหมด</option>
+                    <option value="day" data-translate-key="periodDay">เฉพาะวันนี้</option>
+                    <option value="week" data-translate-key="periodWeek">สัปดาห์นี้</option>
+                    <option value="month" data-translate-key="periodMonth">เดือนนี้</option>
+                    <option value="all" data-translate-key="periodAll">ข้อมูลทั้งหมด</option>
                 </select>
             </div>
             <div class="modal-actions">
-                <button id="confirm-reset-btn" class="btn btn-danger">ยืนยัน</button>
-                <button id="cancel-reset-btn" class="btn btn-secondary">ยกเลิก</button>
+                <button id="confirm-reset-btn" class="btn btn-danger" data-translate-key="confirmBtn">ยืนยัน</button>
+                <button id="cancel-reset-btn" class="btn btn-secondary" data-translate-key="cancelBtn">ยกเลิก</button>
             </div>
         </div>
     </div>
-
-    <div id="license-key-modal" class="modal" style="display: none;">
-         <div class="modal-content">
-            <h2>ระบบถูกล็อค</h2>
-            <p>License Key ของคุณหมดอายุแล้ว กรุณาติดต่อทีมงานเพื่อขอ Key ในการใช้งานต่อ หรือกรอก Key ใหม่ด้านล่าง</p>
-            <div class="form-group">
-                <label for="new-license-key-input">ป้อน License Key ใหม่</label>
-                <input type="text" id="new-license-key-input" placeholder="XXXX-XXXX-XXXX-XXXX">
-            </div>
-            <p id="license-key-error" style="color: var(--danger-color);"></p>
-            <div class="modal-actions">
-                <button id="submit-new-license-key-btn" class="btn btn-primary">เปิดใช้งาน</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="edit-shop-modal" class="modal">
-        <div class="modal-content">
-            <h2>แก้ไขข้อมูลร้านค้า</h2>
-            <form id="edit-shop-form">
-                <input type="hidden" id="edit-shop-id">
-                <div class="form-group">
-                    <label for="edit-shop-name">ชื่อร้านค้า</label>
-                    <input type="text" id="edit-shop-name" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-shop-email">Email</label>
-                    <input type="email" id="edit-shop-email" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-shop-pin">PIN</label>
-                    <input type="password" id="edit-shop-pin" required>
-                </div>
-                <div class="modal-actions">
-                    <button type="submit" class="btn btn-primary">บันทึก</button>
-                    <button type="button" id="close-edit-shop-modal-btn" class="btn btn-secondary">ยกเลิก</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="enter-key-modal" class="modal">
-        <div class="modal-content">
-            <h2>ป้อน Key ต่ออายุ</h2>
-            <p id="enter-key-shop-name"></p>
-            <form id="enter-key-form">
-                <input type="hidden" id="enter-key-shop-id">
-                <div class="form-group">
-                    <label for="new-key-input">License Key</label>
-                    <input type="text" id="new-key-input" required>
-                </div>
-                <div class="modal-actions">
-                    <button type="submit" class="btn btn-primary">ต่ออายุ</button>
-                    <button type="button" id="close-enter-key-modal-btn" class="btn btn-secondary">ยกเลิก</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
 
     <div id="per-piece-price-modal" class="modal">
         <div class="modal-content price-list-modal-content">
-            <h2>ตั้งราคาต่อชิ้น</h2>
-            <p>กำหนดราคาสำหรับทุกๆ 10 ชิ้น</p>
+            <h2 data-translate-key="setPerPiecePriceTitle">ตั้งราคาต่อชิ้น</h2>
+            <p data-translate-key="setPerPiecePriceInfo">กำหนดราคาสำหรับทุกๆ 10 ชิ้น</p>
             <form id="per-piece-price-form"></form>
             <hr>
             <div class="modal-actions">
-                <button id="save-per-piece-price-btn" class="btn btn-primary">บันทึกราคา</button>
-                <button id="close-per-piece-price-modal-btn" class="btn btn-secondary">ปิด</button>
+                <button id="save-per-piece-price-btn" class="btn btn-primary" data-translate-key="savePriceBtn">บันทึกราคา</button>
+                <button id="close-per-piece-price-modal-btn" class="btn btn-secondary" data-translate-key="closeBtn">ปิด</button>
             </div>
         </div>
     </div>
 
     <div id="bulk-price-modal" class="modal">
         <div class="modal-content price-list-modal-content">
-            <h2>ตั้งราคาเหมา</h2>
-            <p>กำหนดราคาสำหรับช่วงจำนวนชิ้น</p>
+            <h2 data-translate-key="setBulkPriceTitle">ตั้งราคาเหมา</h2>
+            <p data-translate-key="setBulkPriceInfo">กำหนดราคาสำหรับช่วงจำนวนชิ้น</p>
             <form id="bulk-price-form"></form>
             <hr>
             <div class="modal-actions">
-                <button id="save-bulk-price-btn" class="btn btn-primary">บันทึกราคา</button>
-                <button id="close-bulk-price-modal-btn" class="btn btn-secondary">ปิด</button>
+                <button id="save-bulk-price-btn" class="btn btn-primary" data-translate-key="savePriceBtn">บันทึกราคา</button>
+                <button id="close-bulk-price-modal-btn" class="btn btn-secondary" data-translate-key="closeBtn">ปิด</button>
             </div>
         </div>
     </div>
 
     <div id="reorder-menu-modal" class="modal">
         <div class="modal-content">
-            <h2>จัดเรียงเมนู</h2>
-            <p>ลากและวางเพื่อจัดลำดับเมนูตามต้องการ</p>
+            <h2 data-translate-key="reorderMenuTitle">จัดเรียงเมนู</h2>
+            <p data-translate-key="reorderMenuInfo">ลากและวางเพื่อจัดลำดับเมนูตามต้องการ</p>
             <ul id="reorder-menu-list" class="reorder-list"></ul>
             <div class="modal-actions">
-                <button id="save-menu-order-btn" class="btn btn-primary">บันทึกการจัดเรียง</button>
-                <button id="close-reorder-menu-modal-btn" class="btn btn-secondary">ปิด</button>
+                <button id="save-menu-order-btn" class="btn btn-primary" data-translate-key="saveOrderBtn">บันทึกการจัดเรียง</button>
+                <button id="close-reorder-menu-modal-btn" class="btn btn-secondary" data-translate-key="closeBtn">ปิด</button>
             </div>
         </div>
     </div>
     
     <div id="permission-modal" class="modal">
         <div class="modal-content">
-            <h2>ตั้งค่าสิทธิ์การเข้าถึง</h2>
+            <h2 data-translate-key="setPermissionsTitle">ตั้งค่าสิทธิ์การเข้าถึง</h2>
             <p id="permission-user-name" style="font-weight: bold;"></p>
             <ul id="permission-list" style="list-style: none; padding: 0;"></ul>
             <hr>
             <div class="modal-actions">
-                <button id="save-permissions-btn" class="btn btn-primary">บันทึกสิทธิ์</button>
-                <button id="close-permission-modal-btn" class="btn btn-secondary">ปิด</button>
+                <button id="save-permissions-btn" class="btn btn-primary" data-translate-key="savePermissionsBtn">บันทึกสิทธิ์</button>
+                <button id="close-permission-modal-btn" class="btn btn-secondary" data-translate-key="closeBtn">ปิด</button>
             </div>
         </div>
     </div>
-
-    <div id="search-modal" class="modal">
-        <div class="modal-content">
-            <h2 id="search-modal-title">ค้นหา</h2>
-            <input type="text" id="search-modal-input" placeholder="พิมพ์เพื่อค้นหา...">
-            <div id="search-modal-results"></div>
-            <div class="modal-actions" style="margin-top: 20px;">
-                <button id="close-search-modal-btn" class="btn btn-secondary">ปิด</button>
-            </div>
-        </div>
-    </div>
-
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
@@ -1555,7 +1558,6 @@
         let appData = {
             categories: [],
             products: [],
-            database: [],
             cart: {},
             adminPin: '210406',
             subAdmins: [],
@@ -1567,8 +1569,6 @@
                 globalFontFamily: "'Kanit', sans-serif",
                 orderNumberFormat: 'format1',
                 orderNumberCounters: { format1: 1, format2: 1, format3: 1 },
-                licenseKey: null,
-                subscriptionExpires: null,
                 logo: null,
                 useLogo: false,
                 darkMode: false,
@@ -1578,7 +1578,11 @@
                     offsetY: 2,
                     blur: 4,
                     color: '#000000'
-                }
+                },
+                backgroundImage: null,
+                backgroundOpacity: 1,
+                language: 'th',
+                lowStockThreshold: 50, // UPDATE: Added low stock threshold
             },
             analytics: {
                 dailyTraffic: Array(7).fill(0),
@@ -1589,7 +1593,7 @@
                 monthlyProfit: 0
             },
             menuOrder: [
-                'admin', 'database', 'stock', 'order-number', 'dashboard', 'manage-account', 'tax'
+                'admin', 'stock', 'order-number', 'dashboard', 'manage-account'
             ]
         };
 
@@ -1603,112 +1607,295 @@
             { name: "Anuphan", value: "'Anuphan', sans-serif" },
             { name: "Taviraj", value: "'Taviraj', serif" },
             { name: "Trirong", value: "'Trirong', serif" },
-            { name: "Srisakdi", value: "'Srisakdi', cursive" },
-            { name: "Fahkwang", value: "'Fahkwang', cursive" },
-            { name: "Kufam", value: "'Kufam', sans-serif" },
-            { name: "Cormorant Garamond", value: "'Cormorant Garamond', serif" },
-            { name: "Playfair Display", value: "'Playfair Display', serif" },
-            { name: "Oswald", value: "'Oswald', sans-serif" },
-            { name: "Lato", value: "'Lato', sans-serif" },
-            { name: "Montserrat", value: "'Montserrat', sans-serif" },
-            { name: "Roboto", value: "'Roboto', sans-serif" },
-            { name: "Open Sans", value: "'Open Sans', sans-serif" },
-            { name: "Poppins", value: "'Poppins', sans-serif" },
-            { name: "Raleway", value: "'Raleway', sans-serif" },
-            { name: "Merriweather", value: "'Merriweather', serif" },
-            { name: "Nunito", value: "'Nunito', sans-serif" },
-            { name: "Dancing Script", value: "'Dancing Script', cursive" },
-            { name: "Pacifico", value: "'Pacifico', cursive" },
-            { name: "Indie Flower", value: "'Indie Flower', cursive" },
-            { name: "Permanent Marker", value: "'Permanent Marker', cursive" },
-            { name: "Lobster", value: "'Lobster', cursive" },
-            { name: "Bebas Neue", value: "'Bebas Neue', cursive" },
-            { name: "Anton", value: "'Anton', sans-serif" },
-            { name: "Fugaz One", value: "'Fugaz One', cursive" },
-            { name: "Exo 2", value: "'Exo 2', sans-serif" },
-            { name: "Source Sans Pro", value: "'Source Sans Pro', sans-serif" },
-            { name: "Cabin", value: "'Cabin', sans-serif" },
-            { name: "Comfortaa", value: "'Comfortaa', cursive" },
-            { name: "Quicksand", value: "'Quicksand', sans-serif" },
-            { name: "Josefin Sans", value: "'Josefin Sans', sans-serif" },
-            { name: "Amatic SC", value: "'Amatic SC', cursive" },
-            { name: "Special Elite", value: "'Special Elite', cursive" },
-            { name: "Press Start 2P", value: "'Press Start 2P', cursive" },
-            { name: "VT323", value: "'VT323', monospace" },
-            { name: "Shadows Into Light", value: "'Shadows Into Light', cursive" },
-            { name: "Acme", value: "'Acme', sans-serif" },
-            { name: "Righteous", value: "'Righteous', cursive" },
-            { name: "Patua One", value: "'Patua One', cursive" },
-            { name: "Abril Fatface", value: "'Abril Fatface', cursive" },
-            { name: "Alfa Slab One", value: "'Alfa Slab One', cursive" },
-            { name: "Titan One", value: "'Titan One', cursive" },
-            { name: "Passion One", value: "'Passion One', cursive" },
-            { name: "Luckiest Guy", value: "'Luckiest Guy', cursive" },
-            { name: "Monoton", value: "'Monoton', cursive" },
-            { name: "Great Vibes", value: "'Great Vibes', cursive" },
-            { name: "Sacramento", value: "'Sacramento', cursive" },
-            { name: "Kaushan Script", value: "'Kaushan Script', cursive" },
-            { name: "Allura", value: "'Allura', cursive" },
-            { name: "Satisfy", value: "'Satisfy', cursive" },
-            { name: "Handlee", value: "'Handlee', cursive" },
-            { name: "Pangolin", value: "'Pangolin', cursive" },
-            { name: "Gochi Hand", value: "'Gochi Hand', cursive" },
-            { name: "Kalam", value: "'Kalam', cursive" },
-            { name: "Caveat", value: "'Caveat', cursive" },
-            { name: "Zeyada", value: "'Zeyada', cursive" },
-            { name: "Homemade Apple", value: "'Homemade Apple', cursive" },
-            { name: "Coming Soon", value: "'Coming Soon', cursive" },
-            { name: "Neucha", value: "'Neucha', cursive" },
-            { name: "Gloria Hallelujah", value: "'Gloria Hallelujah', cursive" },
-            { name: "Walter Turncoat", value: "'Walter Turncoat', cursive" },
-            { name: "Sue Ellen Francisco", value: "'Sue Ellen Francisco', cursive" },
-            { name: "Reenie Beanie", value: "'Reenie Beanie', cursive" },
-            { name: "Shadows Into Light Two", value: "'Shadows Into Light Two', cursive" },
-            { name: "GFS Didot", value: "'GFS Didot', serif" },
-            { name: "Cinzel", value: "'Cinzel', serif" },
-            { name: "Cormorant", value: "'Cormorant', serif" },
-            { name: "Lora", value: "'Lora', serif" },
-            { name: "PT Serif", value: "'PT Serif', serif" },
-            { name: "Frank Ruhl Libre", value: "'Frank Ruhl Libre', serif" },
-            { name: "Domine", value: "'Domine', serif" },
-            { name: "Bitter", value: "'Bitter', serif" },
-            { name: "Arvo", value: "'Arvo', serif" },
-            { name: "Libre Baskerville", value: "'Libre Baskerville', serif" },
-            { name: "Bodoni Moda", value: "'Bodoni Moda', serif" },
-            { name: "Merriweather Sans", value: "'Merriweather Sans', sans-serif" },
-            { name: "Nunito Sans", value: "'Nunito Sans', sans-serif" },
-            { name: "Quicksand", value: "'Quicksand', sans-serif" },
-            { name: "Roboto Condensed", value: "'Roboto Condensed', sans-serif" },
-            { name: "Montserrat Alternates", value: "'Montserrat Alternates', sans-serif" },
-            { name: "Fira Sans", value: "'Fira Sans', sans-serif" },
-            { name: "Vollkorn", value: "'Vollkorn', serif" },
-            { name: "Roboto Slab", value: "'Roboto Slab', serif" },
-            { name: "Old Standard TT", value: "'Old Standard TT', serif" },
-            { name: "Cardo", value: "'Cardo', serif" },
-            { name: "EB Garamond", value: "'EB Garamond', serif" },
-            { name: "Literata", value: "'Literata', serif" },
-            { name: "Cormorant Infant", value: "'Cormorant Infant', serif" },
-            { name: "Nanum Myeongjo", value: "'Nanum Myeongjo', serif" },
-            { name: "Noto Serif", value: "'Noto Serif', serif" },
-            { name: "Playfair Display SC", value: "'Playfair Display SC', serif" },
-            { name: "Amiri", value: "'Amiri', serif" },
-            { name: "Libre Caslon Display", value: "'Libre Caslon Display', serif" },
-            { name: "Trispace", value: "'Trispace', sans-serif" },
-            { name: "Orbitron", value: "'Orbitron', sans-serif" },
-            { name: "Syncopate", value: "'Syncopate', sans-serif" },
-            { name: "Iceland", value: "'Iceland', cursive" },
-            { name: "Nova Square", value: "'Nova Square', cursive" },
-            { name: "Wallpoet", value: "'Wallpoet', cursive" }
         ];
+        
+        const translations = {
+            th: {
+                // General
+                closeBtn: "ปิด",
+                cancelBtn: "ยกเลิก",
+                confirmBtn: "ยืนยัน",
+                saveBtn: "บันทึก",
+                editBtn: "แก้ไข",
+                deleteBtn: "ลบ",
+                // Customer View
+                searchPlaceholder: "ค้นหาสินค้า...",
+                itemsListTitle: "รายการสินค้า",
+                tableHeaderItem: "สินค้า",
+                tableHeaderLevel: "เลเวล",
+                tableHeaderQuantity: "จำนวน",
+                tableHeaderManage: "จัดการ",
+                viewOrderBtn: "รายการสั่งซื้อ",
+                confirmOrderBtn: "ยืนยันสั่งซื้อ",
+                totalAmount: "ยอดรวม",
+                // Admin Login
+                adminLoginTitle: "เข้าสู่ระบบหลังบ้าน",
+                pinLabel: "PIN",
+                loginBtn: "เข้าสู่ระบบ",
+                backToShopBtn: "กลับหน้าหลักสั่งสินค้า",
+                invalidPinError: "PIN ไม่ถูกต้อง!",
+                // Admin Panel
+                adminPanelTitle: "Admin Panel",
+                viewShopBtn: "มุมมองหน้าร้าน",
+                logoutBtn: "ออกจากระบบ",
+                // Admin Menu
+                menuAdmin: "ตั้งค่าร้าน",
+                menuStock: "สต๊อกสินค้า",
+                menuOrderNumber: "Order Number",
+                menuDashboard: "Dashboard",
+                menuManageAccount: "Manage account",
+                editMenuOrderBtn: "EDIT",
+                // General Settings
+                generalSettingsTitle: "ตั้งค่าทั่วไป",
+                shopNameLabel: "ชื่อร้านค้า",
+                shopSloganLabel: "สโลแกนร้าน",
+                globalFontLabel: "ฟอนต์ระบบทั้งหมด",
+                shopNameFontLabel: "ฟอนต์ชื่อร้าน",
+                enableEffectLabel: "เปิดใช้เอฟเฟกต์ชื่อร้าน",
+                effectOffsetX: "เงาแนวนอน (X)",
+                effectOffsetY: "เงาแนวตั้ง (Y)",
+                effectBlur: "ความเบลอ",
+                effectColor: "สีเงา",
+                orderFormatLabel: "รูปแบบเลขที่ออเดอร์",
+                useLogoLabel: "ใช้โลโก้",
+                uploadLogoLabel: "อัปโหลดโลโก้ (PNG)",
+                backgroundSettingsTitle: "ตั้งค่าพื้นหลัง",
+                uploadBgLabel: "อัปโหลดภาพพื้นหลัง",
+                bgOpacityLabel: "ความโปร่งใส (จาง-ชัด)",
+                removeBgBtn: "ลบพื้นหลัง",
+                previewBgBtn: "ดูตัวอย่าง",
+                themeColorLabel: "ธีมสี (Theme)",
+                saveSettingsBtn: "บันทึกการตั้งค่า",
+                changePinTitle: "เปลี่ยนรหัสผ่าน",
+                newPinLabel: "PIN ใหม่",
+                saveNewPinBtn: "บันทึก PIN ใหม่",
+                // Stock Management
+                manageCategoriesTitle: "จัดการหมวดหมู่",
+                categoryNameLabel: "ชื่อหมวดหมู่",
+                categoryIconLabel: "ไอค่อนหมวดหมู่ (ไฟล์ PNG)",
+                minOrderLabel: "จำนวนสั่งซื้อขั้นต่ำ",
+                setPriceLabel: "ตั้งค่าราคา",
+                setPerPiecePriceBtn: "ตั้งราคาต่อชิ้น",
+                saveCategoryBtn: "เพิ่ม/บันทึกหมวดหมู่",
+                categoryListTitle: "รายการหมวดหมู่",
+                tableHeaderIcon: "ไอค่อน",
+                tableHeaderName: "ชื่อ",
+                tableHeaderMinOrder: "ขั้นต่ำ",
+                tableHeaderPrice: "ราคา",
+                manageProductsTitle: "จัดการสินค้า",
+                productNameLabel: "ชื่อสินค้า",
+                levelLabel: "เลเวล",
+                stockQuantityLabel: "จำนวนคงเหลือ",
+                categoryLabel: "หมวดหมู่",
+                productIconLabel: "ไอค่อนสินค้า (ไฟล์ PNG)",
+                productAvailableLabel: "เปิดขายสินค้านี้",
+                saveProductBtn: "บันทึกสินค้า",
+                cancelEditBtn: "ยกเลิกแก้ไข",
+                tableHeaderStock: "คงเหลือ",
+                tableHeaderStatus: "สถานะ",
+                statusAvailable: "เปิดขาย",
+                statusUnavailable: "ปิดขาย",
+                // Order Number
+                selectDateLabel: "เลือกวันที่:",
+                resetDataBtn: "รีเซ็ทข้อมูล",
+                activeOrdersTitle: "รายการออเดอร์ปัจจุบัน",
+                cancelledOrdersTitle: "รายการออเดอร์ที่ถูกยกเลิก",
+                tableHeaderOrderNo: "เลขออเดอร์",
+                tableHeaderDateTime: "วันที่/เวลา",
+                tableHeaderTotal: "ยอดรวม",
+                viewDetailsBtn: "ดูรายละเอียด",
+                cancelOrderBtn: "ยกเลิก",
+                // Dashboard
+                dashboardTitle: "ภาพรวมร้านค้า",
+                monthlyProfitTitle: "กำไรเดือนนี้",
+                dailyOrdersTitle: "ยอดออเดอร์วันนี้",
+                monthlyOrdersTitle: "ยอดออเดอร์เดือนนี้",
+                yearlySalesTitle: "ยอดขายรวม (ปีนี้)",
+                lowStockTitle: "สินค้าที่ต้องเติม (10 อันดับ)",
+                lowStockThresholdLabel: "แจ้งเตือนเมื่อเหลือน้อยกว่า:",
+                lowStockInfo: "รบกวนเติมสินค้าสำหรับรายการที่มีไฟกระพริบ",
+                noLowStockItems: "ไม่มีสินค้าใกล้หมด",
+                categorySalesTitle: "ยอดขายตามหมวดหมู่",
+                topSellingTitle: "สินค้าขายดี (Top 5)",
+                periodDay: "วันนี้",
+                periodMonth: "เดือนนี้",
+                periodYear: "ปีนี้",
+                trafficStatsTitle: "สถิติการเข้าใช้งาน",
+                productStatsTitle: "สถิติสินค้า (ตามจำนวนที่สั่ง)",
+                // Manage Account
+                manageAccountTitle: "จัดการบัญชี",
+                subAdminLimitInfo: "จำกัดจำนวนผู้ใช้ย่อยได้สูงสุด 20 คน",
+                usernameLabel: "ชื่อผู้ใช้",
+                addUserBtn: "เพิ่มผู้ใช้",
+                subAdminListTitle: "รายการผู้ใช้ย่อย",
+                // Modals
+                orderSummaryTitle: "สรุปออเดอร์",
+                copyOrderPrompt: "กรุณาคัดลอกข้อความด้านล่างเพื่อส่งให้ทางร้าน",
+                copyOrderBtn: "คัดลอกออเดอร์",
+                copySuccessMessage: "คัดลอกออเดอร์สำเร็จ",
+                yourOrderListTitle: "รายการสั่งซื้อของคุณ",
+                confirmPinTitle: "ยืนยันรหัส PIN",
+                enterPinPrompt: "กรอกรหัส PIN เพื่อยืนยัน",
+                confirmResetTitle: "ยืนยันการรีเซ็ทข้อมูล",
+                selectResetPeriodPrompt: "กรุณาเลือกช่วงเวลาที่ต้องการรีเซ็ทข้อมูล",
+                periodWeek: "สัปดาห์นี้",
+                periodAll: "ข้อมูลทั้งหมด",
+                setPerPiecePriceTitle: "ตั้งราคาต่อชิ้น",
+                setPerPiecePriceInfo: "กำหนดราคาสำหรับทุกๆ 10 ชิ้น",
+                savePriceBtn: "บันทึกราคา",
+                reorderMenuTitle: "จัดเรียงเมนู",
+                reorderMenuInfo: "ลากและวางเพื่อจัดลำดับเมนูตามต้องการ",
+                saveOrderBtn: "บันทึกการจัดเรียง",
+                setPermissionsTitle: "ตั้งค่าสิทธิ์การเข้าถึง",
+                savePermissionsBtn: "บันทึกสิทธิ์",
+            },
+            en: {
+                // General
+                closeBtn: "Close",
+                cancelBtn: "Cancel",
+                confirmBtn: "Confirm",
+                saveBtn: "Save",
+                editBtn: "Edit",
+                deleteBtn: "Delete",
+                // Customer View
+                searchPlaceholder: "Search for items...",
+                itemsListTitle: "Item List",
+                tableHeaderItem: "Item",
+                tableHeaderLevel: "Level",
+                tableHeaderQuantity: "Quantity",
+                tableHeaderManage: "Manage",
+                viewOrderBtn: "View Order",
+                confirmOrderBtn: "Confirm Order",
+                totalAmount: "Total",
+                // Admin Login
+                adminLoginTitle: "Admin Login",
+                pinLabel: "PIN",
+                loginBtn: "Login",
+                backToShopBtn: "Back to Shop",
+                invalidPinError: "Invalid PIN!",
+                // Admin Panel
+                adminPanelTitle: "Admin Panel",
+                viewShopBtn: "View Shop",
+                logoutBtn: "Logout",
+                // Admin Menu
+                menuAdmin: "Shop Settings",
+                menuStock: "Stock",
+                menuOrderNumber: "Order Number",
+                menuDashboard: "Dashboard",
+                menuManageAccount: "Manage Account",
+                editMenuOrderBtn: "EDIT",
+                // General Settings
+                generalSettingsTitle: "General Settings",
+                shopNameLabel: "Shop Name",
+                shopSloganLabel: "Shop Slogan",
+                globalFontLabel: "Global Font",
+                shopNameFontLabel: "Shop Name Font",
+                enableEffectLabel: "Enable Shop Name Effect",
+                effectOffsetX: "Offset X",
+                effectOffsetY: "Offset Y",
+                effectBlur: "Blur",
+                effectColor: "Color",
+                orderFormatLabel: "Order Number Format",
+                useLogoLabel: "Use Logo",
+                uploadLogoLabel: "Upload Logo (PNG)",
+                backgroundSettingsTitle: "Background Settings",
+                uploadBgLabel: "Upload Background Image",
+                bgOpacityLabel: "Opacity (Faint-Clear)",
+                removeBgBtn: "Remove Background",
+                previewBgBtn: "Preview",
+                themeColorLabel: "Theme Color",
+                saveSettingsBtn: "Save Settings",
+                changePinTitle: "Change PIN",
+                newPinLabel: "New PIN",
+                saveNewPinBtn: "Save New PIN",
+                // Stock Management
+                manageCategoriesTitle: "Manage Categories",
+                categoryNameLabel: "Category Name",
+                categoryIconLabel: "Category Icon (PNG)",
+                minOrderLabel: "Minimum Order Quantity",
+                setPriceLabel: "Set Prices",
+                setPerPiecePriceBtn: "Set Per-Piece Price",
+                saveCategoryBtn: "Add/Save Category",
+                categoryListTitle: "Category List",
+                tableHeaderIcon: "Icon",
+                tableHeaderName: "Name",
+                tableHeaderMinOrder: "Min. Qty",
+                tableHeaderPrice: "Price",
+                manageProductsTitle: "Manage Products",
+                productNameLabel: "Product Name",
+                levelLabel: "Level",
+                stockQuantityLabel: "Stock Quantity",
+                categoryLabel: "Category",
+                productIconLabel: "Product Icon (PNG)",
+                productAvailableLabel: "This product is available",
+                saveProductBtn: "Save Product",
+                cancelEditBtn: "Cancel Edit",
+                tableHeaderStock: "Stock",
+                tableHeaderStatus: "Status",
+                statusAvailable: "Available",
+                statusUnavailable: "Unavailable",
+                // Order Number
+                selectDateLabel: "Select Date:",
+                resetDataBtn: "Reset Data",
+                activeOrdersTitle: "Active Orders",
+                cancelledOrdersTitle: "Cancelled Orders",
+                tableHeaderOrderNo: "Order No.",
+                tableHeaderDateTime: "Date/Time",
+                tableHeaderTotal: "Total",
+                viewDetailsBtn: "Details",
+                cancelOrderBtn: "Cancel",
+                // Dashboard
+                dashboardTitle: "Dashboard",
+                monthlyProfitTitle: "This Month's Profit",
+                dailyOrdersTitle: "Today's Orders",
+                monthlyOrdersTitle: "This Month's Orders",
+                yearlySalesTitle: "This Year's Sales",
+                lowStockTitle: "Low Stock Items (Top 10)",
+                lowStockThresholdLabel: "Alert when stock is less than:",
+                lowStockInfo: "Please restock items with a blinking light.",
+                noLowStockItems: "No items are low on stock",
+                categorySalesTitle: "Sales by Category",
+                topSellingTitle: "Top 5 Selling Items",
+                periodDay: "Today",
+                periodMonth: "This Month",
+                periodYear: "This Year",
+                trafficStatsTitle: "Traffic Statistics",
+                productStatsTitle: "Product Statistics (by quantity)",
+                // Manage Account
+                manageAccountTitle: "Manage Accounts",
+                subAdminLimitInfo: "Sub-admin limit is 20 users.",
+                usernameLabel: "Username",
+                addUserBtn: "Add User",
+                subAdminListTitle: "Sub-Admin List",
+                // Modals
+                orderSummaryTitle: "Order Summary",
+                copyOrderPrompt: "Please copy the text below to send to the shop.",
+                copyOrderBtn: "Copy Order",
+                copySuccessMessage: "Order copied successfully",
+                yourOrderListTitle: "Your Order List",
+                confirmPinTitle: "Confirm PIN",
+                enterPinPrompt: "Enter PIN to confirm",
+                confirmResetTitle: "Confirm Data Reset",
+                selectResetPeriodPrompt: "Please select the period for data reset.",
+                periodWeek: "This Week",
+                periodAll: "All Data",
+                setPerPiecePriceTitle: "Set Per-Piece Price",
+                setPerPiecePriceInfo: "Set the price for every 10 pieces.",
+                savePriceBtn: "Save Prices",
+                reorderMenuTitle: "Reorder Menu",
+                reorderMenuInfo: "Drag and drop to reorder the menu.",
+                saveOrderBtn: "Save Order",
+                setPermissionsTitle: "Set Permissions",
+                savePermissionsBtn: "Save Permissions",
+            }
+        };
 
         const MENU_NAMES = {
-            'admin': 'ตั้งค่าร้าน',
-            'stock': 'สต๊อกสินค้า',
-            'database': 'ฐานข้อมูล',
-            'order-number': 'Order Number',
-            'dashboard': 'Dashboard',
-            'manage-account': 'Manage account',
-            'tax': 'ตรวจสอบภาษี'
+            'admin': 'menuAdmin',
+            'stock': 'menuStock',
+            'order-number': 'menuOrderNumber',
+            'dashboard': 'menuDashboard',
+            'manage-account': 'menuManageAccount'
         };
 
         const generateId = () => Date.now() + Math.floor(Math.random() * 1000);
@@ -1742,10 +1929,9 @@
             try {
                 const response = await fetch(API_ENDPOINT);
                 
-                // หากไม่พบข้อมูลบนเซิร์ฟเวอร์ (เช่น การใช้งานครั้งแรก) ให้ใช้ข้อมูลเริ่มต้น
                 if (response.status === 404) {
                     console.log('No data found on server, initializing with default data.');
-                    await saveState(); // บันทึกข้อมูลเริ่มต้นไปที่เซิร์ฟเวอร์
+                    await saveState(); 
                     return;
                 }
 
@@ -1755,55 +1941,62 @@
 
                 const serverData = await response.json();
                 
-                // ตรวจสอบและผสานข้อมูลเพื่อให้เข้ากับโครงสร้างล่าสุด
                 const defaultAppData = {
-                    database: [],
+                    cart: {},
                     shopSettings: {
                         shopName: "WARISHAYDAY", slogan: "ร้านค้าไอเท็ม Hay Day", themeColor: "#28a745", fontFamily: "'Kanit', sans-serif",
                         globalFontFamily: "'Kanit', sans-serif", logo: null, useLogo: false, darkMode: false,
                         orderNumberFormat: 'format1', orderNumberCounters: { format1: 1, format2: 1, format3: 1 },
-                        licenseKey: null, subscriptionExpires: null,
-                        shopNameEffect: { enabled: false, offsetX: 2, offsetY: 2, blur: 4, color: '#000000' }
+                        shopNameEffect: { enabled: false, offsetX: 2, offsetY: 2, blur: 4, color: '#000000' },
+                        backgroundImage: null, backgroundOpacity: 1, language: 'th', lowStockThreshold: 50
                     },
                     analytics: { dailyTraffic: Array(7).fill(0), hourlyTraffic: Array(24).fill(0), productSales: {}, orders: [], totalSales: 0, monthlyProfit: 0 },
                     subAdmins: [],
-                    menuOrder: ['admin', 'database', 'stock', 'order-number', 'dashboard', 'manage-account', 'tax']
+                    menuOrder: ['admin', 'stock', 'order-number', 'dashboard', 'manage-account'],
+                    categories: [],
+                    products: [],
                 };
                 appData = { ...defaultAppData, ...serverData };
                 appData.shopSettings = {...defaultAppData.shopSettings, ...appData.shopSettings};
                 appData.analytics.orders = appData.analytics.orders || [];
                 appData.analytics.orders.forEach(o => { if(!o.status) o.status = 'active'; });
 
-                if (!appData.menuOrder.includes('database')) {
-                    appData.menuOrder.splice(1, 0, 'database');
-                }
-                if (!appData.menuOrder.includes('order-number')) {
-                    const stockIndex = appData.menuOrder.indexOf('stock');
-                    appData.menuOrder.splice(stockIndex + 1, 0, 'order-number');
-                }
+                appData.categories.forEach(cat => {
+                    if (cat.minOrderQuantity === undefined) {
+                        cat.minOrderQuantity = 30;
+                    }
+                });
+                appData.products.forEach(prod => {
+                    if (prod.isAvailable === undefined) {
+                        prod.isAvailable = true;
+                    }
+                    if (prod.stock === undefined) {
+                        prod.stock = -1; // -1 for infinite
+                    }
+                });
                 
-                appData.menuOrder = appData.menuOrder.filter(item => item !== 'management-store');
-                
+                const validMenus = new Set(defaultAppData.menuOrder);
+                appData.menuOrder = (appData.menuOrder || defaultAppData.menuOrder).filter(item => validMenus.has(item));
+
                 appData.subAdmins.forEach(sa => {
                     if (!sa.permissions) {
                         sa.permissions = {};
-                        appData.menuOrder.forEach(key => sa.permissions[key] = false);
-                        sa.permissions['stock'] = true;
-                    }
-                    if (sa.permissions['management-store']) {
-                        delete sa.permissions['management-store'];
+                        appData.menuOrder.forEach(key => sa.permissions[key] = true);
+                    } else {
+                        Object.keys(sa.permissions).forEach(key => {
+                            if (!validMenus.has(key)) {
+                                delete sa.permissions[key];
+                            }
+                        });
                     }
                 });
+
 
             } catch (error) {
                 console.error('Failed to load state:', error);
                 alert('ไม่สามารถโหลดข้อมูลร้านค้าได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองรีเฟรชหน้าเว็บ');
             }
         };
-
-        // ==================================================================
-        // END: โค้ดที่ปรับปรุงใหม่
-        // ==================================================================
 
         const readFileAsBase64 = (file) => {
             return new Promise((resolve, reject) => {
@@ -1837,29 +2030,26 @@
         const backToAdminBtn = document.getElementById('back-to-admin-btn');
         const adminGearIcon = document.getElementById('admin-gear-icon');
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const langToggleBtn = document.getElementById('lang-toggle-btn');
         
         const adminMenuAdmin = document.getElementById('admin-menu-admin');
         const adminMenuStock = document.getElementById('admin-menu-stock');
-        const adminMenuDatabase = document.getElementById('admin-menu-database');
         const adminMenuOrderNumber = document.getElementById('admin-menu-order-number');
         const adminMenuDashboard = document.getElementById('admin-menu-dashboard');
         const adminMenuManageAccount = document.getElementById('admin-menu-manage-account');
-        const adminMenuTax = document.getElementById('admin-menu-tax');
 
         const adminMenuContainer = document.querySelector('.admin-menu');
         
         let activeAdminMenu = 'admin';
         let activeCategoryId = null;
         let adminActiveCategoryId = null;
-        let dbActiveCategoryId = null;
         let editingProductId = null;
         let editingCategoryId = null;
-        let editingDbCategoryId = null;
-        let editingDbItemId = null;
         let editingSubAdminId = null;
         let catIconFile = null;
         let prodIconFile = null;
         let logoFile = null;
+        let bgFile = null;
         let isAdminLoggedIn = false;
         let loggedInUser = null; 
         
@@ -1870,11 +2060,46 @@
         let selectedDate = new Date().toISOString().slice(0, 10);
         let fp;
 
+        const setLanguage = (lang) => {
+            appData.shopSettings.language = lang;
+            document.querySelectorAll('[data-translate-key]').forEach(el => {
+                const key = el.dataset.translateKey;
+                const translation = translations[lang][key];
+                if (translation) {
+                    if (el.placeholder !== undefined) {
+                        el.placeholder = translation;
+                    } else {
+                        el.textContent = translation;
+                    }
+                }
+            });
+            langToggleBtn.textContent = '🌐';
+        };
+
+        langToggleBtn.addEventListener('click', async () => {
+            const newLang = appData.shopSettings.language === 'th' ? 'en' : 'th';
+            setLanguage(newLang);
+            await saveState();
+        });
+
+        const applyBackground = () => {
+            const bgOverlay = document.getElementById('background-overlay');
+            if (appData.shopSettings.backgroundImage) {
+                bgOverlay.style.backgroundImage = `url(${appData.shopSettings.backgroundImage})`;
+                bgOverlay.style.opacity = appData.shopSettings.backgroundOpacity;
+            } else {
+                bgOverlay.style.backgroundImage = 'none';
+            }
+        };
+
         const applyTheme = () => {
             document.documentElement.style.setProperty('--primary-color', appData.shopSettings.themeColor);
             document.documentElement.style.setProperty('--global-font', appData.shopSettings.globalFontFamily);
             shopNameDisplay.style.fontFamily = appData.shopSettings.fontFamily;
-            shopNameDisplay.textContent = appData.shopSettings.shopName;
+            
+            if (shopNameDisplay.textContent.toLowerCase() !== 'warishayday') {
+                 shopNameDisplay.textContent = appData.shopSettings.shopName;
+            }
             sloganElement.textContent = appData.shopSettings.slogan;
             
             const effect = appData.shopSettings.shopNameEffect;
@@ -1904,6 +2129,8 @@
                 document.body.classList.remove('dark-mode');
                 themeToggleBtn.textContent = '🌙';
             }
+            applyBackground();
+            setLanguage(appData.shopSettings.language);
         };
         
         themeToggleBtn.addEventListener('click', async () => {
@@ -1920,6 +2147,7 @@
             adminGearIcon.style.display = isAdminLoggedIn ? 'none' : 'flex';
             backToAdminBtn.style.display = isAdminLoggedIn ? 'flex' : 'none';
             themeToggleBtn.style.display = 'flex';
+            langToggleBtn.style.display = 'flex';
         };
 
         const renderCategoryTabs = () => {
@@ -1938,6 +2166,7 @@
             });
         };
 
+        // UPDATE: Modified renderProducts to handle unavailable items
         const renderProducts = (searchTerm = '') => {
             productTableBody.innerHTML = '';
             let productsToDisplay = [];
@@ -1952,7 +2181,7 @@
                     currentCategoryName.textContent = '';
                     return;
                 }
-                currentCategoryName.textContent = `รายการสินค้า: ${activeCategory.name}`;
+                currentCategoryName.textContent = `${activeCategory.name}`;
                 productsToDisplay = appData.products.filter(p => p.categoryId === activeCategoryId);
             }
             
@@ -1961,17 +2190,37 @@
             } else {
                 productsToDisplay.forEach(prod => {
                     const quantity = appData.cart[prod.id] || 0;
+                    const isPhysicallyOutOfStock = prod.stock !== -1 && prod.stock <= 0;
+                    const isUnavailableByAdmin = !prod.isAvailable;
+
                     const row = document.createElement('tr');
+                    
+                    if (isUnavailableByAdmin || isPhysicallyOutOfStock) {
+                        row.classList.add('product-unavailable');
+                    }
+
+                    let quantityAndManageCells = '';
+
+                    if (isUnavailableByAdmin) {
+                        // When admin sets to "unavailable", show the specific message
+                        quantityAndManageCells = `<td colspan="2" class="status-cell">สินค้าหมดชั่วคราว</td>`;
+                    } else {
+                        // When available but stock is 0, or available with stock
+                        quantityAndManageCells = `
+                            <td><span class="quantity-display">${quantity}</span></td>
+                            <td>
+                                <div class="quantity-controls">
+                                    <button class="btn btn-primary btn-small" data-id="${prod.id}" data-op="10" ${isPhysicallyOutOfStock ? 'disabled' : ''}>+10</button>
+                                    <button class="btn btn-danger btn-small" data-id="${prod.id}" data-op="-10" ${isPhysicallyOutOfStock ? 'disabled' : ''}>-10</button>
+                                </div>
+                            </td>
+                        `;
+                    }
+
                     row.innerHTML = `
                         <td>${prod.icon ? `<img src="${prod.icon}" alt="${prod.name}">` : ''}${prod.name}</td>
                         <td>${prod.level}</td>
-                        <td><span class="quantity-display">${quantity}</span></td>
-                        <td>
-                            <div class="quantity-controls">
-                                <button class="btn btn-primary btn-small" data-id="${prod.id}" data-op="10">+10</button>
-                                <button class="btn btn-danger btn-small" data-id="${prod.id}" data-op="-10">-10</button>
-                            </div>
-                        </td>
+                        ${quantityAndManageCells}
                     `;
                     productTableBody.appendChild(row);
                 });
@@ -2034,7 +2283,8 @@
         };
 
         const checkOrderValidation = () => {
-            let messages = [];
+            let priceMessages = [];
+            let minOrderMessages = [];
             let totalOrderPrice = 0;
             const itemsByCategory = {};
             
@@ -2060,39 +2310,61 @@
                 const total = itemsByCategory[categoryId].total;
                 const category = appData.categories.find(c => c.id == categoryId);
                 if (!category) continue;
-                const priceResult = calculatePrice(parseInt(categoryId), total);
+                
+                if (total > 0 && total < category.minOrderQuantity) {
+                    minOrderMessages.push(`หมวด "${category.name}" ต้องสั่งขั้นต่ำ ${category.minOrderQuantity} ชิ้น (ขาดอีก ${category.minOrderQuantity - total} ชิ้น) <button class="btn btn-secondary btn-small nav-btn" data-cat-id="${categoryId}">ไปที่หมวด</button>`);
+                    isOrderable = false;
+                }
 
-                if (priceResult.price === 0) {
-                    messages.push(`หมวด "${category.name}" ไม่มีราคาสำหรับจำนวน ${total} ชิ้น`);
+                const priceResult = calculatePrice(parseInt(categoryId), total);
+                if (priceResult.price === 0 && total > 0) {
+                    priceMessages.push(`หมวด "${category.name}" ไม่มีราคาสำหรับจำนวน ${total} ชิ้น`);
                     isOrderable = false;
                 } else {
                     totalOrderPrice += priceResult.price;
                 }
             }
             
-            if (messages.length > 0) {
-                orderValidationMsg.innerHTML = messages.join('<br>');
+            const allMessages = [...minOrderMessages, ...priceMessages];
+            if (allMessages.length > 0) {
+                orderValidationMsg.innerHTML = allMessages.join('<br>');
                 confirmOrderBtn.disabled = true;
+                viewOrderBtn.disabled = true;
             } else {
                 if (totalOrderPrice > 0) {
-                    orderValidationMsg.innerHTML = `ยอดรวม: ${totalOrderPrice} บาท`;
+                    orderValidationMsg.innerHTML = `${translations[appData.shopSettings.language].totalAmount}: ${totalOrderPrice} บาท`;
                     confirmOrderBtn.disabled = false;
+                    viewOrderBtn.disabled = false;
                 } else {
                     orderValidationMsg.textContent = '';
                     confirmOrderBtn.disabled = true;
+                    viewOrderBtn.disabled = false;
                 }
             }
         };
 
+        orderValidationMsg.addEventListener('click', (e) => {
+            if (e.target.classList.contains('nav-btn')) {
+                const catId = parseInt(e.target.dataset.catId);
+                activeCategoryId = catId;
+                renderCustomerView();
+                const tab = document.querySelector(`.tab[data-id="${catId}"]`);
+                if (tab) {
+                    tab.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+
         productTableBody.addEventListener('click', (e) => {
-            if (e.target.matches('button[data-op]')) {
-                const productId = e.target.dataset.id;
-                const operation = parseInt(e.target.dataset.op);
+            const button = e.target.closest('button[data-op]');
+            if (button) {
+                const productId = button.dataset.id;
+                const operation = parseInt(button.dataset.op);
                 let currentQuantity = appData.cart[productId] || 0;
                 currentQuantity += operation;
                 if (currentQuantity < 0) currentQuantity = 0;
                 appData.cart[productId] = currentQuantity;
-                const quantityDisplay = e.target.closest('tr').querySelector('.quantity-display');
+                const quantityDisplay = button.closest('tr').querySelector('.quantity-display');
                 if (quantityDisplay) { quantityDisplay.textContent = currentQuantity; }
                 checkOrderValidation();
             }
@@ -2138,35 +2410,49 @@
             }
             summaryText += `ยอดรวมทั้งหมด: ${totalOrderPrice} บาท`;
 
-            if (totalOrderPrice === 0) {
+            if (totalOrderPrice === 0 && Object.values(appData.cart).every(q => q === 0)) {
                 return 'ไม่มีสินค้าในรายการสั่งซื้อ';
             }
             return summaryText;
         };
         
-        confirmOrderBtn.addEventListener('click', () => {
-            if (confirmOrderBtn.disabled) return;
-            document.getElementById('order-modal-title').textContent = 'สรุปออเดอร์';
-            document.getElementById('order-modal-prompt').style.display = 'block';
-            document.getElementById('copy-order-btn').style.display = 'inline-block';
-            const orderNumber = generateOrderNumber();
-            orderDetails.textContent = createOrderSummaryText(orderNumber);
-            orderDetails.dataset.orderNumber = orderNumber; // Store for later
-            orderModal.style.display = 'flex';
-        });
+        const handleOrderAction = (isConfirm) => {
+            if (isConfirm) {
+                checkOrderValidation(); 
+                const validationText = orderValidationMsg.innerHTML;
+                if (validationText.includes('ต้องสั่งขั้นต่ำ') || validationText.includes('ไม่มีราคา')) {
+                     alert('กรุณาตรวจสอบรายการสั่งซื้อให้ถูกต้องตามเงื่อนไข');
+                     return;
+                }
+                if (confirmOrderBtn.disabled) return;
+            }
+            
+            if (isConfirm) {
+                document.getElementById('order-modal-title').textContent = 'สรุปออเดอร์';
+                document.getElementById('order-modal-prompt').style.display = 'block';
+                document.getElementById('copy-order-btn').style.display = 'inline-block';
+                const orderNumber = generateOrderNumber();
+                orderDetails.textContent = createOrderSummaryText(orderNumber);
+                orderDetails.dataset.orderNumber = orderNumber;
+                orderModal.style.display = 'flex';
+            } else {
+                cartDetails.textContent = createOrderSummaryText();
+                cartModal.style.display = 'flex';
+            }
+        };
 
-        viewOrderBtn.addEventListener('click', () => {
-            cartDetails.textContent = createOrderSummaryText();
-            cartModal.style.display = 'flex';
-        });
+        confirmOrderBtn.addEventListener('click', () => handleOrderAction(true));
+        viewOrderBtn.addEventListener('click', () => handleOrderAction(false));
 
+        // UPDATE: Replaced alert with a success animation modal
         document.getElementById('copy-order-btn').addEventListener('click', async () => {
             const orderText = orderDetails.textContent;
             try {
                 await navigator.clipboard.writeText(orderText);
-                alert('คัดลอกออเดอร์เรียบร้อยแล้ว!');
                 
-                const totalOrderPrice = parseFloat(orderValidationMsg.textContent.replace('ยอดรวม: ', '').replace(' บาท', ''));
+                const totalOrderPriceText = orderText.match(/ยอดรวมทั้งหมด: ([\d,]+) บาท/);
+                const totalOrderPrice = totalOrderPriceText ? parseFloat(totalOrderPriceText[1].replace(/,/g, '')) : 0;
+
                 if (!isNaN(totalOrderPrice) && totalOrderPrice > 0) {
                     const newOrder = {
                         id: orderDetails.dataset.orderNumber,
@@ -2186,12 +2472,8 @@
                                 }
                                 appData.analytics.productSales[product.name] += appData.cart[prodId];
 
-                                for (const dbCat of appData.database) {
-                                    const dbItem = dbCat.items.find(i => i.name === product.name);
-                                    if (dbItem) {
-                                        dbItem.quantity = Math.max(0, dbItem.quantity - appData.cart[prodId]);
-                                        break; 
-                                    }
+                                if (product.stock !== -1) {
+                                    product.stock = Math.max(0, product.stock - appData.cart[prodId]);
                                 }
                             }
                         }
@@ -2200,8 +2482,16 @@
 
                 appData.cart = {};
                 await saveState();
-                orderModal.style.display = 'none';
-                renderCustomerView();
+
+                const successModal = document.getElementById('copy-success-modal');
+                successModal.style.display = 'flex';
+                
+                setTimeout(() => {
+                    successModal.style.display = 'none';
+                    orderModal.style.display = 'none';
+                    renderCustomerView();
+                }, 2000);
+
             } catch (err) {
                 console.error('Failed to copy text: ', err);
                 alert('ไม่สามารถคัดลอกได้ กรุณาลองใหม่');
@@ -2219,7 +2509,6 @@
         document.getElementById('reset-cart-btn').addEventListener('click', () => {
              if (confirm('คุณต้องการรีเซ็ทรายการสั่งซื้อทั้งหมดหรือไม่?')) {
                 appData.cart = {};
-                // ไม่ต้อง saveState เพราะเป็นข้อมูลชั่วคราวฝั่ง client
                 renderCustomerView();
                 alert('รีเซ็ทรายการสั่งซื้อเรียบร้อยแล้ว!');
             }
@@ -2234,7 +2523,13 @@
             if (!isAdminLoggedIn) {
                 switchView('adminLogin');
                 themeToggleBtn.style.display = 'none';
+                langToggleBtn.style.display = 'none';
             }
+        });
+
+        document.getElementById('back-to-customer-view-btn').addEventListener('click', () => {
+            switchView('customer');
+            renderCustomerView();
         });
         
         document.getElementById('login-btn').addEventListener('click', async () => {
@@ -2265,12 +2560,13 @@
                 adminGearIcon.style.display = 'none';
                 backToAdminBtn.style.display = 'flex';
                 themeToggleBtn.style.display = 'none';
+                langToggleBtn.style.display = 'none';
                 
                 const today = new Date().getDay();
                 appData.analytics.dailyTraffic[today] = (appData.analytics.dailyTraffic[today] || 0) + 1;
                 await saveState();
             } else {
-                loginError.textContent = 'PIN ไม่ถูกต้อง!';
+                loginError.textContent = translations[appData.shopSettings.language].invalidPinError;
             }
         });
         
@@ -2296,6 +2592,7 @@
         const renderAdminMenu = () => {
             adminMenuContainer.innerHTML = '';
             const isSuperAdmin = loggedInUser && loggedInUser.isSuper;
+            const lang = appData.shopSettings.language;
 
             appData.menuOrder.forEach(menuKey => {
                 let showMenuItem = false;
@@ -2309,7 +2606,7 @@
                     const btn = document.createElement('button');
                     btn.className = `btn menu-btn ${menuKey === activeAdminMenu ? 'active' : ''}`;
                     btn.dataset.menu = menuKey;
-                    btn.textContent = MENU_NAMES[menuKey];
+                    btn.textContent = translations[lang][MENU_NAMES[menuKey]];
                     adminMenuContainer.appendChild(btn);
                 }
             });
@@ -2317,7 +2614,7 @@
             if (isSuperAdmin) {
                 const reorderBtn = document.createElement('button');
                 reorderBtn.className = 'btn btn-small btn-danger';
-                reorderBtn.textContent = 'EDIT';
+                reorderBtn.textContent = translations[lang].editMenuOrderBtn;
                 reorderBtn.id = 'reorder-menu-btn';
                 adminMenuContainer.appendChild(reorderBtn);
                 reorderBtn.addEventListener('click', () => {
@@ -2338,7 +2635,6 @@
 
             const isSuperAdmin = loggedInUser && loggedInUser.isSuper;
             document.getElementById('admin-pin-section').style.display = isSuperAdmin ? 'block' : 'none';
-            document.getElementById('license-key-section').style.display = isSuperAdmin ? 'none' : 'block';
 
             renderAdminMenu();
 
@@ -2373,24 +2669,21 @@
                 document.getElementById('effect-controls-container').style.display = effect.enabled ? 'grid' : 'none';
                 updateFontPreviewEffect();
                 
-                document.getElementById('license-key-display').value = appData.shopSettings.licenseKey || 'N/A';
-                const expiryDate = appData.shopSettings.subscriptionExpires ? new Date(appData.shopSettings.subscriptionExpires) : null;
-                if (expiryDate) {
-                    document.getElementById('license-expiry-display').textContent = `หมดอายุ: ${expiryDate.toLocaleDateString('th-TH')}`;
+                document.getElementById('bg-opacity').value = appData.shopSettings.backgroundOpacity;
+                const bgPreview = document.getElementById('bg-preview');
+                if (appData.shopSettings.backgroundImage) {
+                    bgPreview.style.backgroundImage = `url(${appData.shopSettings.backgroundImage})`;
+                    bgPreview.style.display = 'block';
                 } else {
-                     document.getElementById('license-expiry-display').textContent = 'ไม่มีข้อมูลวันหมดอายุ';
+                    bgPreview.style.display = 'none';
                 }
+
             } else if (activeAdminMenu === 'stock' && canAccess('stock')) {
                 adminMenuStock.style.display = 'block';
                 renderAdminCategories();
                 renderAdminProductTabs();
                 renderAdminProducts();
                 populateCategoryDropdown();
-            } else if (activeAdminMenu === 'database' && canAccess('database')) {
-                adminMenuDatabase.style.display = 'block';
-                renderDbCategories();
-                renderDbItemTabs();
-                renderDbItems();
             } else if (activeAdminMenu === 'order-number' && canAccess('order-number')) {
                 adminMenuOrderNumber.style.display = 'block';
                 if (!orderDatePicker) {
@@ -2405,6 +2698,7 @@
                 renderOrderNumberView();
             } else if (activeAdminMenu === 'dashboard' && canAccess('dashboard')) {
                 adminMenuDashboard.style.display = 'block';
+                document.getElementById('low-stock-threshold').value = appData.shopSettings.lowStockThreshold; // UPDATE
                 if (!fp) {
                     fp = flatpickr(datePicker, {
                         defaultDate: selectedDate,
@@ -2419,9 +2713,6 @@
             } else if (activeAdminMenu === 'manage-account' && canAccess('manage-account')) {
                 adminMenuManageAccount.style.display = 'block';
                 renderSubAdmins();
-            } else if (activeAdminMenu === 'tax' && canAccess('tax')) {
-                adminMenuTax.style.display = 'block';
-                renderTaxCalculator();
             } else {
                 if (!isSuperAdmin) {
                     const firstPermittedMenu = appData.menuOrder.find(key => permissions[key]);
@@ -2555,31 +2846,42 @@
             });
         };
 
+        // UPDATE: Modified to use dynamic threshold from settings
         const renderLowStockList = () => {
             const listEl = document.getElementById('low-stock-list');
             listEl.innerHTML = '';
-            const allItems = [];
-            appData.database.forEach(cat => {
-                cat.items.forEach(item => allItems.push({ name: item.name, quantity: item.quantity }));
-            });
+            const lang = appData.shopSettings.language;
+            const threshold = appData.shopSettings.lowStockThreshold || 50;
             
-            allItems.sort((a, b) => a.quantity - b.quantity);
-            const lowStockItems = allItems.slice(0, 10);
+            const lowStockItems = appData.products
+                .filter(p => p.stock !== -1 && p.stock < threshold) 
+                .sort((a, b) => a.stock - b.stock)
+                .slice(0, 10);
 
             if (lowStockItems.length === 0) {
-                listEl.innerHTML = '<li>ไม่มีข้อมูลสินค้าในฐานข้อมูล</li>';
+                listEl.innerHTML = `<li>${translations[lang].noLowStockItems}</li>`;
                 return;
             }
 
-            lowStockItems.forEach((item, index) => {
+            lowStockItems.forEach((item) => {
                 const li = document.createElement('li');
-                if (index < 5) {
+                if (item.stock < 20) {
                     li.className = 'blinking-warning';
                 }
-                li.innerHTML = `<span>${item.name}</span><strong>${item.quantity} ชิ้น</strong>`;
+                li.innerHTML = `<span>${item.name}</span><strong>${item.stock} ชิ้น</strong>`;
                 listEl.appendChild(li);
             });
         };
+
+        // UPDATE: Added event listener for the new threshold input
+        document.getElementById('low-stock-threshold').addEventListener('change', async (e) => {
+            const newThreshold = parseInt(e.target.value);
+            if (!isNaN(newThreshold) && newThreshold >= 0) {
+                appData.shopSettings.lowStockThreshold = newThreshold;
+                await saveState();
+                renderLowStockList(); // Re-render the list with the new threshold
+            }
+        });
 
         const renderTopItems = (period) => {
              const listEl = document.getElementById('top-items-list');
@@ -2667,6 +2969,7 @@
                 row.innerHTML = `
                     <td>${cat.icon ? `<img src="${cat.icon}" alt="icon" style="width:24px; height:24px;">` : 'ไม่มี'}</td>
                     <td>${cat.name}</td>
+                    <td>${cat.minOrderQuantity}</td>
                     <td><ul class="price-list">${priceText.length > 0 ? `<li>${priceText.join('</li><li>')}</li>` : '<li>ไม่ได้ตั้งราคา</li>'}</ul></td>
                     <td>
                         <button class="btn btn-secondary btn-small btn-cat-edit" data-id="${cat.id}">แก้ไข</button>
@@ -2680,21 +2983,26 @@
         const renderAdminProducts = () => {
             const list = document.getElementById('admin-prod-list');
             list.innerHTML = '';
+            const lang = appData.shopSettings.language;
             
             const productsInCategory = appData.products.filter(p => p.categoryId === adminActiveCategoryId);
             const adminCurrentCategoryName = document.getElementById('admin-current-category-name');
             const activeCategory = appData.categories.find(c => c.id === adminActiveCategoryId);
-            adminCurrentCategoryName.textContent = activeCategory ? `รายการสินค้า: ${activeCategory.name}` : 'กรุณาเลือกหมวดหมู่';
+            adminCurrentCategoryName.textContent = activeCategory ? `${activeCategory.name}` : 'กรุณาเลือกหมวดหมู่';
 
             if (productsInCategory.length === 0) {
-                 list.innerHTML = '<tr><td colspan="4">ยังไม่มีสินค้าในหมวดนี้</td></tr>';
+                 list.innerHTML = '<tr><td colspan="6">ยังไม่มีสินค้าในหมวดนี้</td></tr>';
             } else {
                 productsInCategory.forEach(prod => {
                     const row = document.createElement('tr');
+                    const statusText = prod.isAvailable ? translations[lang].statusAvailable : translations[lang].statusUnavailable;
+                    const stockText = prod.stock === -1 ? '∞' : prod.stock;
                     row.innerHTML = `
                         <td>${prod.icon ? `<img src="${prod.icon}" alt="${prod.name}">` : 'ไม่มี'}</td>
                         <td>${prod.name}</td>
                         <td>${prod.level}</td>
+                        <td>${stockText}</td>
+                        <td>${statusText}</td>
                         <td>
                             <button class="btn btn-secondary btn-small btn-edit" data-id="${prod.id}">แก้ไข</button>
                             <button class="btn btn-danger btn-small btn-delete" data-id="${prod.id}">ลบ</button>
@@ -2742,7 +3050,7 @@
             });
         });
 
-        document.getElementById('logo-upload').addEventListener('change', async (e) => {
+        document.getElementById('logo-upload').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
                 logoFile = file;
@@ -2754,9 +3062,41 @@
                 reader.readAsDataURL(file);
             } else {
                 logoFile = null;
-                document.getElementById('logo-preview').style.display = 'none';
             }
         });
+
+        document.getElementById('bg-upload').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                bgFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('bg-preview').style.backgroundImage = `url(${e.target.result})`;
+                    document.getElementById('bg-preview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                bgFile = null;
+            }
+        });
+
+        document.getElementById('remove-bg-btn').addEventListener('click', () => {
+            bgFile = null;
+            appData.shopSettings.backgroundImage = null;
+            document.getElementById('bg-preview').style.display = 'none';
+            document.getElementById('bg-upload').value = '';
+            applyBackground();
+        });
+
+        document.getElementById('preview-bg-btn').addEventListener('click', async () => {
+            if (bgFile) {
+                appData.shopSettings.backgroundImage = await readFileAsBase64(bgFile);
+            }
+            appData.shopSettings.backgroundOpacity = document.getElementById('bg-opacity').value;
+            switchView('customer');
+            renderCustomerView();
+        });
+
 
         const updateFontPreviewEffect = () => {
             const effect = {
@@ -2794,9 +3134,13 @@
                 blur: document.getElementById('effect-blur').value,
                 color: document.getElementById('effect-color').value
             };
+            appData.shopSettings.backgroundOpacity = document.getElementById('bg-opacity').value;
             
             if (logoFile) {
                 appData.shopSettings.logo = await readFileAsBase64(logoFile);
+            }
+            if (bgFile) {
+                appData.shopSettings.backgroundImage = await readFileAsBase64(bgFile);
             }
             
             await saveState();
@@ -2818,7 +3162,7 @@
             }
         });
         
-        document.getElementById('cat-icon-upload').addEventListener('change', async (e) => {
+        document.getElementById('cat-icon-upload').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
                 catIconFile = file;
@@ -2829,13 +3173,13 @@
                 reader.readAsDataURL(file);
             } else {
                 catIconFile = null;
-                document.getElementById('cat-icon-preview').style.backgroundImage = 'none';
             }
         });
 
         document.getElementById('category-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('cat-name').value.trim();
+            const minOrder = parseInt(document.getElementById('cat-min-order').value) || 0;
             if (!name) { alert('กรุณากรอกชื่อหมวดหมู่'); return; }
 
             let iconData = null;
@@ -2844,10 +3188,21 @@
             if (editingCategoryId) {
                 const index = appData.categories.findIndex(c => c.id === editingCategoryId);
                 if (index !== -1) {
-                    appData.categories[index] = { ...appData.categories[index], name, icon: iconData || appData.categories[index].icon };
+                    appData.categories[index].name = name;
+                    appData.categories[index].minOrderQuantity = minOrder;
+                    if (iconData) {
+                        appData.categories[index].icon = iconData;
+                    }
                 }
             } else {
-                appData.categories.push({ id: generateId(), name, icon: iconData, perPiecePrices: [], bulkPrices: [] });
+                appData.categories.push({ 
+                    id: generateId(), 
+                    name, 
+                    icon: iconData, 
+                    perPiecePrices: [], 
+                    bulkPrices: [],
+                    minOrderQuantity: minOrder
+                });
             }
 
             await saveState();
@@ -2874,7 +3229,8 @@
         const resetCategoryForm = () => {
             editingCategoryId = null;
             document.getElementById('category-form').reset();
-            document.getElementById('submit-cat-btn').textContent = 'เพิ่ม/บันทึกหมวดหมู่';
+            document.getElementById('cat-min-order').value = 30;
+            document.getElementById('submit-cat-btn').textContent = translations[appData.shopSettings.language].saveCategoryBtn;
             document.getElementById('cancel-cat-edit-btn').style.display = 'none';
             document.getElementById('cat-icon-preview').style.backgroundImage = 'none';
             catIconFile = null;
@@ -2882,26 +3238,32 @@
 
         document.getElementById('cancel-cat-edit-btn').addEventListener('click', resetCategoryForm);
         
+        // UPDATE: Fixed delete buttons with more robust event delegation
         document.getElementById('admin-cat-list').addEventListener('click', (e) => {
-            const id = parseInt(e.target.dataset.id);
-            if (e.target.classList.contains('btn-cat-edit')) {
+            const editBtn = e.target.closest('.btn-cat-edit');
+            const deleteBtn = e.target.closest('.btn-cat-delete');
+
+            if (editBtn) {
+                const id = parseInt(editBtn.dataset.id);
                 const category = appData.categories.find(c => c.id === id);
                 if (category) {
                     editingCategoryId = id;
                     document.getElementById('cat-name').value = category.name;
+                    document.getElementById('cat-min-order').value = category.minOrderQuantity;
                     const catIconPreview = document.getElementById('cat-icon-preview');
                     if (category.icon) { catIconPreview.style.backgroundImage = `url(${category.icon})`; } else { catIconPreview.style.backgroundImage = 'none'; }
-                    document.getElementById('submit-cat-btn').textContent = 'บันทึกการแก้ไข';
+                    document.getElementById('submit-cat-btn').textContent = translations[appData.shopSettings.language].saveBtn;
                     document.getElementById('cancel-cat-edit-btn').style.display = 'inline-block';
                     document.getElementById('category-form').scrollIntoView();
                 }
             }
-            if (e.target.classList.contains('btn-cat-delete')) {
+            if (deleteBtn) {
+                const id = parseInt(deleteBtn.dataset.id);
                 deleteCategory(id);
             }
         });
         
-        document.getElementById('prod-icon-upload').addEventListener('change', async (e) => {
+        document.getElementById('prod-icon-upload').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
                 prodIconFile = file;
@@ -2912,7 +3274,6 @@
                 reader.readAsDataURL(file);
             } else {
                 prodIconFile = null;
-                document.getElementById('prod-icon-preview').style.backgroundImage = 'none';
             }
         });
 
@@ -2923,6 +3284,8 @@
                 name: document.getElementById('prod-name').value,
                 level: parseInt(document.getElementById('prod-level').value),
                 categoryId: parseInt(document.getElementById('prod-category').value),
+                stock: parseInt(document.getElementById('prod-stock').value),
+                isAvailable: document.getElementById('prod-available').checked,
                 icon: null,
             };
             
@@ -2931,7 +3294,8 @@
             if (editingProductId) {
                 const index = appData.products.findIndex(p => p.id === editingProductId);
                 if (index !== -1) {
-                    appData.products[index] = { ...appData.products[index], ...product, icon: product.icon || appData.products[index].icon };
+                    const existingIcon = appData.products[index].icon;
+                    appData.products[index] = { ...appData.products[index], ...product, icon: product.icon || existingIcon };
                 }
             } else {
                 appData.products.push(product);
@@ -2944,15 +3308,21 @@
         
         document.getElementById('cancel-edit-btn').addEventListener('click', resetProductForm);
 
+        // UPDATE: Fixed delete buttons with more robust event delegation
         document.getElementById('admin-prod-list').addEventListener('click', async (e) => {
-            const id = parseInt(e.target.dataset.id);
-            if (e.target.classList.contains('btn-edit')) {
+            const editBtn = e.target.closest('.btn-edit');
+            const deleteBtn = e.target.closest('.btn-delete');
+
+            if (editBtn) {
+                const id = parseInt(editBtn.dataset.id);
                 const product = appData.products.find(p => p.id === id);
                 if (product) {
                     editingProductId = id;
                     document.getElementById('product-id').value = product.id;
                     document.getElementById('prod-name').value = product.name;
                     document.getElementById('prod-level').value = product.level;
+                    document.getElementById('prod-stock').value = product.stock;
+                    document.getElementById('prod-available').checked = product.isAvailable;
                     document.getElementById('prod-category').value = product.categoryId;
                     const prodIconPreview = document.getElementById('prod-icon-preview');
                     if (product.icon) { prodIconPreview.style.backgroundImage = `url(${product.icon})`; } else { prodIconPreview.style.backgroundImage = 'none'; }
@@ -2960,7 +3330,8 @@
                     document.getElementById('product-form').scrollIntoView();
                 }
             }
-            if (e.target.classList.contains('btn-delete')) {
+            if (deleteBtn) {
+                const id = parseInt(deleteBtn.dataset.id);
                 if (confirm('คุณต้องการลบสินค้านี้ใช่หรือไม่?')) {
                     appData.products = appData.products.filter(p => p.id !== id);
                     await saveState();
@@ -2972,6 +3343,8 @@
         function resetProductForm() {
             editingProductId = null;
             document.getElementById('product-form').reset();
+            document.getElementById('prod-stock').value = -1;
+            document.getElementById('prod-available').checked = true;
             document.getElementById('cancel-edit-btn').style.display = 'none';
             document.getElementById('prod-icon-preview').style.backgroundImage = 'none';
             prodIconFile = null;
@@ -3150,9 +3523,8 @@
                     name, 
                     pin, 
                     permissions: {
-                        'admin': true, 'database': true, 'stock': true,
-                        'order-number': true, 'dashboard': true,
-                        'manage-account': true, 'tax': true
+                        'admin': true, 'stock': true, 'order-number': true, 
+                        'dashboard': true, 'manage-account': true
                     } 
                 };
                 appData.subAdmins.push(newSubAdmin);
@@ -3167,7 +3539,7 @@
         const resetSubAdminForm = () => {
             editingSubAdminId = null;
             subAdminForm.reset();
-            addSubAdminBtn.textContent = 'เพิ่มผู้ใช้';
+            addSubAdminBtn.textContent = translations[appData.shopSettings.language].addUserBtn;
             cancelSubAdminEditBtn.style.display = 'none';
         };
 
@@ -3181,7 +3553,7 @@
                     editingSubAdminId = id;
                     subAdminNameInput.value = subAdmin.name;
                     subAdminPinInput.value = subAdmin.pin;
-                    addSubAdminBtn.textContent = 'บันทึกการแก้ไข';
+                    addSubAdminBtn.textContent = translations[appData.shopSettings.language].saveBtn;
                     cancelSubAdminEditBtn.style.display = 'inline-block';
                 }
             }
@@ -3212,6 +3584,7 @@
             currentSubAdminPermissionsId = subAdmin.id;
             permissionUserName.textContent = `ตั้งค่าสิทธิ์สำหรับ: ${subAdmin.name}`;
             const menuKeys = appData.menuOrder;
+            const lang = appData.shopSettings.language;
             menuKeys.forEach(key => {
                 const li = document.createElement('li');
                 li.style.display = 'flex';
@@ -3219,7 +3592,7 @@
                 li.style.alignItems = 'center';
                 li.style.marginBottom = '15px';
                 const isChecked = subAdmin.permissions[key] || false;
-                li.innerHTML = `<span>${MENU_NAMES[key]}</span><label class="toggle-switch"><input type="checkbox" data-menu-key="${key}" ${isChecked ? 'checked' : ''}><span class="slider"></span></label>`;
+                li.innerHTML = `<span>${translations[lang][MENU_NAMES[key]]}</span><label class="toggle-switch"><input type="checkbox" data-menu-key="${key}" ${isChecked ? 'checked' : ''}><span class="slider"></span></label>`;
                 permissionList.appendChild(li);
             });
             permissionModal.style.display = 'flex';
@@ -3242,89 +3615,15 @@
 
         document.getElementById('close-permission-modal-btn').addEventListener('click', () => { permissionModal.style.display = 'none'; });
 
-        // --- Tax Calculator Logic ---
-        const taxTypeToggle = document.getElementById('tax-type-toggle');
-        const taxPersonForm = document.getElementById('tax-person-form');
-        const taxJuristicForm = document.getElementById('tax-juristic-form');
-        const taxResultsContainer = document.getElementById('tax-calculation-results');
-        
-        taxTypeToggle.addEventListener('change', () => {
-            const isJuristic = taxTypeToggle.checked;
-            document.getElementById('tax-type-label').textContent = isJuristic ? 'นิติบุคคล' : 'บุคคลธรรมดา';
-            taxPersonForm.style.display = isJuristic ? 'none' : 'block';
-            taxJuristicForm.style.display = isJuristic ? 'block' : 'none';
-            renderTaxCalculator();
-        });
-
-         document.getElementById('tax-expense-type').addEventListener('change', (e) => {
-            document.getElementById('tax-actual-expense').style.display = e.target.value === 'actual' ? 'block' : 'none';
-        });
-
-        document.getElementById('calculate-tax-btn').addEventListener('click', () => {
-            const isJuristic = taxTypeToggle.checked;
-            let resultsHTML = '';
-
-            if(isJuristic) {
-                const income = parseFloat(document.getElementById('tax-juristic-income').value) || 0;
-                const expense = parseFloat(document.getElementById('tax-juristic-expense').value) || 0;
-                const profit = income - expense;
-                let tax = 0;
-                if (profit > 3000000) {
-                    tax = (3000000 * 0.15) + ((profit - 3000000) * 0.20);
-                } else if (profit > 0) {
-                    tax = profit * 0.15;
-                }
-                resultsHTML = `<h3>ผลการคำนวณ (นิติบุคคล)</h3>
-                               <p>กำไรสุทธิ: <strong>${profit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท</strong></p>
-                               <p>ภาษีที่ต้องชำระ (ประมาณ): <strong>${tax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท</strong></p>`;
-            } else {
-                const income = parseFloat(document.getElementById('tax-income').value) || 0;
-                let expense = 0;
-                if(document.getElementById('tax-expense-type').value === 'standard') {
-                    expense = Math.min(income * 0.6, 100000);
-                } else {
-                    expense = parseFloat(document.getElementById('tax-actual-expense').value) || 0;
-                }
-                const deductions = 60000 + 
-                                   (parseFloat(document.getElementById('tax-spouse').value) || 0) +
-                                   ((parseFloat(document.getElementById('tax-child').value) || 0) * 30000) +
-                                   ((parseFloat(document.getElementById('tax-parent').value) || 0) * 30000) +
-                                   (parseFloat(document.getElementById('tax-insurance').value) || 0) +
-                                   (parseFloat(document.getElementById('tax-donation').value) || 0);
-                
-                const taxableIncome = Math.max(0, income - expense - deductions);
-                
-                let tax = 0;
-                if (taxableIncome > 5000000) tax += (taxableIncome - 5000000) * 0.35;
-                if (taxableIncome > 2000000) tax += (Math.min(taxableIncome, 5000000) - 2000000) * 0.30;
-                if (taxableIncome > 1000000) tax += (Math.min(taxableIncome, 2000000) - 1000000) * 0.25;
-                if (taxableIncome > 750000) tax += (Math.min(taxableIncome, 1000000) - 750000) * 0.20;
-                if (taxableIncome > 500000) tax += (Math.min(taxableIncome, 750000) - 500000) * 0.15;
-                if (taxableIncome > 300000) tax += (Math.min(taxableIncome, 500000) - 300000) * 0.10;
-                if (taxableIncome > 150000) tax += (Math.min(taxableIncome, 300000) - 150000) * 0.05;
-
-                resultsHTML = `<h3>ผลการคำนวณ (ภ.ง.ด. 90/91)</h3>
-                               <p>เงินได้สุทธิ: <strong>${taxableIncome.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท</strong></p>
-                               <p>ภาษีที่ต้องชำระ (ประมาณ): <strong>${tax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท</strong></p>`;
-            }
-            taxResultsContainer.innerHTML = `<div class="tax-results">${resultsHTML}</div>`;
-        });
-
-        const renderTaxCalculator = () => {
-            const totalRevenue = appData.analytics.orders.reduce((sum, order) => sum + order.total, 0);
-            document.getElementById('tax-income').value = totalRevenue;
-            document.getElementById('tax-juristic-income').value = totalRevenue;
-            taxResultsContainer.innerHTML = '';
-        };
-
         // --- Reorder Menu Modal Logic ---
         const reorderMenuModal = document.getElementById('reorder-menu-modal');
         const reorderMenuList = document.getElementById('reorder-menu-list');
         const renderReorderMenuModal = () => {
             reorderMenuList.innerHTML = '';
+            const lang = appData.shopSettings.language;
             appData.menuOrder.forEach(key => {
                 const li = document.createElement('li');
-                li.textContent = MENU_NAMES[key];
+                li.textContent = translations[lang][MENU_NAMES[key]];
                 li.dataset.menu = key;
                 li.draggable = true;
                 li.classList.add('sortable');
@@ -3333,7 +3632,51 @@
             reorderMenuModal.style.display = 'flex';
             addDragDropListeners();
         };
-        const addDragDropListeners = () => { /* ... (Existing drag/drop logic remains unchanged) ... */ };
+
+        const addDragDropListeners = () => {
+            const listItems = reorderMenuList.querySelectorAll('.sortable');
+            let draggedItem = null;
+
+            listItems.forEach(item => {
+                item.addEventListener('dragstart', () => {
+                    draggedItem = item;
+                    setTimeout(() => item.classList.add('dragging'), 0);
+                });
+
+                item.addEventListener('dragend', () => {
+                    setTimeout(() => {
+                        if(draggedItem) {
+                            draggedItem.classList.remove('dragging');
+                        }
+                        draggedItem = null;
+                    }, 0);
+                });
+
+                item.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    const afterElement = getDragAfterElement(reorderMenuList, e.clientY);
+                    if (afterElement == null) {
+                        reorderMenuList.appendChild(draggedItem);
+                    } else {
+                        reorderMenuList.insertBefore(draggedItem, afterElement);
+                    }
+                });
+            });
+
+            function getDragAfterElement(container, y) {
+                const draggableElements = [...container.querySelectorAll('.sortable:not(.dragging)')];
+                return draggableElements.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = y - box.top - box.height / 2;
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child };
+                    } else {
+                        return closest;
+                    }
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+            }
+        };
+
         document.getElementById('save-menu-order-btn').addEventListener('click', async () => {
             const newOrder = [...reorderMenuList.children].map(li => li.dataset.menu);
             appData.menuOrder = newOrder;
@@ -3342,220 +3685,8 @@
             renderAdminPanel();
             alert('บันทึกการจัดเรียงเมนูเรียบร้อยแล้ว');
         });
+
         document.getElementById('close-reorder-menu-modal-btn').addEventListener('click', () => { reorderMenuModal.style.display = 'none'; });
-
-        // --- DATABASE FEATURE LOGIC ---
-        const dbCategoryForm = document.getElementById('db-category-form');
-        const dbCatList = document.getElementById('db-cat-list');
-        const renderDbCategories = () => {
-            dbCatList.innerHTML = '';
-            appData.database.forEach(cat => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${cat.name}</td>
-                    <td>${cat.items.length}</td>
-                    <td>
-                        <button class="btn btn-secondary btn-small btn-db-cat-edit" data-id="${cat.id}">แก้ไข</button>
-                        <button class="btn btn-danger btn-small btn-db-cat-delete" data-id="${cat.id}">ลบ</button>
-                    </td>
-                `;
-                dbCatList.appendChild(row);
-            });
-        };
-        const resetDbCategoryForm = () => {
-            editingDbCategoryId = null;
-            dbCategoryForm.reset();
-            document.getElementById('cancel-db-cat-edit-btn').style.display = 'none';
-        };
-        dbCategoryForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('db-cat-name').value.trim();
-            if (!name) return;
-
-            if (editingDbCategoryId) {
-                const cat = appData.database.find(c => c.id === editingDbCategoryId);
-                if (cat) cat.name = name;
-            } else {
-                appData.database.push({ id: generateId(), name, items: [] });
-            }
-            await saveState();
-            resetDbCategoryForm();
-            renderDbCategories();
-            renderDbItemTabs();
-        });
-        document.getElementById('cancel-db-cat-edit-btn').addEventListener('click', resetDbCategoryForm);
-        dbCatList.addEventListener('click', async (e) => {
-            const id = parseInt(e.target.dataset.id);
-            if (e.target.classList.contains('btn-db-cat-edit')) {
-                const cat = appData.database.find(c => c.id === id);
-                if (cat) {
-                    editingDbCategoryId = id;
-                    document.getElementById('db-cat-id').value = cat.id;
-                    document.getElementById('db-cat-name').value = cat.name;
-                    document.getElementById('cancel-db-cat-edit-btn').style.display = 'inline-block';
-                }
-            }
-            if (e.target.classList.contains('btn-db-cat-delete')) {
-                if (confirm('ยืนยันการลบหมวดหมู่นี้และสินค้าทั้งหมดในฐานข้อมูลหรือไม่?')) {
-                    appData.database = appData.database.filter(c => c.id !== id);
-                    if (dbActiveCategoryId === id) dbActiveCategoryId = null;
-                    await saveState();
-                    renderDbCategories();
-                    renderDbItemTabs();
-                    renderDbItems();
-                }
-            }
-        });
-        const dbItemTabs = document.getElementById('db-item-tabs');
-        const dbItemList = document.getElementById('db-item-list');
-        const dbItemForm = document.getElementById('db-item-form');
-        const dbItemHr = document.getElementById('db-item-hr');
-        const dbCurrentCategoryName = document.getElementById('db-current-category-name');
-        const renderDbItemTabs = () => {
-            dbItemTabs.innerHTML = '';
-            appData.database.forEach(cat => {
-                const tab = document.createElement('div');
-                tab.className = `tab ${cat.id === dbActiveCategoryId ? 'active' : ''}`;
-                tab.dataset.id = cat.id;
-                tab.textContent = cat.name;
-                tab.addEventListener('click', () => {
-                    dbActiveCategoryId = cat.id;
-                    renderDbItemTabs();
-                    renderDbItems();
-                });
-                dbItemTabs.appendChild(tab);
-            });
-        };
-        const renderDbItems = () => {
-            dbItemList.innerHTML = '';
-            const activeCategory = appData.database.find(c => c.id === dbActiveCategoryId);
-            if (!activeCategory) {
-                dbItemForm.style.display = 'none';
-                dbItemHr.style.display = 'none';
-                dbCurrentCategoryName.textContent = 'กรุณาเลือกหมวดหมู่';
-                dbItemList.innerHTML = '<tr><td colspan="4">กรุณาเลือกหมวดหมู่เพื่อดูรายการสินค้า</td></tr>';
-                return;
-            }
-            dbItemForm.style.display = 'block';
-            dbItemHr.style.display = 'block';
-            dbCurrentCategoryName.textContent = `รายการสินค้า: ${activeCategory.name}`;
-            
-            if (activeCategory.items.length === 0) {
-                dbItemList.innerHTML = '<tr><td colspan="4">ยังไม่มีสินค้าในหมวดหมู่นี้</td></tr>';
-            } else {
-                activeCategory.items.forEach(item => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.name}</td>
-                        <td>${item.level}</td>
-                        <td>${item.quantity}</td>
-                        <td>
-                            <button class="btn btn-secondary btn-small btn-db-item-edit" data-id="${item.id}">แก้ไข</button>
-                            <button class="btn btn-danger btn-small btn-db-item-delete" data-id="${item.id}">ลบ</button>
-                        </td>
-                    `;
-                    dbItemList.appendChild(row);
-                });
-            }
-        };
-        const resetDbItemForm = () => {
-            editingDbItemId = null;
-            dbItemForm.reset();
-            document.getElementById('db-item-quantity').value = 0;
-            document.getElementById('cancel-db-item-edit-btn').style.display = 'none';
-        };
-        dbItemForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const category = appData.database.find(c => c.id === dbActiveCategoryId);
-            if (!category) return;
-            const name = document.getElementById('db-item-name').value.trim();
-            const level = parseInt(document.getElementById('db-item-level').value);
-            const quantity = parseInt(document.getElementById('db-item-quantity').value);
-            if (!name || isNaN(level) || isNaN(quantity)) return;
-
-            if (editingDbItemId) {
-                const item = category.items.find(i => i.id === editingDbItemId);
-                if (item) { item.name = name; item.level = level; item.quantity = quantity; }
-            } else {
-                category.items.push({ id: generateId(), name, level, quantity });
-            }
-            await saveState();
-            resetDbItemForm();
-            renderDbItems();
-            renderDbCategories();
-        });
-        document.getElementById('cancel-db-item-edit-btn').addEventListener('click', resetDbItemForm);
-        dbItemList.addEventListener('click', async (e) => {
-            const id = parseInt(e.target.dataset.id);
-            const category = appData.database.find(c => c.id === dbActiveCategoryId);
-            if (!category) return;
-            if (e.target.classList.contains('btn-db-item-edit')) {
-                const item = category.items.find(i => i.id === id);
-                if (item) {
-                    editingDbItemId = id;
-                    document.getElementById('db-item-id').value = item.id;
-                    document.getElementById('db-item-name').value = item.name;
-                    document.getElementById('db-item-level').value = item.level;
-                    document.getElementById('db-item-quantity').value = item.quantity;
-                    document.getElementById('cancel-db-item-edit-btn').style.display = 'inline-block';
-                }
-            }
-            if (e.target.classList.contains('btn-db-item-delete')) {
-                category.items = category.items.filter(i => i.id !== id);
-                await saveState();
-                renderDbItems();
-                renderDbCategories();
-            }
-        });
-
-        // --- Search Modal Logic ---
-        const searchModal = document.getElementById('search-modal');
-        const searchModalTitle = document.getElementById('search-modal-title');
-        const searchModalInput = document.getElementById('search-modal-input');
-        const searchModalResults = document.getElementById('search-modal-results');
-        const openSearchModal = (type) => {
-            searchModalTitle.textContent = type === 'category' ? 'ค้นหาหมวดหมู่' : 'ค้นหาสินค้า';
-            searchModalInput.value = '';
-            searchModalInput.dataset.type = type;
-            populateSearchResults(type, '');
-            searchModal.style.display = 'flex';
-            searchModalInput.focus();
-        };
-        const populateSearchResults = (type, searchTerm) => {
-            searchModalResults.innerHTML = '';
-            const lowerSearchTerm = searchTerm.toLowerCase();
-            if (type === 'category') {
-                const filtered = appData.database.filter(cat => cat.name.toLowerCase().includes(lowerSearchTerm));
-                filtered.forEach(cat => {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'search-modal-result-item';
-                    itemDiv.textContent = cat.name;
-                    itemDiv.addEventListener('click', () => {
-                        document.getElementById('cat-name').value = cat.name;
-                        searchModal.style.display = 'none';
-                    });
-                    searchModalResults.appendChild(itemDiv);
-                });
-            } else if (type === 'product') {
-                appData.database.forEach(cat => {
-                    const filtered = cat.items.filter(item => item.name.toLowerCase().includes(lowerSearchTerm));
-                    filtered.forEach(item => {
-                        const itemDiv = document.createElement('div');
-                        itemDiv.className = 'search-modal-result-item';
-                        itemDiv.textContent = `${item.name} (LV: ${item.level}) - [${cat.name}]`;
-                        itemDiv.addEventListener('click', () => {
-                            document.getElementById('prod-name').value = item.name;
-                            document.getElementById('prod-level').value = item.level;
-                            searchModal.style.display = 'none';
-                        });
-                        searchModalResults.appendChild(itemDiv);
-                    });
-                });
-            }
-        };
-        document.querySelectorAll('.search-btn').forEach(btn => { btn.addEventListener('click', () => { openSearchModal(btn.dataset.type); }); });
-        searchModalInput.addEventListener('input', (e) => { populateSearchResults(e.target.dataset.type, e.target.value); });
-        document.getElementById('close-search-modal-btn').addEventListener('click', () => { searchModal.style.display = 'none'; });
 
         // --- ORDER NUMBER ---
         const generateOrderNumber = () => {
@@ -3588,6 +3719,7 @@
             const cancelledList = document.getElementById('cancelled-orders-list');
             activeList.innerHTML = '';
             cancelledList.innerHTML = '';
+            const lang = appData.shopSettings.language;
 
             let orders = [...appData.analytics.orders];
 
@@ -3613,8 +3745,8 @@
                         <td>${formattedDate}</td>
                         <td>${order.total.toLocaleString()} บาท</td>
                         <td>
-                            <button class="btn btn-info btn-small view-order-details" data-id="${order.id}">ดูรายละเอียด</button>
-                            <button class="btn btn-danger btn-small cancel-order" data-id="${order.id}">ยกเลิก</button>
+                            <button class="btn btn-info btn-small view-order-details" data-id="${order.id}">${translations[lang].viewDetailsBtn}</button>
+                            <button class="btn btn-danger btn-small cancel-order" data-id="${order.id}">${translations[lang].cancelOrderBtn}</button>
                         </td>`;
                     activeList.appendChild(row);
                 } else {
@@ -3623,7 +3755,7 @@
                         <td>${formattedDate}</td>
                         <td>${order.total.toLocaleString()} บาท</td>
                         <td>
-                            <button class="btn btn-info btn-small view-order-details" data-id="${order.id}">ดูรายละเอียด</button>
+                            <button class="btn btn-info btn-small view-order-details" data-id="${order.id}">${translations[lang].viewDetailsBtn}</button>
                         </td>`;
                     cancelledList.appendChild(row);
                 }
@@ -3660,64 +3792,19 @@
             }
         };
         
-        // --- LICENSE KEY / SUBSCRIPTION ---
-        const checkSubscription = async () => {
-            if (loggedInUser && loggedInUser.isSuper) return; 
-
-            const expiry = appData.shopSettings.subscriptionExpires;
-            if (!expiry) { 
-                const today = new Date();
-                today.setDate(today.getDate() + 30);
-                appData.shopSettings.subscriptionExpires = today.toISOString();
-                appData.shopSettings.licenseKey = "TRIAL-KEY-30-DAYS";
-                await saveState();
-                return;
-            }
-
-            if (new Date() > new Date(expiry)) {
-                document.getElementById('license-key-modal').style.display = 'flex';
-                document.getElementById('customer-view').style.display = 'none';
-                document.getElementById('admin-login-view').style.display = 'none';
-            }
-        };
-
-        document.getElementById('submit-new-license-key-btn').addEventListener('click', async () => {
-            const key = document.getElementById('new-license-key-input').value;
-            const keyParts = key.split('-');
-            if (key.startsWith("KEY-") && keyParts.length === 3) {
-                const days = parseInt(keyParts[1]);
-                if (!isNaN(days)) {
-                    const today = new Date();
-                    today.setDate(today.getDate() + days);
-                    appData.shopSettings.subscriptionExpires = today.toISOString();
-                    appData.shopSettings.licenseKey = key;
-                    await saveState();
-                    alert('เปิดใช้งานสำเร็จ!');
-                    window.location.reload();
-                } else {
-                     document.getElementById('license-key-error').textContent = 'Key ไม่ถูกต้อง';
-                }
-            } else {
-                 document.getElementById('license-key-error').textContent = 'Key ไม่ถูกต้อง';
-            }
-        });
-
-
         // --- Init ---
         const init = async () => {
             await loadState();
-            await checkSubscription();
             
             if (appData.categories.length > 0) {
                 if (!appData.categories.find(c => c.id === activeCategoryId)) { activeCategoryId = appData.categories[0].id; }
                 adminActiveCategoryId = activeCategoryId;
             } else { activeCategoryId = null; adminActiveCategoryId = null; }
-            if (appData.database.length > 0) {
-                 if (!appData.database.find(c => c.id === dbActiveCategoryId)) { dbActiveCategoryId = appData.database[0].id; }
-            } else { dbActiveCategoryId = null; }
-            renderCustomerView();
             
-            // การนับสถิติการเข้าชมจะถูกบันทึกเมื่อแอดมินล็อกอินเข้าระบบ
+            renderCustomerView();
+
+            // ===== เพิ่มบรรทัดนี้เข้าไปเพื่อซ่อนหน้าจอโหลด (อัปเดตใหม่) =====
+            document.getElementById('loader-overlay').style.display = 'none';
         };
 
         init();
