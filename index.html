@@ -11,11 +11,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
+    <!-- Canvas for festival effects -->
+    <canvas id="festival-canvas"></canvas>
+
     <div id="loader-overlay">
         <div id="loader-background"></div>
         <div class="loader-content">
             <div class="spinner"></div>
-            <p data-translate-key="loadingMessage">กำลังโหลดข้อมูลล่าสุด...</p>
+            <p data-translate-key="loadingMessage">กำลังดาวน์โหลดข้อมูลล่าสุด...</p>
             <div class="progress-bar"></div>
         </div>
     </div>
@@ -95,12 +98,14 @@
             </div>
             <div class="admin-menu"></div>
 
-            <!-- UPDATE: Restructured Admin Content -->
+            <!-- Admin Settings Menu Content -->
             <div id="admin-menu-admin" class="admin-menu-content">
                 <div class="tab-group-container" id="admin-settings-tabs"></div>
                 <div class="card">
+                    <!-- Shop Info Sub-content -->
                     <div id="admin-sub-shop-info" class="admin-sub-content">
                         <h2 data-translate-key="shopInfoTitle">ข้อมูลร้าน</h2>
+                        <!-- Form fields for shop info -->
                         <div class="form-group">
                             <label for="shop-name" data-translate-key="shopNameLabel">ชื่อร้านค้า</label>
                             <input type="text" id="shop-name" placeholder="WARISHAYDAY">
@@ -144,6 +149,7 @@
                         </div>
                         <button id="save-shop-info-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกข้อมูลร้าน</button>
                     </div>
+                    <!-- System Fonts Sub-content -->
                     <div id="admin-sub-system-fonts" class="admin-sub-content">
                         <h2 data-translate-key="systemFontsTitle">System Fonts</h2>
                         <div class="form-group">
@@ -199,8 +205,9 @@
                         </div>
                         <button id="save-system-fonts-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกการตั้งค่า</button>
                     </div>
+                    <!-- Background Sub-content -->
                     <div id="admin-sub-background" class="admin-sub-content">
-                        <h2 data-translate-key="backgroundSettingsTitle">ตั้งค่าพื้นหลัง</h2>
+                         <h2 data-translate-key="backgroundSettingsTitle">ตั้งค่าพื้นหลัง</h2>
                         <div class="form-group">
                             <label for="bg-upload" data-translate-key="uploadBgLabel">อัปโหลดภาพพื้นหลัง</label>
                             <input type="file" id="bg-upload" accept="image/*">
@@ -216,6 +223,7 @@
                         </div>
                         <button id="save-background-settings-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกพื้นหลัง</button>
                     </div>
+                    <!-- Loading BG Sub-content -->
                     <div id="admin-sub-loading-bg" class="admin-sub-content">
                         <h2 data-translate-key="loadingBackgroundTitle">พื้นหลัง Loading</h2>
                         <div class="form-group">
@@ -228,6 +236,54 @@
                         </div>
                         <button id="save-loading-bg-settings-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกพื้นหลัง Loading</button>
                     </div>
+                     <!-- Festival Effects Sub-content -->
+                    <div id="admin-sub-festival" class="admin-sub-content">
+                        <h2 data-translate-key="festivalTitle">เอฟเฟกต์พิเศษ (Festival)</h2>
+                        <!-- Rain Effect -->
+                        <div class="effect-group">
+                            <div class="toggle-switch-container">
+                                <label data-translate-key="rainEffectLabel">ฤดูฝนตก</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="rain-effect-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="effect-controls" id="rain-controls-container" style="display: none;">
+                                <label><span data-translate-key="intensityLabel">ความหนัก/เบา</span> <input type="range" id="rain-intensity" min="1" max="200" value="50"></label>
+                                <label><span data-translate-key="opacityLabel">ความชัด/จาง</span> <input type="range" id="rain-opacity" min="0.1" max="1" step="0.1" value="0.5"></label>
+                            </div>
+                        </div>
+                        <!-- Snow Effect -->
+                        <div class="effect-group">
+                            <div class="toggle-switch-container">
+                                <label data-translate-key="snowEffectLabel">ฤดูหิมะ</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="snow-effect-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="effect-controls" id="snow-controls-container" style="display: none;">
+                                <label><span data-translate-key="intensityLabel">ความหนัก/เบา</span> <input type="range" id="snow-intensity" min="1" max="200" value="50"></label>
+                                <label><span data-translate-key="opacityLabel">ความชัด/จาง</span> <input type="range" id="snow-opacity" min="0.1" max="1" step="0.1" value="0.7"></label>
+                            </div>
+                        </div>
+                        <!-- Fireworks Effect -->
+                        <div class="effect-group">
+                             <div class="toggle-switch-container">
+                                <label data-translate-key="fireworksEffectLabel">พลุฉลอง</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="fireworks-effect-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="effect-controls" id="fireworks-controls-container" style="display: none;">
+                                <label><span data-translate-key="durationLabel">นาทีการแสดง</span> <input type="number" id="fireworks-duration" min="1" max="60" value="5"></label>
+                                <label><span data-translate-key="opacityLabel">ความชัด/จาง</span> <input type="range" id="fireworks-opacity" min="0.1" max="1" step="0.1" value="1"></label>
+                            </div>
+                        </div>
+                        <button id="save-festival-settings-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกเอฟเฟกต์</button>
+                    </div>
+                    <!-- PIN Sub-content -->
                     <div id="admin-sub-pin" class="admin-sub-content">
                         <h2 data-translate-key="changePinTitle">เปลี่ยนรหัสผ่าน</h2>
                         <div class="form-group">
@@ -239,8 +295,10 @@
                 </div>
             </div>
 
+            <!-- Stock Management Menu Content -->
             <div id="admin-menu-stock" class="admin-menu-content" style="display: none;">
-                <div class="tab-group-container" id="admin-stock-tabs"></div>
+                <!-- Stock tabs and content -->
+                 <div class="tab-group-container" id="admin-stock-tabs"></div>
                 <div id="admin-sub-categories" class="admin-sub-content">
                     <div class="card admin-section">
                         <h2 data-translate-key="manageCategoriesTitle">จัดการหมวดหมู่</h2>
@@ -313,7 +371,7 @@
                                     </label>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary" data-translate-key="saveProductBtn">บันทึกสินค้า</button>
+                            <button type="submit" id="save-product-btn" class="btn btn-primary" data-translate-key="saveProductBtn">บันทึกสินค้า</button>
                             <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="display:none;" data-translate-key="cancelEditBtn">ยกเลิกแก้ไข</button>
                         </form>
                         <hr style="margin: 20px 0;">
@@ -329,6 +387,7 @@
                 </div>
             </div>
 
+            <!-- Order Number Menu Content -->
             <div id="admin-menu-order-number" class="admin-menu-content" style="display: none;">
                 <div class="tab-group-container" id="admin-order-tabs"></div>
                  <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap;">
@@ -336,6 +395,19 @@
                     <input type="text" id="order-date-picker" style="width: 150px;" placeholder="ดูออเดอร์ทั้งหมด">
                     <button id="reset-orders-btn" class="btn btn-danger btn-small" data-translate-key="resetDataBtn">รีเซ็ทข้อมูล</button>
                 </div>
+                <!-- New "Confirm Order" Sub-content -->
+                <div id="admin-sub-confirm-orders" class="admin-sub-content">
+                    <div class="card admin-section">
+                        <h2 data-translate-key="confirmOrdersTitle">คอนเฟิร์มออเดอร์</h2>
+                        <div class="table-wrapper">
+                            <table id="confirm-orders-table">
+                                <thead><tr><th data-translate-key="tableHeaderOrderNo">เลขออเดอร์</th><th data-translate-key="tableHeaderDateTime">วันที่/เวลา</th><th data-translate-key="tableHeaderTotal">ยอดรวม</th><th data-translate-key="tableHeaderManage">จัดการ</th></tr></thead>
+                                <tbody id="confirm-orders-list"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Active Orders Sub-content -->
                 <div id="admin-sub-active-orders" class="admin-sub-content">
                     <div class="card admin-section">
                         <h2 data-translate-key="activeOrdersTitle">รายการออเดอร์ปัจจุบัน</h2>
@@ -347,6 +419,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Cancelled Orders Sub-content -->
                 <div id="admin-sub-cancelled-orders" class="admin-sub-content">
                     <div class="card admin-section">
                         <h2 data-translate-key="cancelledOrdersTitle">รายการออเดอร์ที่ถูกยกเลิก</h2>
@@ -359,9 +432,46 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Tax Check Menu Content -->
+            <div id="admin-menu-tax" class="admin-menu-content" style="display: none;">
+                <div class="card admin-section">
+                    <h2 data-translate-key="taxCheckTitle">ตรวจสอบภาษีร้านค้าออนไลน์</h2>
+                    <div class="tax-calculator">
+                        <div class="form-group">
+                            <label for="tax-income" data-translate-key="taxIncomeLabel">รายได้รวมทั้งปี (บาท)</label>
+                            <input type="number" id="tax-income" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="tax-expense-type" data-translate-key="taxExpenseTypeLabel">ประเภทการหักค่าใช้จ่าย</label>
+                            <select id="tax-expense-type">
+                                <option value="actual" data-translate-key="taxExpenseActual">หักตามจริง (ต้องมีเอกสาร)</option>
+                                <option value="lump" data-translate-key="taxExpenseLump">หักเหมา 60% (สูงสุด 1,000,000 บาท)</option>
+                            </select>
+                        </div>
+                         <div class="form-group" id="tax-actual-expense-group" style="display: none;">
+                            <label for="tax-actual-expense" data-translate-key="taxActualExpenseLabel">ค่าใช้จ่ายตามจริง (บาท)</label>
+                            <input type="number" id="tax-actual-expense" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="tax-deduction" data-translate-key="taxDeductionLabel">ค่าลดหย่อนส่วนตัว (บาท)</label>
+                            <input type="number" id="tax-deduction" value="60000" readonly>
+                        </div>
+                        <button id="calculate-tax-btn" class="btn btn-primary" data-translate-key="taxCalculateBtn">คำนวณภาษี</button>
+                        <div id="tax-result" class="card" style="margin-top: 20px; display: none;">
+                            <h3 data-translate-key="taxResultTitle">สรุปผลการคำนวณภาษี</h3>
+                            <p><strong>รายได้สุทธิ:</strong> <span id="tax-net-income"></span> บาท</p>
+                            <p><strong>ภาษีที่ต้องชำระ (ภ.ง.ด. 90/94):</strong> <span id="tax-payable"></span> บาท</p>
+                            <hr>
+                            <p class="tax-note" data-translate-key="taxNote">หมายเหตุ: นี่คือการคำนวณเบื้องต้นเท่านั้น กรุณาปรึกษาผู้เชี่ยวชาญเพื่อข้อมูลที่ถูกต้อง</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Dashboard Menu Content -->
             <div id="admin-menu-dashboard" class="admin-menu-content" style="display: none;">
-                <h2 data-translate-key="dashboardTitle">ภาพรวมร้านค้า</h2>
+                 <h2 data-translate-key="dashboardTitle">ภาพรวมร้านค้า</h2>
                 <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap;">
                     <label for="date-picker" data-translate-key="selectDateLabel">เลือกวันที่:</label>
                     <input type="text" id="date-picker" style="width: 150px;">
@@ -430,6 +540,7 @@
                 </div>
             </div>
 
+            <!-- Manage Account Menu Content -->
             <div id="admin-menu-manage-account" class="admin-menu-content" style="display: none;">
                 <div class="card admin-section">
                     <h2 data-translate-key="manageAccountTitle">จัดการบัญชี</h2>
@@ -466,6 +577,7 @@
         </div>
     </div>
     
+    <!-- Modals -->
     <div id="copy-success-modal" class="modal">
         <div class="copy-success-content">
             <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
