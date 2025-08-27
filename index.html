@@ -11,15 +11,22 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
+    <!-- Canvas for festival effects -->
+    <canvas id="festival-canvas"></canvas>
+
     <div id="loader-overlay">
         <div id="loader-background"></div>
         <div class="loader-content">
             <div class="spinner"></div>
-            <p data-translate-key="loadingMessage">กำลังโหลดข้อมูลล่าสุด...</p>
-            <div class="progress-bar"></div>
+            <p data-translate-key="loadingMessage">กำลังดาวน์โหลดข้อมูลล่าสุด...</p>
+            <div id="progress-bar-container" class="progress-bar style-1"></div>
         </div>
     </div>
     <div id="background-overlay"></div>
+    <div id="shop-closed-overlay" style="display: none;">
+        <div id="shop-closed-message"></div>
+    </div>
+
 
     <div class="floating-buttons-container">
         <button id="admin-gear-icon" style="display: block;">⚙️</button>
@@ -87,15 +94,24 @@
         
         <div id="admin-panel-view" class="view">
             <div class="admin-header">
+                <div class="admin-header-left">
+                     <div class="toggle-switch-container">
+                        <label data-translate-key="shopStatusLabel">เปิดร้าน</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="shop-enabled-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
                 <h2 data-translate-key="adminPanelTitle">Admin Panel</h2>
-                <div style="display:flex; gap: 10px;">
+                <div class="admin-header-right">
                     <button id="view-shop-btn" class="btn btn-secondary" data-translate-key="viewShopBtn">มุมมองหน้าร้าน</button>
                     <button id="logout-btn" class="btn btn-danger" data-translate-key="logoutBtn">ออกจากระบบ</button>
                 </div>
             </div>
             <div class="admin-menu"></div>
 
-            <!-- UPDATE: Restructured Admin Content -->
+            <!-- Admin Content: Shop Settings -->
             <div id="admin-menu-admin" class="admin-menu-content">
                 <div class="tab-group-container" id="admin-settings-tabs"></div>
                 <div class="card">
@@ -147,6 +163,14 @@
                     <div id="admin-sub-system-fonts" class="admin-sub-content">
                         <h2 data-translate-key="systemFontsTitle">System Fonts</h2>
                         <div class="form-group">
+                            <label for="shop-name-font-size" data-translate-key="shopNameFontSizeLabel">ขนาดฟอนต์ชื่อร้าน</label>
+                            <input type="range" id="shop-name-font-size" min="1.5" max="4" step="0.1" value="2.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="slogan-font-size" data-translate-key="sloganFontSizeLabel">ขนาดฟอนต์สโลแกน</label>
+                            <input type="range" id="slogan-font-size" min="0.8" max="2" step="0.1" value="1.2">
+                        </div>
+                        <div class="form-group">
                             <label for="shop-font" data-translate-key="shopNameFontLabel">ฟอนต์ชื่อร้าน</label>
                             <select id="shop-font"></select>
                             <div id="font-preview" style="font-family: 'Kanit', sans-serif;">WARISHAYDAY</div>
@@ -170,6 +194,10 @@
                             </div>
                         </div>
                         <hr>
+                         <div class="form-group">
+                            <label for="global-font-size" data-translate-key="globalFontSizeLabel">ขนาดฟอนต์ทั้งระบบ</label>
+                            <input type="range" id="global-font-size" min="12" max="20" step="1" value="16">
+                        </div>
                         <div class="form-group">
                             <label for="shop-global-font" data-translate-key="globalFontLabel">ฟอนต์ระบบทั้งหมด</label>
                             <select id="shop-global-font"></select>
@@ -226,6 +254,22 @@
                             <input type="range" id="loading-bg-opacity" min="0.1" max="1" step="0.05" value="0.7">
                             <button type="button" id="remove-loading-bg-btn" class="btn btn-danger btn-small" data-translate-key="removeBgBtn" style="margin-top: 10px;">ลบพื้นหลัง</button>
                         </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="loading-bar-style" data-translate-key="loadingBarStyleLabel">รูปแบบแถบดาวน์โหลด</label>
+                            <select id="loading-bar-style">
+                                <option value="1">Style 1</option>
+                                <option value="2">Style 2</option>
+                                <option value="3">Style 3</option>
+                                <option value="4">Style 4</option>
+                                <option value="5">Style 5</option>
+                                <option value="6">Style 6</option>
+                                <option value="7">Style 7</option>
+                                <option value="8">Style 8</option>
+                                <option value="9">Style 9</option>
+                                <option value="10">Style 10</option>
+                            </select>
+                        </div>
                         <button id="save-loading-bg-settings-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกพื้นหลัง Loading</button>
                     </div>
                     <div id="admin-sub-pin" class="admin-sub-content">
@@ -239,6 +283,53 @@
                 </div>
             </div>
 
+            <!-- Admin Content: Festival -->
+            <div id="admin-menu-festival" class="admin-menu-content" style="display: none;">
+                <div class="card">
+                    <h2 data-translate-key="festivalTitle">Festival Effects</h2>
+                    <div class="form-group">
+                        <label for="shop-closed-message" data-translate-key="shopClosedMessageLabel">ข้อความเมื่อปิดร้าน</label>
+                        <textarea id="shop-closed-message" rows="3" placeholder="เช่น ปิดปรับปรุงชั่วคราว"></textarea>
+                    </div>
+                    <hr>
+                    <!-- Rain Effect -->
+                    <div class="festival-control">
+                        <div class="toggle-switch-container">
+                            <label data-translate-key="rainEffectLabel">เอฟเฟกต์ฝนตก</label>
+                            <label class="toggle-switch"><input type="checkbox" id="rain-effect-toggle"><span class="slider"></span></label>
+                        </div>
+                        <div class="effect-controls">
+                            <label><span data-translate-key="rainIntensityLabel">ความหนัก</span> <input type="range" id="rain-intensity" min="1" max="100" value="20"></label>
+                            <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="rain-opacity" min="0.1" max="1" step="0.1" value="0.5"></label>
+                        </div>
+                    </div>
+                     <!-- Snow Effect -->
+                    <div class="festival-control">
+                        <div class="toggle-switch-container">
+                            <label data-translate-key="snowEffectLabel">เอฟเฟกต์หิมะตก</label>
+                            <label class="toggle-switch"><input type="checkbox" id="snow-effect-toggle"><span class="slider"></span></label>
+                        </div>
+                        <div class="effect-controls">
+                            <label><span data-translate-key="snowIntensityLabel">ความหนัก</span> <input type="range" id="snow-intensity" min="1" max="100" value="20"></label>
+                            <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="snow-opacity" min="0.1" max="1" step="0.1" value="0.5"></label>
+                        </div>
+                    </div>
+                    <!-- Fireworks Effect -->
+                    <div class="festival-control">
+                        <div class="toggle-switch-container">
+                            <label data-translate-key="fireworksEffectLabel">เอฟเฟกต์พลุ</label>
+                            <label class="toggle-switch"><input type="checkbox" id="fireworks-effect-toggle"><span class="slider"></span></label>
+                        </div>
+                         <div class="effect-controls">
+                            <label><span data-translate-key="fireworksIntensityLabel">ความถี่ (นาที)</span> <input type="range" id="fireworks-intensity" min="1" max="10" value="1"></label>
+                            <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="fireworks-opacity" min="0.1" max="1" step="0.1" value="0.8"></label>
+                        </div>
+                    </div>
+                    <button id="save-festival-settings-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกการตั้งค่า</button>
+                </div>
+            </div>
+
+            <!-- Admin Content: Stock -->
             <div id="admin-menu-stock" class="admin-menu-content" style="display: none;">
                 <div class="tab-group-container" id="admin-stock-tabs"></div>
                 <div id="admin-sub-categories" class="admin-sub-content">
@@ -329,12 +420,24 @@
                 </div>
             </div>
 
+            <!-- Admin Content: Order Number -->
             <div id="admin-menu-order-number" class="admin-menu-content" style="display: none;">
                 <div class="tab-group-container" id="admin-order-tabs"></div>
                  <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap;">
                     <label for="order-date-picker" data-translate-key="selectDateLabel">เลือกวันที่:</label>
                     <input type="text" id="order-date-picker" style="width: 150px;" placeholder="ดูออเดอร์ทั้งหมด">
                     <button id="reset-orders-btn" class="btn btn-danger btn-small" data-translate-key="resetDataBtn">รีเซ็ทข้อมูล</button>
+                </div>
+                <div id="admin-sub-confirm-orders" class="admin-sub-content">
+                    <div class="card admin-section">
+                        <h2 data-translate-key="confirmOrdersTitle">ออเดอร์ใหม่</h2>
+                        <div class="table-wrapper">
+                            <table id="confirm-orders-table">
+                                <thead><tr><th data-translate-key="tableHeaderOrderNo">เลขออเดอร์</th><th data-translate-key="tableHeaderDateTime">วันที่/เวลา</th><th data-translate-key="tableHeaderTotal">ยอดรวม</th><th data-translate-key="tableHeaderManage">จัดการ</th></tr></thead>
+                                <tbody id="confirm-orders-list"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <div id="admin-sub-active-orders" class="admin-sub-content">
                     <div class="card admin-section">
@@ -360,6 +463,7 @@
                 </div>
             </div>
 
+            <!-- Admin Content: Dashboard -->
             <div id="admin-menu-dashboard" class="admin-menu-content" style="display: none;">
                 <h2 data-translate-key="dashboardTitle">ภาพรวมร้านค้า</h2>
                 <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap;">
@@ -430,6 +534,7 @@
                 </div>
             </div>
 
+            <!-- Admin Content: Manage Account -->
             <div id="admin-menu-manage-account" class="admin-menu-content" style="display: none;">
                 <div class="card admin-section">
                     <h2 data-translate-key="manageAccountTitle">จัดการบัญชี</h2>
@@ -496,6 +601,16 @@
             <div id="cart-details"></div>
             <div class="modal-actions">
                 <button id="close-cart-modal-btn" class="btn btn-secondary" data-translate-key="closeBtn">ปิด</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="price-view-modal" class="modal">
+        <div class="modal-content">
+            <h2 data-translate-key="priceDetailsTitle">รายละเอียดราคา</h2>
+            <div id="price-view-details"></div>
+            <div class="modal-actions">
+                <button id="close-price-view-modal-btn" class="btn btn-secondary" data-translate-key="closeBtn">ปิด</button>
             </div>
         </div>
     </div>
