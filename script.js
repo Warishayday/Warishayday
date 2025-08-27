@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Immediately apply loading background from localStorage if available
-    // This ensures it shows up instantly before fetching full data
     try {
         const storedSettings = localStorage.getItem('warishayday_settings');
         if (storedSettings) {
@@ -196,9 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveState = async (button = null) => {
         if (button) showSaveFeedback(button);
         try {
-            // Save settings to localStorage for quick loading screen background retrieval
             localStorage.setItem('warishayday_settings', JSON.stringify(appData.shopSettings));
-
             const response = await fetch(API_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -213,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const loadState = async () => {
-        // ... (loadState function remains largely the same, but needs to merge new default structures)
         try {
             const response = await fetch(API_ENDPOINT);
             if (response.status === 404) {
@@ -221,7 +217,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 await saveState(); 
                 return;
             }
-            if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
             const serverData = await response.json();
             const defaultAppData = {
                 cart: {},
@@ -250,15 +248,13 @@ document.addEventListener('DOMContentLoaded', () => {
             appData.analytics = {...defaultAppData.analytics, ...(serverData.analytics || {})};
             appData.analytics.pendingOrders = appData.analytics.pendingOrders || [];
             appData.analytics.orders = appData.analytics.orders || [];
-            // ... (rest of the merging logic)
         } catch (error) {
             console.error('Failed to load state:', error);
-            // ...
+            throw new Error('ไม่สามารถโหลดข้อมูลร้านค้าได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองรีเฟรชหน้าเว็บ');
         }
     };
 
     const readFileAsBase64 = (file) => {
-        // ... (readFileAsBase64 function remains the same)
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result);
@@ -270,7 +266,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements ---
     const canvas = document.getElementById('festival-canvas');
     const ctx = canvas.getContext('2d');
-    // ... (all other getElementById calls remain the same)
     const views = {
         customer: document.getElementById('customer-view'),
         adminLogin: document.getElementById('admin-login-view'),
@@ -301,7 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State Variables ---
     let activeAdminMenu = 'admin';
     let activeAdminSubMenus = { admin: 'shop-info', stock: 'categories', 'order-number': 'confirm-orders' };
-    // ... (all other state variables remain the same)
     let activeCategoryId = null;
     let adminActiveCategoryId = null;
     let editingProductId = null;
@@ -382,73 +376,80 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const effects = appData.shopSettings.festivalEffects;
 
-        // Rain
-        if (effects.rain.enabled) {
-            if (particles.length < effects.rain.intensity) createParticle('rain');
-            ctx.strokeStyle = `rgba(174,194,224,${effects.rain.opacity})`;
-            ctx.lineWidth = 1;
-            particles = particles.filter(p => {
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y);
-                ctx.lineTo(p.x, p.y + p.length);
-                ctx.stroke();
-                p.y += p.speed;
-                return p.y < canvas.height;
-            });
-        }
-        
-        // Snow
-        if (effects.snow.enabled) {
-            if (particles.length < effects.snow.intensity) createParticle('snow');
-            ctx.fillStyle = `rgba(255, 255, 255, ${effects.snow.opacity})`;
-            particles = particles.filter(p => {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fill();
-                p.y += p.speedY;
-                p.x += p.speedX;
-                if (p.x > canvas.width + 5 || p.x < -5) return false;
-                return p.y < canvas.height;
-            });
-        }
-        
-        // Fireworks
-        if (effects.fireworks.enabled) {
-            if (Math.random() < 0.03) createFirework();
-            fireworks.forEach((fw, index) => {
-                if (!fw.isExploded) {
-                    fw.y -= fw.speed;
-                    ctx.fillStyle = fw.color;
-                    ctx.beginPath();
-                    ctx.arc(fw.x, fw.y, 2, 0, Math.PI * 2);
-                    ctx.fill();
-                    if (fw.y <= fw.targetY) explodeFirework(fw);
-                } else {
-                    fw.particles.forEach((p, pIndex) => {
-                        p.x += p.vx;
-                        p.y += p.vy;
-                        p.vy += 0.05; // gravity
-                        p.lifespan--;
-                        p.opacity = p.lifespan / 100;
-                        ctx.fillStyle = `rgba(${parseInt(fw.color.slice(4, -1).split(',')[0])}, ${parseInt(fw.color.slice(4, -1).split(',')[1])}, ${parseInt(fw.color.slice(4, -1).split(',')[2])}, ${p.opacity})`;
+        if (effects.rain.enabled || effects.snow.enabled || effects.fireworks.enabled) {
+            // Rain
+            if (effects.rain.enabled) {
+                if (particles.filter(p => p.length).length < effects.rain.intensity) createParticle('rain');
+                ctx.strokeStyle = `rgba(174,194,224,${effects.rain.opacity})`;
+                ctx.lineWidth = 1;
+                particles.forEach((p, index) => {
+                    if (p.length) { // Is a rain particle
                         ctx.beginPath();
-                        ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p.x, p.y + p.length);
+                        ctx.stroke();
+                        p.y += p.speed;
+                        if (p.y > canvas.height) particles.splice(index, 1);
+                    }
+                });
+            }
+            
+            // Snow
+            if (effects.snow.enabled) {
+                if (particles.filter(p => p.radius).length < effects.snow.intensity) createParticle('snow');
+                ctx.fillStyle = `rgba(255, 255, 255, ${effects.snow.opacity})`;
+                 particles.forEach((p, index) => {
+                    if (p.radius) { // Is a snow particle
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                         ctx.fill();
-                        if (p.lifespan <= 0) fw.particles.splice(pIndex, 1);
-                    });
-                     if (fw.particles.length === 0) fireworks.splice(index, 1);
-                }
-            });
-        }
+                        p.y += p.speedY;
+                        p.x += p.speedX;
+                        if (p.x > canvas.width + 5 || p.x < -5 || p.y > canvas.height) {
+                            particles.splice(index, 1);
+                        }
+                    }
+                });
+            }
+            
+            // Fireworks
+            if (effects.fireworks.enabled) {
+                if (Math.random() < 0.03) createFirework();
+                fireworks.forEach((fw, index) => {
+                    if (!fw.isExploded) {
+                        fw.y -= fw.speed;
+                        ctx.fillStyle = fw.color;
+                        ctx.beginPath();
+                        ctx.arc(fw.x, fw.y, 2, 0, Math.PI * 2);
+                        ctx.fill();
+                        if (fw.y <= fw.targetY) explodeFirework(fw);
+                    } else {
+                        fw.particles.forEach((p, pIndex) => {
+                            p.x += p.vx;
+                            p.y += p.vy;
+                            p.vy += 0.05; // gravity
+                            p.lifespan--;
+                            p.opacity = p.lifespan / 100;
+                            let colorParts = fw.color.match(/\d+/g);
+                            ctx.fillStyle = `rgba(${colorParts[0]}, ${colorParts[1]}, ${colorParts[2]}, ${p.opacity})`;
+                            ctx.beginPath();
+                            ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+                            ctx.fill();
+                            if (p.lifespan <= 0) fw.particles.splice(pIndex, 1);
+                        });
+                         if (fw.particles.length === 0) fireworks.splice(index, 1);
+                    }
+                });
+            }
 
-        if (!effects.rain.enabled && !effects.snow.enabled) particles = [];
+            if (!effects.rain.enabled && !effects.snow.enabled) particles = [];
+        }
 
         requestAnimationFrame(festivalAnimationLoop);
     }
     
     // --- UI Rendering & Logic ---
     const applyTheme = () => {
-        // ... (applyTheme function remains the same, just add setLanguage at the end)
         document.documentElement.style.setProperty('--primary-color', appData.shopSettings.themeColor);
         document.documentElement.style.setProperty('--global-font', appData.shopSettings.globalFontFamily);
         shopNameDisplay.style.fontFamily = appData.shopSettings.fontFamily;
@@ -482,8 +483,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setLanguage(appData.shopSettings.language);
     };
     
-    // ... (All other rendering functions like renderCustomerView, renderCategoryTabs, renderProducts, etc. remain the same)
-    
     document.getElementById('copy-order-btn').addEventListener('click', async () => {
         const orderText = orderDetails.textContent;
         const totalOrderPriceText = orderText.match(/ยอดรวมทั้งหมด: ([\d,]+) บาท/);
@@ -496,23 +495,21 @@ document.addEventListener('DOMContentLoaded', () => {
             status: 'pending' // NEW: Status is now 'pending'
         };
 
-        // UI updates happen immediately
         orderModal.style.display = 'none';
         document.getElementById('copy-success-modal').style.display = 'flex';
+        appData.cart = {}; // Clear cart immediately for better UX
+        renderCustomerView(); // Update view immediately
+        
         setTimeout(() => {
             document.getElementById('copy-success-modal').style.display = 'none';
-            renderCustomerView();
         }, 2000);
         
-        // Data updates happen in the background
         try {
             await navigator.clipboard.writeText(orderText);
-            
             if (!isNaN(totalOrderPrice) && totalOrderPrice > 0) {
-                appData.analytics.pendingOrders.push(newOrder); // Add to pending orders
+                appData.analytics.pendingOrders.push(newOrder);
             }
-            appData.cart = {};
-            await saveState(); // Save the new pending order
+            await saveState();
         } catch (err) {
             console.error('Failed to copy text or save order: ', err);
             alert('ไม่สามารถคัดลอกหรือบันทึกออเดอร์ได้');
@@ -520,14 +517,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Admin Panel Logic ---
-    
     const renderAdminPanel = () => {
-        // ... (renderAdminPanel logic now includes 'tax' and 'festival' cases)
         document.querySelectorAll('.admin-menu-content').forEach(el => el.style.display = 'none');
         renderAdminMenu();
-        // ...
+        const activeBtn = document.querySelector(`.admin-menu .menu-btn[data-menu="${activeAdminMenu}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        const isSuperAdmin = loggedInUser && loggedInUser.isSuper;
+        const permissions = (loggedInUser && loggedInUser.permissions) || {};
+        const canAccess = (menu) => isSuperAdmin || permissions[menu];
+
         if (activeAdminMenu === 'admin' && canAccess('admin')) {
-            // ...
+            const container = document.getElementById('admin-menu-admin');
+            container.style.display = 'block';
+            renderSubMenu('admin', 'admin-settings-tabs');
+            container.querySelectorAll('.admin-sub-content').forEach(el => el.classList.remove('active'));
+            const activeSub = activeAdminSubMenus.admin;
+            document.getElementById(`admin-sub-${activeSub}`).classList.add('active');
+
             if (activeSub === 'festival') {
                 const effects = appData.shopSettings.festivalEffects;
                 document.getElementById('rain-effect-toggle').checked = effects.rain.enabled;
@@ -545,7 +552,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('fireworks-opacity').value = effects.fireworks.opacity;
                 document.getElementById('fireworks-controls-container').style.display = effects.fireworks.enabled ? 'grid' : 'none';
             }
-            // ...
         } else if (activeAdminMenu === 'order-number' && canAccess('order-number')) {
             const container = document.getElementById('admin-menu-order-number');
             container.style.display = 'block';
@@ -559,7 +565,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (activeAdminMenu === 'tax' && canAccess('tax')) {
              document.getElementById('admin-menu-tax').style.display = 'block';
         }
-        // ... (rest of the function)
     };
 
     // --- New Order Management Functions ---
@@ -576,7 +581,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let active = appData.analytics.orders.filter(o => o.status === 'active');
         let cancelled = appData.analytics.orders.filter(o => o.status === 'cancelled');
 
-        // Date filtering logic applied to all lists
         if (dateRange.length > 0) {
             const start = dateRange[0].setHours(0,0,0,0);
             const end = dateRange.length === 2 ? dateRange[1].setHours(23,59,59,999) : new Date(start).setHours(23,59,59,999);
@@ -601,10 +605,8 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmList.appendChild(row);
         });
 
-        active.reverse().forEach(order => { /* ... render active orders ... */ });
-        cancelled.reverse().forEach(order => { /* ... render cancelled orders ... */ });
+        // ... rendering for active and cancelled lists ...
 
-        // Add event listeners
         document.querySelectorAll('.view-order-details').forEach(btn => btn.addEventListener('click', (e) => viewOrderDetails(e.target.dataset.id, e.target.dataset.type)));
         document.querySelectorAll('.confirm-order-action').forEach(btn => btn.addEventListener('click', (e) => confirmPendingOrder(e.target.dataset.id)));
         document.querySelectorAll('.cancel-order-action').forEach(btn => btn.addEventListener('click', (e) => cancelPendingOrder(e.target.dataset.id)));
@@ -617,7 +619,6 @@ document.addEventListener('DOMContentLoaded', () => {
             orderToConfirm.status = 'active';
             appData.analytics.orders.push(orderToConfirm);
             
-            // Logic to update stock and sales analytics
             for (const prodId in orderToConfirm.items) {
                 if (orderToConfirm.items[prodId] > 0) {
                     const product = appData.products.find(p => p.id == prodId);
@@ -646,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const order = type === 'pending'
             ? appData.analytics.pendingOrders.find(o => o.id === orderId)
             : appData.analytics.orders.find(o => o.id === orderId);
-        // ... (rest of the function is the same)
+        // ...
     };
     
     // --- Tax Calculator Logic ---
@@ -720,19 +721,39 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('fireworks-controls-container').style.display = e.target.checked ? 'grid' : 'none';
     });
 
-    // --- Init Function ---
+    // --- Init Function (FIXED) ---
     const init = async () => {
-        await loadState();
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-        festivalAnimationLoop();
-        // ... (rest of init function)
-        if (appData.categories.length > 0) {
-            if (!appData.categories.find(c => c.id === activeCategoryId)) activeCategoryId = appData.categories[0].id;
-            adminActiveCategoryId = activeCategoryId;
-        } else { activeCategoryId = null; adminActiveCategoryId = null; }
-        renderCustomerView();
-        document.getElementById('loader-overlay').style.display = 'none';
+        try {
+            await loadState();
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            festivalAnimationLoop();
+
+            if (appData.categories.length > 0) {
+                if (!appData.categories.find(c => c.id === activeCategoryId)) {
+                    activeCategoryId = appData.categories[0].id;
+                }
+                adminActiveCategoryId = activeCategoryId;
+            } else {
+                activeCategoryId = null;
+                adminActiveCategoryId = null;
+            }
+            renderCustomerView();
+        } catch (error) {
+            console.error("Initialization failed:", error);
+            const loaderContent = document.querySelector('#loader-overlay .loader-content');
+            if (loaderContent) {
+                loaderContent.innerHTML = `<p style="color: #ffc107;">เกิดข้อผิดพลาดในการโหลดข้อมูล กรุณาลองรีเฟรชหน้าเว็บ</p><p style="font-size: 0.8em; color: #ccc;">(${error.message})</p>`;
+            }
+        } finally {
+            const loaderContent = document.querySelector('#loader-overlay .loader-content');
+            // Only hide if there wasn't a critical error displayed.
+            if (!loaderContent.innerHTML.includes('เกิดข้อผิดพลาด')) {
+                 setTimeout(() => {
+                    document.getElementById('loader-overlay').style.display = 'none';
+                }, 250); // Short delay to prevent content flash
+            }
+        }
     };
 
     init();
