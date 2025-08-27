@@ -10,11 +10,14 @@ document.addEventListener('DOMContentLoaded', () => {
         shopSettings: {
             shopName: "WARISHAYDAY",
             slogan: "ร้านค้าไอเท็ม Hay Day",
-            managerName: "", // NEW
-            shareholderName: "", // NEW
+            managerName: "",
+            shareholderName: "",
             themeColor: "#28a745",
             fontFamily: "'Kanit', sans-serif",
             globalFontFamily: "'Kanit', sans-serif",
+            globalFontSize: 16, // NEW
+            shopNameFontSize: 2.5, // NEW
+            sloganFontSize: 1.2, // NEW
             orderNumberFormat: 'format1',
             orderNumberCounters: { format1: 1, format2: 1, format3: 1 },
             logo: null,
@@ -32,10 +35,18 @@ document.addEventListener('DOMContentLoaded', () => {
             backgroundBlur: 0,
             loadingBackgroundImage: null,
             loadingBackgroundOpacity: 0.7,
+            loadingBarStyle: '1', // NEW
             language: 'th',
             lowStockThreshold: 50,
-            copyrightText: "Copyright © 2025 Warishayday", // NEW
-            copyrightOpacity: 1, // NEW
+            copyrightText: "Copyright © 2025 Warishayday",
+            copyrightOpacity: 1,
+            shopEnabled: true, // NEW
+            shopClosedMessage: "ร้านปิดปรับปรุงชั่วคราว", // NEW
+            festival: { // NEW
+                rain: { enabled: false, intensity: 20, opacity: 0.5 },
+                snow: { enabled: false, intensity: 20, opacity: 0.5 },
+                fireworks: { enabled: false, intensity: 1, opacity: 0.8 }
+            }
         },
         analytics: {
             dailyTraffic: Array(7).fill(0),
@@ -46,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             monthlyProfit: 0
         },
         menuOrder: [
-            'admin', 'stock', 'order-number', 'dashboard', 'manage-account'
+            'admin', 'festival', 'stock', 'order-number', 'dashboard', 'manage-account'
         ]
     };
 
@@ -64,13 +75,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const translations = {
         th: {
-            loadingMessage: "กำลังโหลดข้อมูลล่าสุด...",
+            loadingMessage: "กำลังดาวน์โหลดข้อมูลล่าสุด...",
             closeBtn: "ปิด", cancelBtn: "ยกเลิก", confirmBtn: "ยืนยัน", saveBtn: "บันทึก", editBtn: "แก้ไข", deleteBtn: "ลบ",
             searchPlaceholder: "ค้นหาสินค้า...", itemsListTitle: "รายการสินค้า", tableHeaderItem: "สินค้า", tableHeaderLevel: "เลเวล", tableHeaderQuantity: "จำนวน", tableHeaderManage: "จัดการ",
             viewOrderBtn: "รายการสั่งซื้อ", confirmOrderBtn: "ยืนยันสั่งซื้อ", totalAmount: "ยอดรวม",
             adminLoginTitle: "เข้าสู่ระบบหลังบ้าน", pinLabel: "PIN", loginBtn: "เข้าสู่ระบบ", backToShopBtn: "กลับหน้าหลักสั่งสินค้า", invalidPinError: "PIN ไม่ถูกต้อง!",
             adminPanelTitle: "Admin Panel", viewShopBtn: "มุมมองหน้าร้าน", logoutBtn: "ออกจากระบบ",
-            menuAdmin: "ตั้งค่าร้าน", menuStock: "สต๊อกสินค้า", menuOrderNumber: "Order Number", menuDashboard: "Dashboard", menuManageAccount: "Manage account", editMenuOrderBtn: "EDIT",
+            menuAdmin: "ตั้งค่าร้าน", menuFestival: "Festival", menuStock: "สต๊อกสินค้า", menuOrderNumber: "Order Number", menuDashboard: "Dashboard", menuManageAccount: "Manage account", editMenuOrderBtn: "EDIT",
             
             shopInfoTitle: "ข้อมูลร้าน",
             systemFontsTitle: "System Fonts",
@@ -79,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             managerNameLabel: "ชื่อผู้จัดการระบบ",
             shareholderNameLabel: "ชื่อผู้ถือหุ้นใหญ่",
             globalFontLabel: "ฟอนต์ระบบทั้งหมด", shopNameFontLabel: "ฟอนต์ชื่อร้าน",
+            globalFontSizeLabel: "ขนาดฟอนต์ทั้งระบบ", shopNameFontSizeLabel: "ขนาดฟอนต์ชื่อร้าน", sloganFontSizeLabel: "ขนาดฟอนต์สโลแกน",
             enableEffectLabel: "เปิดใช้เอฟเฟกต์ชื่อร้าน", effectOffsetX: "เงาแนวนอน (X)", effectOffsetY: "เงาแนวตั้ง (Y)", effectBlur: "ความเบลอ", effectColor: "สีเงา",
             orderFormatLabel: "รูปแบบเลขที่ออเดอร์", useLogoLabel: "ใช้โลโก้", uploadLogoLabel: "อัปโหลดโลโก้ (PNG)",
             backgroundSettingsTitle: "ตั้งค่าพื้นหลัง", uploadBgLabel: "อัปโหลดภาพพื้นหลัง", bgOpacityLabel: "ความโปร่งใส (จาง-ชัด)", bgBlurLabel: "ความเบลอ (น้อย-มาก)",
@@ -93,7 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
             manageProductsTitle: "จัดการสินค้า", productNameLabel: "ชื่อสินค้า", levelLabel: "เลเวล", stockQuantityLabel: "จำนวนคงเหลือ", categoryLabel: "หมวดหมู่",
             productIconLabel: "ไอค่อนสินค้า (ไฟล์ PNG)", productAvailableLabel: "เปิดขายสินค้านี้", saveProductBtn: "บันทึกสินค้า", cancelEditBtn: "ยกเลิกแก้ไข",
             tableHeaderStock: "คงเหลือ", tableHeaderStatus: "สถานะ", statusAvailable: "เปิดขาย", statusUnavailable: "ปิดขาย",
-            selectDateLabel: "เลือกวันที่:", resetDataBtn: "รีเซ็ทข้อมูล", activeOrdersTitle: "รายการออเดอร์ปัจจุบัน", cancelledOrdersTitle: "รายการออเดอร์ที่ถูกยกเลิก",
+            selectDateLabel: "เลือกวันที่:", resetDataBtn: "รีเซ็ทข้อมูล", 
+            confirmOrdersTitle: "คอนเฟิร์มออเดอร์", activeOrdersTitle: "รายการออเดอร์ปัจจุบัน", cancelledOrdersTitle: "รายการออเดอร์ที่ถูกยกเลิก",
             tableHeaderOrderNo: "เลขออเดอร์", tableHeaderDateTime: "วันที่/เวลา", tableHeaderTotal: "ยอดรวม", viewDetailsBtn: "ดูรายละเอียด", cancelOrderBtn: "ยกเลิก",
             dashboardTitle: "ภาพรวมร้านค้า", monthlyProfitTitle: "กำไรเดือนนี้", dailyOrdersTitle: "ยอดออเดอร์วันนี้", monthlyOrdersTitle: "ยอดออเดอร์เดือนนี้", yearlySalesTitle: "ยอดขายรวม (ปีนี้)",
             lowStockTitle: "สินค้าที่ต้องเติม (10 อันดับ)", lowStockThresholdLabel: "แจ้งเตือนเมื่อเหลือน้อยกว่า:", lowStockInfo: "รบกวนเติมสินค้าสำหรับรายการที่มีไฟกระพริบ",
@@ -106,7 +119,13 @@ document.addEventListener('DOMContentLoaded', () => {
             setPerPiecePriceTitle: "ตั้งราคาต่อชิ้น", setPerPiecePriceInfo: "กำหนดราคาสำหรับทุกๆ 10 ชิ้น", savePriceBtn: "บันทึกราคา",
             reorderMenuTitle: "จัดเรียงเมนู", reorderMenuInfo: "ลากและวางเพื่อจัดลำดับเมนูตามต้องการ", saveOrderBtn: "บันทึกการจัดเรียง",
             setPermissionsTitle: "ตั้งค่าสิทธิ์การเข้าถึง", savePermissionsBtn: "บันทึกสิทธิ์",
-            loadingBackgroundTitle: "พื้นหลัง Loading", uploadLoadingBgLabel: "อัปโหลดภาพพื้นหลัง Loading",
+            loadingBackgroundTitle: "พื้นหลัง Loading", uploadLoadingBgLabel: "อัปโหลดภาพพื้นหลัง Loading", loadingBarStyleLabel: "รูปแบบแถบดาวน์โหลด",
+            priceDetailsTitle: "รายละเอียดราคา", viewPriceBtn: "ดูราคา",
+            festivalTitle: "Festival Effects", shopStatusLabel: "เปิดร้าน", shopClosedMessageLabel: "ข้อความเมื่อปิดร้าน",
+            rainEffectLabel: "เอฟเฟกต์ฝนตก", rainIntensityLabel: "ความหนัก", effectOpacityLabel: "ความชัด",
+            snowEffectLabel: "เอฟเฟกต์หิมะตก", snowIntensityLabel: "ความหนัก",
+            fireworksEffectLabel: "เอฟเฟกต์พลุ", fireworksIntensityLabel: "ความถี่ (นาที)",
+            saveSuccessMessage: "บันทึกสำเร็จ!",
         },
         en: {
             loadingMessage: "Loading latest data...",
@@ -115,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             viewOrderBtn: "View Order", confirmOrderBtn: "Confirm Order", totalAmount: "Total",
             adminLoginTitle: "Admin Login", pinLabel: "PIN", loginBtn: "Login", backToShopBtn: "Back to Shop", invalidPinError: "Invalid PIN!",
             adminPanelTitle: "Admin Panel", viewShopBtn: "View Shop", logoutBtn: "Logout",
-            menuAdmin: "Shop Settings", menuStock: "Stock", menuOrderNumber: "Order Number", menuDashboard: "Dashboard", menuManageAccount: "Manage Account", editMenuOrderBtn: "EDIT",
+            menuAdmin: "Shop Settings", menuFestival: "Festival", menuStock: "Stock", menuOrderNumber: "Order Number", menuDashboard: "Dashboard", menuManageAccount: "Manage Account", editMenuOrderBtn: "EDIT",
             
             shopInfoTitle: "Shop Information",
             systemFontsTitle: "System Fonts",
@@ -124,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             managerNameLabel: "System Manager Name",
             shareholderNameLabel: "Major Shareholder Name",
             globalFontLabel: "Global Font", shopNameFontLabel: "Shop Name Font",
+            globalFontSizeLabel: "Global Font Size", shopNameFontSizeLabel: "Shop Name Font Size", sloganFontSizeLabel: "Slogan Font Size",
             enableEffectLabel: "Enable Shop Name Effect", effectOffsetX: "Offset X", effectOffsetY: "Offset Y", effectBlur: "Blur", effectColor: "Color",
             orderFormatLabel: "Order Number Format", useLogoLabel: "Use Logo", uploadLogoLabel: "Upload Logo (PNG)",
             backgroundSettingsTitle: "Background Settings", uploadBgLabel: "Upload Background Image", bgOpacityLabel: "Opacity (Faint-Clear)", bgBlurLabel: "Blur (Less-More)",
@@ -138,7 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
             manageProductsTitle: "Manage Products", productNameLabel: "Product Name", levelLabel: "Level", stockQuantityLabel: "Stock Quantity", categoryLabel: "Category",
             productIconLabel: "Product Icon (PNG)", productAvailableLabel: "This product is available", saveProductBtn: "Save Product", cancelEditBtn: "Cancel Edit",
             tableHeaderStock: "Stock", tableHeaderStatus: "Status", statusAvailable: "Available", statusUnavailable: "Unavailable",
-            selectDateLabel: "Select Date:", resetDataBtn: "Reset Data", activeOrdersTitle: "Active Orders", cancelledOrdersTitle: "Cancelled Orders",
+            selectDateLabel: "Select Date:", resetDataBtn: "Reset Data", 
+            confirmOrdersTitle: "Confirm Orders", activeOrdersTitle: "Active Orders", cancelledOrdersTitle: "Cancelled Orders",
             tableHeaderOrderNo: "Order No.", tableHeaderDateTime: "Date/Time", tableHeaderTotal: "Total", viewDetailsBtn: "Details", cancelOrderBtn: "Cancel",
             dashboardTitle: "Dashboard", monthlyProfitTitle: "This Month's Profit", dailyOrdersTitle: "Today's Orders", monthlyOrdersTitle: "This Month's Orders", yearlySalesTitle: "This Year's Sales",
             lowStockTitle: "Low Stock Items (Top 10)", lowStockThresholdLabel: "Alert when stock is less than:", lowStockInfo: "Please restock items with a blinking light.",
@@ -151,12 +172,19 @@ document.addEventListener('DOMContentLoaded', () => {
             setPerPiecePriceTitle: "Set Per-Piece Price", setPerPiecePriceInfo: "Set the price for every 10 pieces.", savePriceBtn: "Save Prices",
             reorderMenuTitle: "Reorder Menu", reorderMenuInfo: "Drag and drop to reorder the menu.", saveOrderBtn: "Save Order",
             setPermissionsTitle: "Set Permissions", savePermissionsBtn: "Save Permissions",
-            loadingBackgroundTitle: "Loading Background", uploadLoadingBgLabel: "Upload Loading Background",
+            loadingBackgroundTitle: "Loading Background", uploadLoadingBgLabel: "Upload Loading Background", loadingBarStyleLabel: "Loading Bar Style",
+            priceDetailsTitle: "Price Details", viewPriceBtn: "View Prices",
+            festivalTitle: "Festival Effects", shopStatusLabel: "Shop Open", shopClosedMessageLabel: "Shop Closed Message",
+            rainEffectLabel: "Rain Effect", rainIntensityLabel: "Intensity", effectOpacityLabel: "Opacity",
+            snowEffectLabel: "Snow Effect", snowIntensityLabel: "Intensity",
+            fireworksEffectLabel: "Fireworks Effect", fireworksIntensityLabel: "Frequency (min)",
+            saveSuccessMessage: "Saved!",
         }
     };
 
     const MENU_NAMES = {
         'admin': 'menuAdmin',
+        'festival': 'menuFestival',
         'stock': 'menuStock',
         'order-number': 'menuOrderNumber',
         'dashboard': 'menuDashboard',
@@ -172,10 +200,21 @@ document.addEventListener('DOMContentLoaded', () => {
             'pin': 'changePinTitle' 
         },
         'stock': { 'categories': 'manageCategoriesTitle', 'products': 'manageProductsTitle' },
-        'order-number': { 'active-orders': 'activeOrdersTitle', 'cancelled-orders': 'cancelledOrdersTitle' }
+        'order-number': { 'confirm-orders': 'confirmOrdersTitle', 'active-orders': 'activeOrdersTitle', 'cancelled-orders': 'cancelledOrdersTitle' }
     };
 
     const generateId = () => Date.now() + Math.floor(Math.random() * 1000);
+
+    const showSaveFeedback = (buttonElement) => {
+        const originalText = buttonElement.textContent;
+        const lang = appData.shopSettings.language;
+        buttonElement.textContent = translations[lang].saveSuccessMessage;
+        buttonElement.disabled = true;
+        setTimeout(() => {
+            buttonElement.textContent = originalText;
+            buttonElement.disabled = false;
+        }, 1500);
+    };
 
     const saveState = async () => {
         try {
@@ -206,21 +245,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 cart: {},
                 shopSettings: {
                     shopName: "WARISHAYDAY", slogan: "ร้านค้าไอเท็ม Hay Day", managerName: "", shareholderName: "", themeColor: "#28a745", fontFamily: "'Kanit', sans-serif",
-                    globalFontFamily: "'Kanit', sans-serif", logo: null, useLogo: false, darkMode: false,
+                    globalFontFamily: "'Kanit', sans-serif", globalFontSize: 16, shopNameFontSize: 2.5, sloganFontSize: 1.2, logo: null, useLogo: false, darkMode: false,
                     orderNumberFormat: 'format1', orderNumberCounters: { format1: 1, format2: 1, format3: 1 },
                     shopNameEffect: { enabled: false, offsetX: 2, offsetY: 2, blur: 4, color: '#000000' },
                     backgroundImage: null, backgroundOpacity: 1, backgroundBlur: 0, 
-                    loadingBackgroundImage: null, loadingBackgroundOpacity: 0.7,
+                    loadingBackgroundImage: null, loadingBackgroundOpacity: 0.7, loadingBarStyle: '1',
                     language: 'th', lowStockThreshold: 50,
                     copyrightText: "Copyright © 2025 Warishayday", copyrightOpacity: 1,
+                    shopEnabled: true, shopClosedMessage: "ร้านปิดปรับปรุงชั่วคราว",
+                    festival: { rain: { enabled: false, intensity: 20, opacity: 0.5 }, snow: { enabled: false, intensity: 20, opacity: 0.5 }, fireworks: { enabled: false, intensity: 1, opacity: 0.8 } }
                 },
                 analytics: { dailyTraffic: Array(7).fill(0), hourlyTraffic: Array(24).fill(0), productSales: {}, orders: [], totalSales: 0, monthlyProfit: 0 },
                 subAdmins: [],
-                menuOrder: ['admin', 'stock', 'order-number', 'dashboard', 'manage-account'],
+                menuOrder: ['admin', 'festival', 'stock', 'order-number', 'dashboard', 'manage-account'],
                 categories: [], products: [],
             };
             appData = { ...defaultAppData, ...serverData };
             appData.shopSettings = {...defaultAppData.shopSettings, ...appData.shopSettings};
+            appData.shopSettings.festival = {...defaultAppData.shopSettings.festival, ...appData.shopSettings.festival};
             appData.analytics.orders = appData.analytics.orders || [];
             appData.analytics.orders.forEach(o => { if(!o.status) o.status = 'active'; });
             appData.categories.forEach(cat => { if (cat.minOrderQuantity === undefined) cat.minOrderQuantity = 30; });
@@ -230,6 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const validMenus = new Set(defaultAppData.menuOrder);
             appData.menuOrder = (appData.menuOrder || defaultAppData.menuOrder).filter(item => validMenus.has(item));
+            if (!appData.menuOrder.includes('festival')) {
+                appData.menuOrder.splice(1, 0, 'festival');
+            }
             appData.subAdmins.forEach(sa => {
                 if (!sa.permissions) {
                     sa.permissions = {};
@@ -279,9 +324,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const langToggleBtn = document.getElementById('lang-toggle-btn');
     const adminMenuContainer = document.querySelector('.admin-menu');
     const copyrightFooter = document.getElementById('copyright-footer');
+    const festivalCanvas = document.getElementById('festival-canvas');
+    const festivalCtx = festivalCanvas.getContext('2d');
     
     let activeAdminMenu = 'admin';
-    let activeAdminSubMenus = { admin: 'shop-info', stock: 'categories', 'order-number': 'active-orders' };
+    let activeAdminSubMenus = { admin: 'shop-info', stock: 'categories', 'order-number': 'confirm-orders' };
     let activeCategoryId = null;
     let adminActiveCategoryId = null;
     let editingProductId = null;
@@ -335,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyLoadingBackground = () => {
         const loaderBg = document.getElementById('loader-background');
         const loaderOverlay = document.getElementById('loader-overlay');
+        const progressBar = document.getElementById('progress-bar-container');
         if (appData.shopSettings.loadingBackgroundImage) {
             loaderBg.style.backgroundImage = `url(${appData.shopSettings.loadingBackgroundImage})`;
             loaderOverlay.style.backgroundColor = `rgba(0, 0, 0, ${appData.shopSettings.loadingBackgroundOpacity})`;
@@ -342,14 +390,21 @@ document.addEventListener('DOMContentLoaded', () => {
             loaderBg.style.backgroundImage = 'none';
             loaderOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
         }
+        progressBar.className = `progress-bar style-${appData.shopSettings.loadingBarStyle}`;
     };
 
     const applyTheme = () => {
-        document.documentElement.style.setProperty('--primary-color', appData.shopSettings.themeColor);
-        document.documentElement.style.setProperty('--global-font', appData.shopSettings.globalFontFamily);
+        const root = document.documentElement;
+        root.style.setProperty('--primary-color', appData.shopSettings.themeColor);
+        root.style.setProperty('--global-font', appData.shopSettings.globalFontFamily);
+        root.style.setProperty('--global-font-size', `${appData.shopSettings.globalFontSize}px`);
+        root.style.setProperty('--shop-name-font-size', `${appData.shopSettings.shopNameFontSize}rem`);
+        root.style.setProperty('--slogan-font-size', `${appData.shopSettings.sloganFontSize}rem`);
+        
         shopNameDisplay.style.fontFamily = appData.shopSettings.fontFamily;
         shopNameDisplay.textContent = appData.shopSettings.shopName;
         sloganElement.textContent = appData.shopSettings.slogan;
+        
         const effect = appData.shopSettings.shopNameEffect;
         shopNameDisplay.style.textShadow = effect.enabled ? `${effect.offsetX}px ${effect.offsetY}px ${effect.blur}px ${effect.color}` : '1px 1px 2px rgba(0,0,0,0.1)';
         
@@ -380,13 +435,26 @@ document.addEventListener('DOMContentLoaded', () => {
         applyBackground();
         applyLoadingBackground();
         setLanguage(appData.shopSettings.language);
+        updateShopStatusView();
+        initFestivalEffects();
     };
     
-    themeToggleBtn.addEventListener('click', async () => {
+    themeToggleBtn.addEventListener('click', async (e) => {
+        showSaveFeedback(e.currentTarget);
         appData.shopSettings.darkMode = !appData.shopSettings.darkMode;
         applyTheme();
         await saveState();
     });
+
+    const updateShopStatusView = () => {
+        const overlay = document.getElementById('shop-closed-overlay');
+        if (!appData.shopSettings.shopEnabled) {
+            document.getElementById('shop-closed-message').textContent = appData.shopSettings.shopClosedMessage;
+            overlay.style.display = 'flex';
+        } else {
+            overlay.style.display = 'none';
+        }
+    };
 
     const renderCustomerView = () => {
         applyTheme();
@@ -618,13 +686,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('copy-order-btn').addEventListener('click', async () => {
         orderModal.style.display = 'none';
+        const successModal = document.getElementById('copy-success-modal');
+        successModal.style.display = 'flex';
+        
         const orderText = orderDetails.textContent;
         try {
             await navigator.clipboard.writeText(orderText);
             const totalOrderPriceText = orderText.match(/ยอดรวมทั้งหมด: ([\d,]+) บาท/);
             const totalOrderPrice = totalOrderPriceText ? parseFloat(totalOrderPriceText[1].replace(/,/g, '')) : 0;
             if (!isNaN(totalOrderPrice) && totalOrderPrice > 0) {
-                const newOrder = { id: orderDetails.dataset.orderNumber, timestamp: new Date().toISOString(), total: totalOrderPrice, items: { ...appData.cart }, status: 'active' };
+                const newOrder = { id: orderDetails.dataset.orderNumber, timestamp: new Date().toISOString(), total: totalOrderPrice, items: { ...appData.cart }, status: 'new' };
                 appData.analytics.orders.push(newOrder);
                 for (const prodId in appData.cart) {
                     if (appData.cart[prodId] > 0) {
@@ -639,8 +710,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             appData.cart = {};
             await saveState();
-            const successModal = document.getElementById('copy-success-modal');
-            successModal.style.display = 'flex';
             setTimeout(() => {
                 successModal.style.display = 'none';
                 renderCustomerView();
@@ -648,6 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             console.error('Failed to copy text: ', err);
             alert('ไม่สามารถคัดลอกได้ กรุณาลองใหม่');
+            successModal.style.display = 'none';
         }
     });
     
@@ -793,6 +863,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const permissions = (loggedInUser && loggedInUser.permissions) || {};
         const canAccess = (menu) => isSuperAdmin || permissions[menu];
+        
+        document.getElementById('shop-enabled-toggle').checked = appData.shopSettings.shopEnabled;
 
         if (activeAdminMenu === 'admin' && canAccess('admin')) {
             const container = document.getElementById('admin-menu-admin');
@@ -810,6 +882,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('shareholder-name').value = appData.shopSettings.shareholderName;
                 document.getElementById('order-format-select').value = appData.shopSettings.orderNumberFormat;
             } else if (activeSub === 'system-fonts') {
+                document.getElementById('global-font-size').value = appData.shopSettings.globalFontSize;
+                document.getElementById('shop-name-font-size').value = appData.shopSettings.shopNameFontSize;
+                document.getElementById('slogan-font-size').value = appData.shopSettings.sloganFontSize;
                 document.getElementById('shop-global-font').value = appData.shopSettings.globalFontFamily;
                 document.getElementById('shop-font').value = appData.shopSettings.fontFamily;
                 document.getElementById('font-preview').style.fontFamily = appData.shopSettings.fontFamily;
@@ -835,10 +910,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(appData.shopSettings.backgroundImage) bgPreview.style.backgroundImage = `url(${appData.shopSettings.backgroundImage})`;
             } else if (activeSub === 'loading-bg') {
                 document.getElementById('loading-bg-opacity').value = appData.shopSettings.loadingBackgroundOpacity;
+                document.getElementById('loading-bar-style').value = appData.shopSettings.loadingBarStyle;
                 const loadingBgPreview = document.getElementById('loading-bg-preview');
                 loadingBgPreview.style.display = appData.shopSettings.loadingBackgroundImage ? 'block' : 'none';
                 if(appData.shopSettings.loadingBackgroundImage) loadingBgPreview.style.backgroundImage = `url(${appData.shopSettings.loadingBackgroundImage})`;
             }
+        } else if (activeAdminMenu === 'festival' && canAccess('festival')) {
+            const container = document.getElementById('admin-menu-festival');
+            container.style.display = 'block';
+            document.getElementById('shop-closed-message').value = appData.shopSettings.shopClosedMessage;
+            document.getElementById('rain-effect-toggle').checked = appData.shopSettings.festival.rain.enabled;
+            document.getElementById('rain-intensity').value = appData.shopSettings.festival.rain.intensity;
+            document.getElementById('rain-opacity').value = appData.shopSettings.festival.rain.opacity;
+            document.getElementById('snow-effect-toggle').checked = appData.shopSettings.festival.snow.enabled;
+            document.getElementById('snow-intensity').value = appData.shopSettings.festival.snow.intensity;
+            document.getElementById('snow-opacity').value = appData.shopSettings.festival.snow.opacity;
+            document.getElementById('fireworks-effect-toggle').checked = appData.shopSettings.festival.fireworks.enabled;
+            document.getElementById('fireworks-intensity').value = appData.shopSettings.festival.fireworks.intensity;
+            document.getElementById('fireworks-opacity').value = appData.shopSettings.festival.fireworks.opacity;
         } else if (activeAdminMenu === 'stock' && canAccess('stock')) {
             const container = document.getElementById('admin-menu-stock');
             container.style.display = 'block';
@@ -884,9 +973,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderDashboard = () => {
         const today = new Date(), currentMonth = today.getMonth(), currentYear = today.getFullYear();
-        const ordersToday = appData.analytics.orders.filter(o => o.timestamp.startsWith(selectedDate));
-        const ordersInMonth = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === currentYear && new Date(o.timestamp).getMonth() === currentMonth);
-        const ordersInYear = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === currentYear);
+        const ordersToday = appData.analytics.orders.filter(o => o.timestamp.startsWith(selectedDate) && o.status !== 'cancelled');
+        const ordersInMonth = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === currentYear && new Date(o.timestamp).getMonth() === currentMonth && o.status !== 'cancelled');
+        const ordersInYear = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === currentYear && o.status !== 'cancelled');
         const monthlyProfit = ordersInMonth.reduce((sum, order) => sum + order.total, 0);
         const yearlySales = ordersInYear.reduce((sum, order) => sum + order.total, 0);
         document.getElementById('monthly-profit').textContent = `${monthlyProfit.toLocaleString()} บาท`;
@@ -975,9 +1064,9 @@ document.addEventListener('DOMContentLoaded', () => {
         listEl.innerHTML = '';
         const today = new Date();
         let ordersToAnalyze = [];
-        if(period === 'day') ordersToAnalyze = appData.analytics.orders.filter(o => o.timestamp.startsWith(today.toISOString().slice(0, 10)));
-        else if (period === 'month') ordersToAnalyze = appData.analytics.orders.filter(o => new Date(o.timestamp).getMonth() === today.getMonth() && new Date(o.timestamp).getFullYear() === today.getFullYear());
-        else ordersToAnalyze = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === today.getFullYear());
+        if(period === 'day') ordersToAnalyze = appData.analytics.orders.filter(o => o.timestamp.startsWith(today.toISOString().slice(0, 10)) && o.status !== 'cancelled');
+        else if (period === 'month') ordersToAnalyze = appData.analytics.orders.filter(o => new Date(o.timestamp).getMonth() === today.getMonth() && new Date(o.timestamp).getFullYear() === today.getFullYear() && o.status !== 'cancelled');
+        else ordersToAnalyze = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === today.getFullYear() && o.status !== 'cancelled');
         const itemCounts = {};
         ordersToAnalyze.forEach(order => {
             for(const prodId in order.items) {
@@ -1030,15 +1119,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const list = document.getElementById('admin-cat-list');
         list.innerHTML = '';
         appData.categories.forEach(cat => {
-            const priceText = [];
-            if (cat.perPiecePrices && cat.perPiecePrices.length > 0) priceText.push(`ราคาต่อชิ้น:`, ...cat.perPiecePrices.sort((a,b) => a.quantity - b.quantity).map(p => `- ${p.quantity} ชิ้น = ${p.price} บาท`));
-            if (cat.bulkPrices && cat.bulkPrices.length > 0) priceText.push(`ราคาเหมา:`, ...cat.bulkPrices.sort((a,b) => a.min - b.min).map(p => `- ${p.min}-${p.max} ชิ้น = ${p.price} บาท`));
             const row = document.createElement('tr');
-            row.innerHTML = `<td>${cat.icon ? `<img src="${cat.icon}" alt="icon" style="width:24px; height:24px;">` : 'ไม่มี'}</td><td>${cat.name}</td><td>${cat.minOrderQuantity}</td><td><ul class="price-list">${priceText.length > 0 ? `<li>${priceText.join('</li><li>')}</li>` : '<li>ไม่ได้ตั้งราคา</li>'}</ul></td><td><button class="btn btn-secondary btn-small btn-cat-edit" data-id="${cat.id}">แก้ไข</button><button class="btn btn-danger btn-small btn-cat-delete" data-id="${cat.id}">ลบ</button></td>`;
+            row.innerHTML = `
+                <td>${cat.icon ? `<img src="${cat.icon}" alt="icon" style="width:24px; height:24px;">` : 'ไม่มี'}</td>
+                <td>${cat.name}</td>
+                <td>${cat.minOrderQuantity}</td>
+                <td><button class="btn btn-info btn-small btn-view-price" data-id="${cat.id}">${translations[appData.shopSettings.language].viewPriceBtn}</button></td>
+                <td><button class="btn btn-secondary btn-small btn-cat-edit" data-id="${cat.id}">แก้ไข</button><button class="btn btn-danger btn-small btn-cat-delete" data-id="${cat.id}">ลบ</button></td>`;
             list.appendChild(row);
         });
     };
     
+    document.getElementById('admin-cat-list').addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-view-price')) {
+            const catId = parseInt(e.target.dataset.id);
+            const category = appData.categories.find(c => c.id === catId);
+            if (category) {
+                const priceDetails = document.getElementById('price-view-details');
+                const priceText = [];
+                if (category.perPiecePrices && category.perPiecePrices.length > 0) {
+                    priceText.push(`<h3>ราคาต่อชิ้น:</h3>`, ...category.perPiecePrices.sort((a, b) => a.quantity - b.quantity).map(p => `<div>- ${p.quantity} ชิ้น = ${p.price} บาท</div>`));
+                }
+                if (category.bulkPrices && category.bulkPrices.length > 0) {
+                    priceText.push(`<h3>ราคาเหมา:</h3>`, ...category.bulkPrices.sort((a, b) => a.min - b.min).map(p => `<div>- ${p.min}-${p.max} ชิ้น = ${p.price} บาท</div>`));
+                }
+                priceDetails.innerHTML = priceText.length > 0 ? priceText.join('') : '<div>ไม่ได้ตั้งราคา</div>';
+                document.getElementById('price-view-modal').style.display = 'flex';
+            }
+        }
+    });
+    document.getElementById('close-price-view-modal-btn').addEventListener('click', () => {
+        document.getElementById('price-view-modal').style.display = 'none';
+    });
+
+
     const renderAdminProducts = () => {
         const list = document.getElementById('admin-prod-list');
         list.innerHTML = '';
@@ -1171,7 +1285,8 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFontPreviewEffect();
     });
 
-    document.getElementById('save-shop-info-btn').addEventListener('click', async () => {
+    document.getElementById('save-shop-info-btn').addEventListener('click', async (e) => {
+        showSaveFeedback(e.currentTarget);
         appData.shopSettings.shopName = document.getElementById('shop-name').value;
         appData.shopSettings.slogan = document.getElementById('shop-slogan').value;
         appData.shopSettings.managerName = document.getElementById('manager-name').value;
@@ -1179,12 +1294,15 @@ document.addEventListener('DOMContentLoaded', () => {
         appData.shopSettings.orderNumberFormat = document.getElementById('order-format-select').value;
         await saveState();
         applyTheme();
-        alert('บันทึกข้อมูลร้านแล้ว!');
     });
 
-    document.getElementById('save-system-fonts-btn').addEventListener('click', async () => {
+    document.getElementById('save-system-fonts-btn').addEventListener('click', async (e) => {
+        showSaveFeedback(e.currentTarget);
         appData.shopSettings.fontFamily = document.getElementById('shop-font').value;
         appData.shopSettings.globalFontFamily = document.getElementById('shop-global-font').value;
+        appData.shopSettings.globalFontSize = parseFloat(document.getElementById('global-font-size').value);
+        appData.shopSettings.shopNameFontSize = parseFloat(document.getElementById('shop-name-font-size').value);
+        appData.shopSettings.sloganFontSize = parseFloat(document.getElementById('slogan-font-size').value);
         appData.shopSettings.useLogo = document.getElementById('logo-toggle').checked;
         appData.shopSettings.shopNameEffect = {
             enabled: document.getElementById('effect-toggle').checked,
@@ -1199,33 +1317,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
         await saveState();
         applyTheme();
-        alert('บันทึกการตั้งค่าฟอนต์และโลโก้แล้ว!');
     });
     
-    document.getElementById('save-background-settings-btn').addEventListener('click', async () => {
+    document.getElementById('save-background-settings-btn').addEventListener('click', async (e) => {
+        showSaveFeedback(e.currentTarget);
         appData.shopSettings.backgroundOpacity = document.getElementById('bg-opacity').value;
         appData.shopSettings.backgroundBlur = document.getElementById('bg-blur').value;
         if (bgFile) appData.shopSettings.backgroundImage = await readFileAsBase64(bgFile);
         await saveState();
         applyTheme();
-        alert('บันทึกพื้นหลังแล้ว!');
     });
     
-    document.getElementById('save-loading-bg-settings-btn').addEventListener('click', async () => {
+    document.getElementById('save-loading-bg-settings-btn').addEventListener('click', async (e) => {
+        showSaveFeedback(e.currentTarget);
         appData.shopSettings.loadingBackgroundOpacity = document.getElementById('loading-bg-opacity').value;
+        appData.shopSettings.loadingBarStyle = document.getElementById('loading-bar-style').value;
         if (loadingBgFile) appData.shopSettings.loadingBackgroundImage = await readFileAsBase64(loadingBgFile);
         await saveState();
         applyTheme();
-        alert('บันทึกพื้นหลัง Loading แล้ว!');
+    });
+    
+    document.getElementById('save-festival-settings-btn').addEventListener('click', async (e) => {
+        showSaveFeedback(e.currentTarget);
+        appData.shopSettings.shopClosedMessage = document.getElementById('shop-closed-message').value;
+        appData.shopSettings.festival.rain.enabled = document.getElementById('rain-effect-toggle').checked;
+        appData.shopSettings.festival.rain.intensity = document.getElementById('rain-intensity').value;
+        appData.shopSettings.festival.rain.opacity = document.getElementById('rain-opacity').value;
+        appData.shopSettings.festival.snow.enabled = document.getElementById('snow-effect-toggle').checked;
+        appData.shopSettings.festival.snow.intensity = document.getElementById('snow-intensity').value;
+        appData.shopSettings.festival.snow.opacity = document.getElementById('snow-opacity').value;
+        appData.shopSettings.festival.fireworks.enabled = document.getElementById('fireworks-effect-toggle').checked;
+        appData.shopSettings.festival.fireworks.intensity = document.getElementById('fireworks-intensity').value;
+        appData.shopSettings.festival.fireworks.opacity = document.getElementById('fireworks-opacity').value;
+        await saveState();
+        applyTheme();
     });
 
-    document.getElementById('change-pin-btn').addEventListener('click', async () => {
+    document.getElementById('shop-enabled-toggle').addEventListener('change', async (e) => {
+        appData.shopSettings.shopEnabled = e.target.checked;
+        updateShopStatusView();
+        await saveState();
+    });
+
+    document.getElementById('change-pin-btn').addEventListener('click', async (e) => {
         const newPin = document.getElementById('new-pin').value;
         if (newPin && newPin.length >= 4) {
             if (confirm(`คุณต้องการเปลี่ยน PIN เป็น "${newPin}" ใช่หรือไม่?`)) {
+                showSaveFeedback(e.currentTarget);
                 appData.adminPin = newPin;
                 await saveState();
-                alert('เปลี่ยน PIN สำเร็จ!');
                 document.getElementById('new-pin').value = '';
             }
         } else alert('PIN ต้องมีอย่างน้อย 4 ตัวอักษร');
@@ -1243,6 +1383,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('category-form').addEventListener('submit', async (e) => {
         e.preventDefault();
+        showSaveFeedback(e.target.querySelector('button[type="submit"]'));
         const name = document.getElementById('cat-name').value.trim();
         const minOrder = parseInt(document.getElementById('cat-min-order').value) || 0;
         if (!name) { alert('กรุณากรอกชื่อหมวดหมู่'); return; }
@@ -1317,6 +1458,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('product-form').addEventListener('submit', async (e) => {
         e.preventDefault();
+        showSaveFeedback(e.target.querySelector('button[type="submit"]'));
         const product = { id: editingProductId || generateId(), name: document.getElementById('prod-name').value, level: parseInt(document.getElementById('prod-level').value), categoryId: parseInt(document.getElementById('prod-category').value), stock: parseInt(document.getElementById('prod-stock').value), isAvailable: document.getElementById('prod-available').checked, icon: null };
         if (prodIconFile) product.icon = await readFileAsBase64(prodIconFile);
         if (editingProductId) {
@@ -1440,7 +1582,8 @@ document.addEventListener('DOMContentLoaded', () => {
         perPiecePriceModal.style.display = 'flex';
     });
     document.getElementById('close-per-piece-price-modal-btn').addEventListener('click', () => perPiecePriceModal.style.display = 'none');
-    document.getElementById('save-per-piece-price-btn').addEventListener('click', async () => {
+    document.getElementById('save-per-piece-price-btn').addEventListener('click', async (e) => {
+        showSaveFeedback(e.currentTarget);
         const category = appData.categories.find(c => c.id === editingCategoryId);
         const newPrices = [];
         perPiecePriceForm.querySelectorAll('input').forEach(input => {
@@ -1452,7 +1595,6 @@ document.addEventListener('DOMContentLoaded', () => {
         await saveState();
         renderAdminCategories();
         perPiecePriceModal.style.display = 'none';
-        alert('บันทึกราคาต่อชิ้นเรียบร้อยแล้ว');
     });
 
     const renderSubAdmins = () => {
@@ -1471,6 +1613,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const subAdminForm = document.getElementById('sub-admin-form');
     subAdminForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        showSaveFeedback(e.target.querySelector('button[type="submit"]'));
         const name = document.getElementById('sub-admin-name').value.trim();
         const pin = document.getElementById('sub-admin-pin').value;
         if (pin.length < 4) { alert('PIN ต้องมีอย่างน้อย 4 ตัวอักษร'); return; }
@@ -1484,13 +1627,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             if (appData.subAdmins.length >= 20) { alert('ไม่สามารถเพิ่มผู้ใช้ย่อยได้เกิน 20 คน'); return; }
             if (appData.subAdmins.find(sa => sa.pin === pin)) { alert('PIN นี้มีผู้ใช้งานแล้ว'); return; }
-            const newSubAdmin = { id: generateId(), name, pin, permissions: {'admin': true, 'stock': true, 'order-number': true, 'dashboard': true, 'manage-account': true} };
+            const newSubAdmin = { id: generateId(), name, pin, permissions: {'admin': true, 'festival': true, 'stock': true, 'order-number': true, 'dashboard': true, 'manage-account': true} };
             appData.subAdmins.push(newSubAdmin);
         }
         await saveState();
         resetSubAdminForm();
         renderSubAdmins();
-        alert('บันทึกข้อมูลผู้ใช้ย่อยเรียบร้อยแล้ว');
     });
 
     const resetSubAdminForm = () => {
@@ -1543,7 +1685,8 @@ document.addEventListener('DOMContentLoaded', () => {
         permissionModal.style.display = 'flex';
     });
     
-    document.getElementById('save-permissions-btn').addEventListener('click', async () => {
+    document.getElementById('save-permissions-btn').addEventListener('click', async (e) => {
+        showSaveFeedback(e.currentTarget);
         const subAdmin = appData.subAdmins.find(sa => sa.id === currentSubAdminPermissionsId);
         if (subAdmin) {
             const newPermissions = {};
@@ -1553,7 +1696,6 @@ document.addEventListener('DOMContentLoaded', () => {
             subAdmin.permissions = newPermissions;
             await saveState();
             permissionModal.style.display = 'none';
-            alert('บันทึกสิทธิ์เรียบร้อยแล้ว');
             if (loggedInUser && loggedInUser.id === currentSubAdminPermissionsId) renderAdminPanel();
         }
     });
@@ -1597,12 +1739,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    document.getElementById('save-menu-order-btn').addEventListener('click', async () => {
+    document.getElementById('save-menu-order-btn').addEventListener('click', async (e) => {
+        showSaveFeedback(e.currentTarget);
         appData.menuOrder = [...document.getElementById('reorder-menu-list').children].map(li => li.dataset.menu);
         await saveState();
         reorderMenuModal.style.display = 'none';
         renderAdminPanel();
-        alert('บันทึกการจัดเรียงเมนูเรียบร้อยแล้ว');
     });
 
     document.getElementById('close-reorder-menu-modal-btn').addEventListener('click', () => reorderMenuModal.style.display = 'none');
@@ -1622,8 +1764,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderOrderNumberView = (dateRange = []) => {
+        const confirmList = document.getElementById('confirm-orders-list');
         const activeList = document.getElementById('active-orders-list');
         const cancelledList = document.getElementById('cancelled-orders-list');
+        confirmList.innerHTML = '';
         activeList.innerHTML = '';
         cancelledList.innerHTML = '';
         const lang = appData.shopSettings.language;
@@ -1637,16 +1781,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const date = new Date(order.timestamp);
             const formattedDate = `${date.toLocaleDateString('th-TH')} ${date.toLocaleTimeString('th-TH')}`;
             const row = document.createElement('tr');
-            if (order.status === 'active') {
-                row.innerHTML = `<td>${order.id}</td><td>${formattedDate}</td><td>${order.total.toLocaleString()} บาท</td><td><button class="btn btn-info btn-small view-order-details" data-id="${order.id}">${translations[lang].viewDetailsBtn}</button><button class="btn btn-danger btn-small cancel-order" data-id="${order.id}">${translations[lang].cancelOrderBtn}</button></td>`;
+            if (order.status === 'new') {
+                row.innerHTML = `<td>${order.id}</td><td>${formattedDate}</td><td>${order.total.toLocaleString()} บาท</td><td><button class="btn btn-success btn-small confirm-order-action" data-id="${order.id}">${translations[lang].confirmBtn}</button><button class="btn btn-danger btn-small cancel-order-action" data-id="${order.id}">${translations[lang].cancelBtn}</button></td>`;
+                confirmList.appendChild(row);
+            } else if (order.status === 'active') {
+                row.innerHTML = `<td>${order.id}</td><td>${formattedDate}</td><td>${order.total.toLocaleString()} บาท</td><td><button class="btn btn-info btn-small view-order-details" data-id="${order.id}">${translations[lang].viewDetailsBtn}</button><button class="btn btn-danger btn-small cancel-order-action" data-id="${order.id}">${translations[lang].cancelOrderBtn}</button></td>`;
                 activeList.appendChild(row);
-            } else {
+            } else if (order.status === 'cancelled') {
                 row.innerHTML = `<td>${order.id}</td><td>${formattedDate}</td><td>${order.total.toLocaleString()} บาท</td><td><button class="btn btn-info btn-small view-order-details" data-id="${order.id}">${translations[lang].viewDetailsBtn}</button></td>`;
                 cancelledList.appendChild(row);
             }
         });
         document.querySelectorAll('.view-order-details').forEach(btn => btn.addEventListener('click', (e) => viewOrderDetails(e.target.dataset.id)));
-        document.querySelectorAll('.cancel-order').forEach(btn => btn.addEventListener('click', (e) => cancelOrder(e.target.dataset.id)));
+        document.querySelectorAll('.confirm-order-action').forEach(btn => btn.addEventListener('click', (e) => confirmOrderAction(e.target.dataset.id)));
+        document.querySelectorAll('.cancel-order-action').forEach(btn => btn.addEventListener('click', (e) => cancelOrderAction(e.target.dataset.id)));
     };
 
     const viewOrderDetails = (orderId) => {
@@ -1662,20 +1810,194 @@ document.addEventListener('DOMContentLoaded', () => {
         orderModal.style.display = 'flex';
     };
 
-    const cancelOrder = async (orderId) => {
-        if (confirm(`คุณต้องการยกเลิกออเดอร์เลขที่ ${orderId} ใช่หรือไม่?`)) {
-            const order = appData.analytics.orders.find(o => o.id === orderId);
-            if (order) {
+    const confirmOrderAction = async (orderId) => {
+        const order = appData.analytics.orders.find(o => o.id === orderId);
+        if (order) {
+            order.status = 'active';
+            await saveState();
+            renderOrderNumberView(orderDatePicker.selectedDates);
+        }
+    };
+
+    const cancelOrderAction = async (orderId) => {
+        const order = appData.analytics.orders.find(o => o.id === orderId);
+        if(!order) return;
+
+        if (order.status === 'new') {
+             if (confirm(`คุณต้องการลบออเดอร์ใหม่เลขที่ ${orderId} ทิ้งถาวรใช่หรือไม่?`)) {
+                appData.analytics.orders = appData.analytics.orders.filter(o => o.id !== orderId);
+                await saveState();
+                renderOrderNumberView(orderDatePicker.selectedDates);
+            }
+        } else if (order.status === 'active') {
+            if (confirm(`คุณต้องการยกเลิกออเดอร์เลขที่ ${orderId} ใช่หรือไม่?`)) {
                 order.status = 'cancelled';
                 await saveState();
                 renderOrderNumberView(orderDatePicker.selectedDates);
             }
         }
     };
+
+    // --- Festival Effects ---
+    let animationFrameId;
+    let rainDrops = [];
+    let snowFlakes = [];
+    let fireworks = [];
+    let lastFireworkTime = 0;
+
+    function resizeCanvas() {
+        festivalCanvas.width = window.innerWidth;
+        festivalCanvas.height = window.innerHeight;
+    }
+
+    function createRainDrop() {
+        return {
+            x: Math.random() * festivalCanvas.width,
+            y: Math.random() * -festivalCanvas.height,
+            length: Math.random() * 20 + 10,
+            speed: Math.random() * 5 + 2,
+            opacity: appData.shopSettings.festival.rain.opacity,
+        };
+    }
+
+    function createSnowFlake() {
+        return {
+            x: Math.random() * festivalCanvas.width,
+            y: Math.random() * -50,
+            radius: Math.random() * 3 + 1,
+            speed: Math.random() * 1 + 0.5,
+            drift: Math.random() * 2 - 1,
+            opacity: appData.shopSettings.festival.snow.opacity,
+        };
+    }
+    
+    function createFirework(x, y) {
+        const particleCount = 100;
+        const particles = [];
+        const angleStep = (Math.PI * 2) / particleCount;
+        const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: x, y: y,
+                angle: angleStep * i,
+                speed: Math.random() * 5 + 2,
+                friction: 0.95,
+                gravity: 0.1,
+                alpha: 1,
+                color: color
+            });
+        }
+        return { particles, opacity: appData.shopSettings.festival.fireworks.opacity };
+    }
+
+    function animateFestival() {
+        festivalCtx.clearRect(0, 0, festivalCanvas.width, festivalCanvas.height);
+        let activeEffects = 0;
+
+        // Rain
+        if (appData.shopSettings.festival.rain.enabled) {
+            activeEffects++;
+            while (rainDrops.length < appData.shopSettings.festival.rain.intensity) {
+                rainDrops.push(createRainDrop());
+            }
+            rainDrops.length = appData.shopSettings.festival.rain.intensity;
+            festivalCtx.strokeStyle = `rgba(174,194,224,${appData.shopSettings.festival.rain.opacity})`;
+            festivalCtx.lineWidth = 1;
+            rainDrops.forEach(drop => {
+                festivalCtx.beginPath();
+                festivalCtx.moveTo(drop.x, drop.y);
+                festivalCtx.lineTo(drop.x, drop.y + drop.length);
+                festivalCtx.stroke();
+                drop.y += drop.speed;
+                if (drop.y > festivalCanvas.height) {
+                    Object.assign(drop, createRainDrop(), { y: -20 });
+                }
+            });
+        } else {
+            rainDrops = [];
+        }
+
+        // Snow
+        if (appData.shopSettings.festival.snow.enabled) {
+            activeEffects++;
+            while (snowFlakes.length < appData.shopSettings.festival.snow.intensity) {
+                snowFlakes.push(createSnowFlake());
+            }
+            snowFlakes.length = appData.shopSettings.festival.snow.intensity;
+            festivalCtx.fillStyle = `rgba(255, 255, 255, ${appData.shopSettings.festival.snow.opacity})`;
+            snowFlakes.forEach(flake => {
+                festivalCtx.beginPath();
+                festivalCtx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+                festivalCtx.fill();
+                flake.y += flake.speed;
+                flake.x += flake.drift;
+                if (flake.y > festivalCanvas.height) {
+                    Object.assign(flake, createSnowFlake(), { y: -10 });
+                }
+            });
+        } else {
+            snowFlakes = [];
+        }
+
+        // Fireworks
+        if (appData.shopSettings.festival.fireworks.enabled) {
+            activeEffects++;
+            const now = Date.now();
+            const fireworkInterval = appData.shopSettings.festival.fireworks.intensity * 60 * 1000;
+            if (now - lastFireworkTime > fireworkInterval / 10) { // simplified for more frequent bursts
+                if (Math.random() < 0.05) {
+                    fireworks.push(createFirework(Math.random() * festivalCanvas.width, Math.random() * (festivalCanvas.height / 2)));
+                    lastFireworkTime = now;
+                }
+            }
+            fireworks.forEach((fw, index) => {
+                if (fw.particles.length === 0) {
+                    fireworks.splice(index, 1);
+                } else {
+                    fw.particles.forEach((p, pIndex) => {
+                        p.speed *= p.friction;
+                        p.x += Math.cos(p.angle) * p.speed;
+                        p.y += Math.sin(p.angle) * p.speed + p.gravity;
+                        p.alpha -= 0.02;
+                        if (p.alpha <= 0) {
+                            fw.particles.splice(pIndex, 1);
+                        } else {
+                            festivalCtx.globalAlpha = p.alpha * fw.opacity;
+                            festivalCtx.fillStyle = p.color;
+                            festivalCtx.fillRect(p.x, p.y, 2, 2);
+                        }
+                    });
+                    festivalCtx.globalAlpha = 1;
+                }
+            });
+        } else {
+            fireworks = [];
+        }
+
+
+        if (activeEffects > 0) {
+            animationFrameId = requestAnimationFrame(animateFestival);
+        } else {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
+    }
+
+    function initFestivalEffects() {
+        cancelAnimationFrame(animationFrameId);
+        const settings = appData.shopSettings.festival;
+        if (settings.rain.enabled || settings.snow.enabled || settings.fireworks.enabled) {
+            festivalCanvas.style.display = 'block';
+            resizeCanvas();
+            animateFestival();
+        } else {
+            festivalCanvas.style.display = 'none';
+        }
+    }
     
     const init = async () => {
-        await loadState();
         applyLoadingBackground();
+        await loadState();
         if (appData.categories.length > 0) {
             if (!appData.categories.find(c => c.id === activeCategoryId)) activeCategoryId = appData.categories[0].id;
             adminActiveCategoryId = activeCategoryId;
@@ -1684,5 +2006,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loader-overlay').style.display = 'none';
     };
 
+    window.addEventListener('resize', resizeCanvas);
     init();
 });
