@@ -15,14 +15,11 @@
         <div id="loader-background"></div>
         <div class="loader-content">
             <div class="spinner"></div>
-            <p data-translate-key="loadingMessage">กำลังดาวน์โหลดข้อมูลล่าสุด...</p>
-            <div class="progress-bar-container">
-                 <div class="progress-bar style-1"></div>
-            </div>
+            <p data-translate-key="loadingMessage">กำลังโหลดข้อมูลล่าสุด...</p>
+            <div class="progress-bar"></div>
         </div>
     </div>
     <div id="background-overlay"></div>
-    <div id="festival-effects-container"></div>
 
     <div class="floating-buttons-container">
         <button id="admin-gear-icon" style="display: block;">⚙️</button>
@@ -90,13 +87,6 @@
         
         <div id="admin-panel-view" class="view">
             <div class="admin-header">
-                <div class="system-status-toggle-wrapper">
-                    <label data-translate-key="systemStatusLabel">สถานะร้าน</label>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="system-status-toggle" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
                 <h2 data-translate-key="adminPanelTitle">Admin Panel</h2>
                 <div style="display:flex; gap: 10px;">
                     <button id="view-shop-btn" class="btn btn-secondary" data-translate-key="viewShopBtn">มุมมองหน้าร้าน</button>
@@ -105,6 +95,7 @@
             </div>
             <div class="admin-menu"></div>
 
+            <!-- UPDATE: Restructured Admin Content -->
             <div id="admin-menu-admin" class="admin-menu-content">
                 <div class="tab-group-container" id="admin-settings-tabs"></div>
                 <div class="card">
@@ -152,23 +143,9 @@
                             </div>
                         </div>
                         <button id="save-shop-info-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกข้อมูลร้าน</button>
-                        <span class="save-feedback"></span>
                     </div>
                     <div id="admin-sub-system-fonts" class="admin-sub-content">
                         <h2 data-translate-key="systemFontsTitle">System Fonts</h2>
-                        <div class="form-group">
-                            <label for="shop-name-font-size-slider"><span data-translate-key="shopNameFontSizeLabel">ขนาดฟอนต์ชื่อร้าน</span> <span id="shop-name-font-size-value">100</span>%</label>
-                            <input type="range" id="shop-name-font-size-slider" min="50" max="200" value="100">
-                        </div>
-                        <div class="form-group">
-                            <label for="slogan-font-size-slider"><span data-translate-key="sloganFontSizeLabel">ขนาดฟอนต์สโลแกน</span> <span id="slogan-font-size-value">100</span>%</label>
-                            <input type="range" id="slogan-font-size-slider" min="50" max="200" value="100">
-                        </div>
-                        <div class="form-group">
-                            <label for="global-font-size-slider"><span data-translate-key="globalFontSizeLabel">ขนาดฟอนต์ทั้งระบบ</span> <span id="global-font-size-value">100</span>%</label>
-                            <input type="range" id="global-font-size-slider" min="80" max="120" value="100">
-                        </div>
-                        <hr>
                         <div class="form-group">
                             <label for="shop-font" data-translate-key="shopNameFontLabel">ฟอนต์ชื่อร้าน</label>
                             <select id="shop-font"></select>
@@ -221,7 +198,6 @@
                             <input type="range" id="copyright-opacity" min="0" max="1" step="0.1" value="1">
                         </div>
                         <button id="save-system-fonts-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกการตั้งค่า</button>
-                        <span class="save-feedback"></span>
                     </div>
                     <div id="admin-sub-background" class="admin-sub-content">
                         <h2 data-translate-key="backgroundSettingsTitle">ตั้งค่าพื้นหลัง</h2>
@@ -239,7 +215,6 @@
                             </div>
                         </div>
                         <button id="save-background-settings-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกพื้นหลัง</button>
-                        <span class="save-feedback"></span>
                     </div>
                     <div id="admin-sub-loading-bg" class="admin-sub-content">
                         <h2 data-translate-key="loadingBackgroundTitle">พื้นหลัง Loading</h2>
@@ -251,81 +226,7 @@
                             <input type="range" id="loading-bg-opacity" min="0.1" max="1" step="0.05" value="0.7">
                             <button type="button" id="remove-loading-bg-btn" class="btn btn-danger btn-small" data-translate-key="removeBgBtn" style="margin-top: 10px;">ลบพื้นหลัง</button>
                         </div>
-                        <div class="form-group">
-                            <label for="loading-bar-style-select" data-translate-key="loadingBarStyleLabel">รูปแบบแถบดาวน์โหลด</label>
-                            <select id="loading-bar-style-select">
-                                <option value="style-1">แบบที่ 1</option>
-                                <option value="style-2">แบบที่ 2</option>
-                                <option value="style-3">แบบที่ 3</option>
-                                <option value="style-4">แบบที่ 4</option>
-                                <option value="style-5">แบบที่ 5</option>
-                                <option value="style-6">แบบที่ 6</option>
-                                <option value="style-7">แบบที่ 7</option>
-                                <option value="style-8">แบบที่ 8</option>
-                                <option value="style-9">แบบที่ 9</option>
-                                <option value="style-10">แบบที่ 10</option>
-                            </select>
-                        </div>
                         <button id="save-loading-bg-settings-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกพื้นหลัง Loading</button>
-                        <span class="save-feedback"></span>
-                    </div>
-                    <div id="admin-sub-festival" class="admin-sub-content">
-                        <h2 data-translate-key="festivalTitle">Festival Effects</h2>
-                        <div class="form-group">
-                            <div class="toggle-switch-container">
-                                <label data-translate-key="rainEffectLabel">เอฟเฟกต์ฝนตก</label>
-                                <label class="toggle-switch"><input type="checkbox" id="rain-effect-toggle"><span class="slider"></span></label>
-                            </div>
-                            <div class="effect-controls">
-                                <label><span data-translate-key="rainIntensityLabel">ความหนัก</span> <input type="range" id="rain-intensity" min="1" max="100" value="20"></label>
-                                <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="rain-opacity" min="0.1" max="1" step="0.1" value="1"></label>
-                            </div>
-                        </div>
-                        <hr>
-                         <div class="form-group">
-                            <div class="toggle-switch-container">
-                                <label data-translate-key="snowEffectLabel">เอฟเฟกต์หิมะตก</label>
-                                <label class="toggle-switch"><input type="checkbox" id="snow-effect-toggle"><span class="slider"></span></label>
-                            </div>
-                            <div class="effect-controls">
-                                <label><span data-translate-key="snowIntensityLabel">ความหนัก</span> <input type="range" id="snow-intensity" min="1" max="100" value="20"></label>
-                                <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="snow-opacity" min="0.1" max="1" step="0.1" value="1"></label>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="form-group">
-                            <div class="toggle-switch-container">
-                                <label data-translate-key="fireworksEffectLabel">เอฟเฟกต์พลุ</label>
-                                <label class="toggle-switch"><input type="checkbox" id="fireworks-effect-toggle"><span class="slider"></span></label>
-                            </div>
-                            <div class="effect-controls">
-                                <label><span data-translate-key="fireworksDurationLabel">ระยะเวลา (นาที)</span> <input type="number" id="fireworks-duration" min="1" max="10" value="1"></label>
-                                <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="fireworks-opacity" min="0.1" max="1" step="0.1" value="1"></label>
-                            </div>
-                        </div>
-                        <hr>
-                         <div class="form-group">
-                            <label for="custom-effect-select" data-translate-key="customEffectLabel">เอฟเฟกต์อื่นๆ</label>
-                            <select id="custom-effect-select">
-                                <option value="none">ไม่มี</option>
-                                <option value="bubbles">ฟองสบู่</option>
-                                <option value="leaves">ใบไม้ร่วง</option>
-                                <option value="sakura">ซากุระ</option>
-                                <option value="hearts">หัวใจ</option>
-                                <option value="stars">ดวงดาว</option>
-                            </select>
-                        </div>
-                        <button id="save-festival-settings-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกเอฟเฟกต์</button>
-                        <span class="save-feedback"></span>
-                    </div>
-                    <div id="admin-sub-system-status" class="admin-sub-content">
-                        <h2 data-translate-key="systemStatusSettingsTitle">ตั้งค่าการเปิด/ปิดระบบ</h2>
-                        <div class="form-group">
-                             <label for="maintenance-message-input" data-translate-key="maintenanceMessageLabel">ข้อความที่จะแสดงเมื่อปิดระบบ</label>
-                             <textarea id="maintenance-message-input" rows="3" placeholder="เช่น ขณะนี้ร้านค้ากำลังปิดปรับปรุง"></textarea>
-                        </div>
-                        <button id="save-system-status-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกสถานะ</button>
-                        <span class="save-feedback"></span>
                     </div>
                     <div id="admin-sub-pin" class="admin-sub-content">
                         <h2 data-translate-key="changePinTitle">เปลี่ยนรหัสผ่าน</h2>
@@ -334,7 +235,6 @@
                             <input type="password" id="new-pin" placeholder="กรอก PIN ใหม่อย่างน้อย 4 ตัว">
                         </div>
                         <button id="change-pin-btn" class="btn btn-primary" data-translate-key="saveNewPinBtn">บันทึก PIN ใหม่</button>
-                         <span class="save-feedback"></span>
                     </div>
                 </div>
             </div>
@@ -359,17 +259,20 @@
                                 <label for="cat-min-order" data-translate-key="minOrderLabel">จำนวนสั่งซื้อขั้นต่ำ</label>
                                 <input type="number" id="cat-min-order" value="30" min="0">
                             </div>
+                            <div class="form-group">
+                                <label data-translate-key="setPriceLabel">ตั้งค่าราคา</label>
+                                <div class="btn-group">
+                                    <button type="button" id="set-per-piece-price-btn" class="btn btn-info" data-translate-key="setPerPiecePriceBtn">ตั้งราคาต่อชิ้น</button>
+                                </div>
+                            </div>
                             <button type="submit" id="submit-cat-btn" class="btn btn-primary" data-translate-key="saveCategoryBtn">เพิ่ม/บันทึกหมวดหมู่</button>
                             <button type="button" id="cancel-cat-edit-btn" class="btn btn-secondary" style="display:none;" data-translate-key="cancelBtn">ยกเลิก</button>
-                            <span class="save-feedback"></span>
                         </form>
                         <hr style="margin: 20px 0;">
                         <h3 data-translate-key="categoryListTitle">รายการหมวดหมู่</h3>
                         <div class="table-wrapper">
                             <table id="admin-cat-table">
-                                <thead><tr><th data-translate-key="tableHeaderIcon">ไอค่อน</th><th data-translate-key="tableHeaderName">ชื่อ</th><th data-translate-key="tableHeaderMinOrder">ขั้นต่ำ</th>
-                                <th data-translate-key="tableHeaderPriceSettings">ตั้งค่าราคา</th>
-                                <th data-translate-key="tableHeaderManage">แก้ไข/ลบ</th></tr></thead>
+                                <thead><tr><th data-translate-key="tableHeaderIcon">ไอค่อน</th><th data-translate-key="tableHeaderName">ชื่อ</th><th data-translate-key="tableHeaderMinOrder">ขั้นต่ำ</th><th data-translate-key="tableHeaderPrice">ราคา</th><th data-translate-key="tableHeaderManage">แก้ไข/ลบ</th></tr></thead>
                                 <tbody id="admin-cat-list"></tbody>
                             </table>
                         </div>
@@ -412,10 +315,9 @@
                             </div>
                             <button type="submit" class="btn btn-primary" data-translate-key="saveProductBtn">บันทึกสินค้า</button>
                             <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="display:none;" data-translate-key="cancelEditBtn">ยกเลิกแก้ไข</button>
-                            <span class="save-feedback"></span>
                         </form>
                         <hr style="margin: 20px 0;">
-                        <div id="admin-product-tabs" class="category-tabs-horizontal card"></div>
+                        <div id="admin-product-tabs" class="card"></div>
                         <h3 id="admin-current-category-name"></h3>
                         <div class="table-wrapper">
                             <table id="admin-prod-table">
@@ -433,17 +335,6 @@
                     <label for="order-date-picker" data-translate-key="selectDateLabel">เลือกวันที่:</label>
                     <input type="text" id="order-date-picker" style="width: 150px;" placeholder="ดูออเดอร์ทั้งหมด">
                     <button id="reset-orders-btn" class="btn btn-danger btn-small" data-translate-key="resetDataBtn">รีเซ็ทข้อมูล</button>
-                </div>
-                 <div id="admin-sub-new-orders" class="admin-sub-content">
-                    <div class="card admin-section">
-                        <h2 data-translate-key="newOrdersTitle">ออเดอร์ใหม่</h2>
-                        <div class="table-wrapper">
-                            <table id="new-orders-table">
-                                <thead><tr><th data-translate-key="tableHeaderOrderNo">เลขออเดอร์</th><th data-translate-key="tableHeaderDateTime">วันที่/เวลา</th><th data-translate-key="tableHeaderTotal">ยอดรวม</th><th data-translate-key="tableHeaderManage">จัดการ</th></tr></thead>
-                                <tbody id="new-orders-list"></tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
                 <div id="admin-sub-active-orders" class="admin-sub-content">
                     <div class="card admin-section">
@@ -538,34 +429,6 @@
                     <div class="chart-container"><canvas id="productSalesChart"></canvas></div>
                 </div>
             </div>
-            
-            <div id="admin-menu-tax" class="admin-menu-content" style="display: none;">
-                <div class="card admin-section">
-                     <h2 data-translate-key="taxCalculationTitle">คำนวณภาษี (ภ.ง.ด. 90/94)</h2>
-                     <p data-translate-key="taxInfoText">ระบบจะดึงยอดขายรวมทั้งปีมาคำนวณเบื้องต้น กรุณากรอกค่าลดหย่อนอื่นๆ เพื่อความถูกต้อง</p>
-                     <div class="tax-grid">
-                        <div class="form-group">
-                            <label for="tax-total-sales" data-translate-key="taxTotalSalesLabel">รายได้รวมจากระบบ (ทั้งปี)</label>
-                            <input type="text" id="tax-total-sales" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="tax-other-income" data-translate-key="taxOtherIncomeLabel">รายได้อื่นๆ</label>
-                            <input type="number" id="tax-other-income" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label for="tax-deduction" data-translate-key="taxDeductionLabel">ค่าลดหย่อนส่วนตัวและอื่นๆ</label>
-                            <input type="number" id="tax-deduction" placeholder="เช่น ค่าลดหย่อนส่วนตัว, ประกัน, ดอกเบี้ยบ้าน" value="60000">
-                        </div>
-                     </div>
-                     <button id="calculate-tax-btn" class="btn btn-primary" data-translate-key="calculateTaxBtn">คำนวณภาษี</button>
-                     <hr style="margin: 20px 0;">
-                     <div id="tax-result-container" style="display:none;">
-                        <h3 data-translate-key="taxResultTitle">ผลการคำนวณภาษี</h3>
-                        <p id="tax-net-income"></p>
-                        <p id="tax-total-tax"></p>
-                     </div>
-                </div>
-            </div>
 
             <div id="admin-menu-manage-account" class="admin-menu-content" style="display: none;">
                 <div class="card admin-section">
@@ -584,7 +447,6 @@
                             </div>
                             <button type="submit" id="add-sub-admin-btn" class="btn btn-primary" data-translate-key="addUserBtn">เพิ่มผู้ใช้</button>
                             <button type="button" id="cancel-sub-admin-edit" class="btn btn-secondary" style="display:none;" data-translate-key="cancelBtn">ยกเลิก</button>
-                             <span class="save-feedback"></span>
                         </form>
                         <button type="button" id="view-permissions-btn" class="btn btn-info" style="font-size: 1.5rem; padding: 10px; height: 50px;">
                             <span class="view-icon">👁️</span>
@@ -604,13 +466,6 @@
         </div>
     </div>
     
-    <div id="maintenance-overlay" class="view">
-        <div class="maintenance-content">
-            <h1 id="maintenance-shop-name">WARISHAYDAY</h1>
-            <p id="maintenance-message"></p>
-        </div>
-    </div>
-
     <div id="copy-success-modal" class="modal">
         <div class="copy-success-content">
             <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
@@ -679,15 +534,28 @@
         </div>
     </div>
 
-    <div id="price-settings-modal" class="modal">
+    <div id="per-piece-price-modal" class="modal">
         <div class="modal-content price-list-modal-content">
-            <h2 data-translate-key="priceSettingsTitle">ตั้งค่าราคา</h2>
-            <p data-translate-key="priceSettingsInfo">กำหนดราคาสำหรับหมวดหมู่: <strong id="price-settings-category-name"></strong></p>
+            <h2 data-translate-key="setPerPiecePriceTitle">ตั้งราคาต่อชิ้น</h2>
+            <p data-translate-key="setPerPiecePriceInfo">กำหนดราคาสำหรับทุกๆ 10 ชิ้น</p>
             <form id="per-piece-price-form"></form>
             <hr>
             <div class="modal-actions">
-                <button id="save-price-settings-btn" class="btn btn-primary" data-translate-key="savePriceBtn">บันทึกราคา</button>
-                <button id="close-price-settings-modal-btn" class="btn btn-secondary" data-translate-key="closeBtn">ปิด</button>
+                <button id="save-per-piece-price-btn" class="btn btn-primary" data-translate-key="savePriceBtn">บันทึกราคา</button>
+                <button id="close-per-piece-price-modal-btn" class="btn btn-secondary" data-translate-key="closeBtn">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bulk-price-modal" class="modal">
+        <div class="modal-content price-list-modal-content">
+            <h2 data-translate-key="setBulkPriceTitle">ตั้งราคาเหมา</h2>
+            <p data-translate-key="setBulkPriceInfo">กำหนดราคาสำหรับช่วงจำนวนชิ้น</p>
+            <form id="bulk-price-form"></form>
+            <hr>
+            <div class="modal-actions">
+                <button id="save-bulk-price-btn" class="btn btn-primary" data-translate-key="savePriceBtn">บันทึกราคา</button>
+                <button id="close-bulk-price-modal-btn" class="btn btn-secondary" data-translate-key="closeBtn">ปิด</button>
             </div>
         </div>
     </div>
