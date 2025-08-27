@@ -39,21 +39,17 @@ document.addEventListener('DOMContentLoaded', () => {
             lowStockThreshold: 50,
             copyrightText: "Copyright © 2025 Warishayday", 
             copyrightOpacity: 1,
-            // NEW: Font size settings
             globalFontSize: 100,
             shopNameFontSize: 100,
             sloganFontSize: 100,
-            // NEW: Festival effects settings
             festivalEffects: {
                 rain: { enabled: false, intensity: 20, opacity: 1 },
                 snow: { enabled: false, intensity: 20, opacity: 1 },
                 fireworks: { enabled: false, duration: 1, opacity: 1 },
                 custom: 'none'
             },
-            // NEW: System status settings
             systemOpen: true,
             maintenanceMessage: "ขณะนี้ร้านค้ากำลังปิดปรับปรุงชั่วคราว ขออภัยในความไม่สะดวกครับ",
-            // NEW: Loading bar style
             loadingBarStyle: 'style-1'
         },
         analytics: {
@@ -64,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
             totalSales: 0,
             monthlyProfit: 0
         },
-        // UPDATE: Add 'tax' to menu order
         menuOrder: [
             'admin', 'stock', 'order-number', 'dashboard', 'tax', 'manage-account'
         ]
@@ -81,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: "Trirong", value: "'Trirong', serif" },
     ];
     
-    // UPDATE: Add new translation keys
     const translations = {
         th: {
             loadingMessage: "กำลังดาวน์โหลดข้อมูลล่าสุด...",
@@ -177,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // UPDATE: Add new menu names and sub-menus
     const MENU_NAMES = {
         'admin': 'menuAdmin', 'stock': 'menuStock', 'order-number': 'menuOrderNumber',
         'dashboard': 'menuDashboard', 'tax': 'menuTax', 'manage-account': 'menuManageAccount'
@@ -221,7 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
             const serverData = await response.json();
-            // Deep merge server data with default structure to ensure new properties are added
             const defaultAppData = {
                 cart: {},
                 shopSettings: {
@@ -247,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
             appData.shopSettings = {...defaultAppData.shopSettings, ...(serverData.shopSettings || {})};
             appData.shopSettings.festivalEffects = {...defaultAppData.shopSettings.festivalEffects, ...(serverData.shopSettings?.festivalEffects || {})};
             appData.analytics.orders = appData.analytics.orders || [];
-            // Ensure all orders have a status
             appData.analytics.orders.forEach(o => { if(!o.status) o.status = 'active'; });
             appData.categories.forEach(cat => { if (cat.minOrderQuantity === undefined) cat.minOrderQuantity = 30; });
             appData.products.forEach(prod => {
@@ -256,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const validMenus = new Set(defaultAppData.menuOrder);
             appData.menuOrder = (appData.menuOrder || defaultAppData.menuOrder).filter(item => validMenus.has(item));
-            defaultAppData.menuOrder.forEach(item => { if (!appData.menuOrder.includes(item)) appData.menuOrder.push(item); }); // Add new menus if missing
+            defaultAppData.menuOrder.forEach(item => { if (!appData.menuOrder.includes(item)) appData.menuOrder.push(item); });
             appData.subAdmins.forEach(sa => {
                 if (!sa.permissions) {
                     sa.permissions = {};
@@ -280,7 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // NEW: UI Responsiveness helper for save buttons
     const showSaveFeedback = (buttonEl) => {
         const feedbackEl = buttonEl.nextElementSibling;
         if (feedbackEl && feedbackEl.classList.contains('save-feedback')) {
@@ -343,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const datePicker = document.getElementById('date-picker');
     let orderDatePicker, fp;
     let selectedDate = new Date().toISOString().slice(0, 10);
-    let festivalIntervals = {}; // To store intervals for effects
+    let festivalIntervals = {};
 
     // =================================================================================
     // ===== UI RENDERING & THEME APPLICATION =====
@@ -382,12 +372,10 @@ document.addEventListener('DOMContentLoaded', () => {
             loaderBg.style.backgroundImage = 'none';
             loaderOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
         }
-        // Apply loading bar style
         const progressBar = document.querySelector('.progress-bar-container .progress-bar');
         if(progressBar) progressBar.className = `progress-bar ${appData.shopSettings.loadingBarStyle}`;
     };
     
-    // NEW: Function to apply font size changes
     const applyFontSizes = () => {
         const root = document.documentElement;
         root.style.setProperty('--global-font-size-multiplier', appData.shopSettings.globalFontSize / 100);
@@ -462,7 +450,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
         }
         
-        // Add fall animation if not already present
         if (!document.getElementById('fall-animation')) {
             const styleSheet = document.createElement("style");
             styleSheet.id = 'fall-animation';
@@ -475,7 +462,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderFestivalEffects = () => {
-        // Clear existing effects and intervals
         festivalContainer.innerHTML = '';
         Object.values(festivalIntervals).forEach(clearInterval);
         festivalIntervals = {};
@@ -493,7 +479,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 createEffectElement('snow');
             }, 1000 / effects.snow.intensity);
         }
-        // Add other effects (fireworks, custom) here if needed
     };
 
     // =================================================================================
@@ -517,11 +502,6 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.className = `tab ${cat.id === activeCategoryId ? 'active' : ''}`;
             tab.dataset.id = cat.id;
             tab.innerHTML = `${cat.icon ? `<img src="${cat.icon}" alt="${cat.name}">` : ''}<span>${cat.name}</span>`;
-            tab.addEventListener('click', () => {
-                activeCategoryId = cat.id;
-                searchBox.value = '';
-                renderCustomerView();
-            });
             categoryTabsContainer.appendChild(tab);
         });
     };
@@ -691,6 +671,8 @@ document.addEventListener('DOMContentLoaded', () => {
             reorderBtn.id = 'reorder-menu-btn';
             reorderBtn.textContent = translations[lang].editMenuOrderBtn;
             adminMenuContainer.appendChild(reorderBtn);
+            // FIX: Event listener for this button needs to be handled by delegation or re-added.
+            // For simplicity, we'll re-add it here as it's a single button.
             reorderBtn.addEventListener('click', renderReorderMenuModal);
         }
     };
@@ -707,10 +689,6 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.className = `tab ${subKey === activeAdminSubMenus[menuKey] ? 'active' : ''}`;
             tab.dataset.sub = subKey;
             tab.textContent = translations[lang][subMenuConfig[subKey]];
-            tab.addEventListener('click', () => {
-                activeAdminSubMenus[menuKey] = subKey;
-                renderAdminPanel();
-            });
             container.appendChild(tab);
         }
     };
@@ -719,9 +697,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.admin-menu-content').forEach(el => el.style.display = 'none');
         const isSuperAdmin = loggedInUser && loggedInUser.isSuper;
         renderAdminMenu();
-        document.querySelectorAll('.admin-menu .menu-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.querySelector(`.admin-menu .menu-btn[data-menu="${activeAdminMenu}"]`);
-        if (activeBtn) activeBtn.classList.add('active');
 
         const permissions = (loggedInUser && loggedInUser.permissions) || {};
         const canAccess = (menu) => isSuperAdmin || permissions[menu];
@@ -906,6 +881,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
     
+    const renderAdminProductTabs = () => {
+        const tabsContainer = document.getElementById('admin-product-tabs');
+        tabsContainer.innerHTML = '';
+        appData.categories.forEach(cat => {
+            const tab = document.createElement('div');
+            tab.className = `tab ${cat.id === adminActiveCategoryId ? 'active' : ''}`;
+            tab.dataset.id = cat.id;
+            tab.textContent = cat.name;
+            tabsContainer.appendChild(tab);
+        });
+    };
+
     const renderAdminProducts = () => {
         const list = document.getElementById('admin-prod-list');
         list.innerHTML = '';
@@ -972,7 +959,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const deductions = parseFloat(document.getElementById('tax-deduction').value) || 0;
         
         const totalIncome = yearlySales + otherIncome;
-        const assessableIncome = totalIncome * 0.4; // หักค่าใช้จ่ายเหมา 60% (คงเหลือ 40%)
+        const assessableIncome = totalIncome * 0.4;
         const netIncome = assessableIncome - deductions;
 
         if (netIncome <= 0) {
@@ -1008,6 +995,60 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===== EVENT LISTENERS =====
     // =================================================================================
     const addEventListeners = () => {
+        // FIX: Use event delegation for main admin menu
+        adminMenuContainer.addEventListener('click', (e) => {
+            const menuBtn = e.target.closest('.menu-btn');
+            if (menuBtn && menuBtn.dataset.menu) {
+                activeAdminMenu = menuBtn.dataset.menu;
+                renderAdminPanel();
+            }
+        });
+
+        // FIX: Use event delegation for sub-menus
+        document.getElementById('admin-settings-tabs').addEventListener('click', (e) => {
+            const tab = e.target.closest('.tab');
+            if (tab && tab.dataset.sub) {
+                activeAdminSubMenus.admin = tab.dataset.sub;
+                renderAdminPanel();
+            }
+        });
+
+        document.getElementById('admin-stock-tabs').addEventListener('click', (e) => {
+            const tab = e.target.closest('.tab');
+            if (tab && tab.dataset.sub) {
+                activeAdminSubMenus.stock = tab.dataset.sub;
+                renderAdminPanel();
+            }
+        });
+        
+        document.getElementById('admin-order-tabs').addEventListener('click', (e) => {
+            const tab = e.target.closest('.tab');
+            if (tab && tab.dataset.sub) {
+                activeAdminSubMenus['order-number'] = tab.dataset.sub;
+                renderAdminPanel();
+            }
+        });
+        
+        // FIX: Use event delegation for dynamically generated product category tabs
+        document.getElementById('admin-product-tabs').addEventListener('click', (e) => {
+            const tab = e.target.closest('.tab');
+            if (tab && tab.dataset.id) {
+                adminActiveCategoryId = parseInt(tab.dataset.id);
+                renderAdminProducts();
+                renderAdminProductTabs(); // Re-render to update active state
+            }
+        });
+
+        // FIX: Use event delegation for customer category tabs
+        categoryTabsContainer.addEventListener('click', (e) => {
+            const tab = e.target.closest('.tab');
+            if (tab && tab.dataset.id) {
+                activeCategoryId = parseInt(tab.dataset.id);
+                searchBox.value = '';
+                renderCustomerView();
+            }
+        });
+
         langToggleBtn.addEventListener('click', async () => {
             const newLang = appData.shopSettings.language === 'th' ? 'en' : 'th';
             setLanguage(newLang);
@@ -1064,7 +1105,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const totalOrderPriceText = orderText.match(/ยอดรวมทั้งหมด: ([\d,]+) บาท/);
                 const totalOrderPrice = totalOrderPriceText ? parseFloat(totalOrderPriceText[1].replace(/,/g, '')) : 0;
                 if (!isNaN(totalOrderPrice) && totalOrderPrice > 0) {
-                    // UPDATE: Set status to 'new'
                     const newOrder = { id: orderDetails.dataset.orderNumber, timestamp: new Date().toISOString(), total: totalOrderPrice, items: { ...appData.cart }, status: 'new' };
                     appData.analytics.orders.push(newOrder);
                     for (const prodId in appData.cart) {
@@ -1076,7 +1116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 appData.cart = {};
                 await saveState();
-                orderModal.style.display = 'none'; // Close modal first
+                orderModal.style.display = 'none';
                 const successModal = document.getElementById('copy-success-modal');
                 successModal.style.display = 'flex';
                 setTimeout(() => {
@@ -1161,18 +1201,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Admin Panel Save Buttons with UI Feedback
-        document.querySelectorAll('#admin-panel-view .btn-primary').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                if(e.target.id.startsWith('save-') || e.target.id === 'change-pin-btn' || e.target.id === 'add-sub-admin-btn' || e.target.id === 'submit-cat-btn' || e.target.classList.contains('saveProductBtn')) {
-                    e.preventDefault();
-                    showSaveFeedback(e.target);
-                    // The actual save logic is in separate event listeners
-                }
-            });
+        document.getElementById('save-shop-info-btn').addEventListener('click', async (e) => {
+            showSaveFeedback(e.target);
+            appData.shopSettings.shopName = document.getElementById('shop-name').value;
+            appData.shopSettings.slogan = document.getElementById('shop-slogan').value;
+            appData.shopSettings.managerName = document.getElementById('manager-name').value;
+            appData.shopSettings.shareholderName = document.getElementById('shareholder-name').value;
+            appData.shopSettings.orderNumberFormat = document.getElementById('order-format-select').value;
+            await saveState();
+            applyTheme();
         });
 
-        // Font Size Sliders
         ['global-font-size', 'shop-name-font-size', 'slogan-font-size'].forEach(id => {
             const slider = document.getElementById(`${id}-slider`);
             const valueDisplay = document.getElementById(`${id}-value`);
@@ -1203,7 +1242,6 @@ document.addEventListener('DOMContentLoaded', () => {
             applyTheme();
         });
 
-        // Festival Settings
         document.getElementById('save-festival-settings-btn').addEventListener('click', async (e) => {
             showSaveFeedback(e.target);
             const effects = appData.shopSettings.festivalEffects;
@@ -1217,7 +1255,6 @@ document.addEventListener('DOMContentLoaded', () => {
             renderFestivalEffects();
         });
 
-        // System Status
         document.getElementById('system-status-toggle').addEventListener('change', async (e) => {
             appData.shopSettings.systemOpen = e.target.checked;
             checkSystemStatus();
@@ -1230,7 +1267,6 @@ document.addEventListener('DOMContentLoaded', () => {
             await saveState();
         });
 
-        // Loading Bar Style
         document.getElementById('save-loading-bg-settings-btn').addEventListener('click', async (e) => {
             showSaveFeedback(e.target);
             appData.shopSettings.loadingBackgroundOpacity = document.getElementById('loading-bg-opacity').value;
@@ -1240,10 +1276,8 @@ document.addEventListener('DOMContentLoaded', () => {
             applyLoadingBackground();
         });
         
-        // Tax Calculator
         document.getElementById('calculate-tax-btn').addEventListener('click', calculateTax);
         
-        // Order Number View Actions
         document.getElementById('admin-menu-order-number').addEventListener('click', async (e) => {
             const target = e.target;
             const orderId = target.dataset.id;
@@ -1274,27 +1308,65 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        // Price Settings Modal
         document.getElementById('admin-cat-list').addEventListener('click', (e) => {
-            const priceBtn = e.target.closest('.btn-price-settings');
-            if(priceBtn) {
-                const id = parseInt(priceBtn.dataset.id);
+            const target = e.target.closest('button');
+            if(!target) return;
+            const id = parseInt(target.dataset.id);
+
+            if (target.classList.contains('btn-price-settings')) {
                 renderPriceSettingsModal(id);
+            } else if (target.classList.contains('btn-cat-edit')) {
+                const category = appData.categories.find(c => c.id === id);
+                if (category) {
+                    editingCategoryId = id;
+                    document.getElementById('cat-name').value = category.name;
+                    document.getElementById('cat-min-order').value = category.minOrderQuantity;
+                    document.getElementById('submit-cat-btn').textContent = translations[appData.shopSettings.language].saveBtn;
+                    document.getElementById('cancel-cat-edit-btn').style.display = 'inline-block';
+                }
+            } else if (target.classList.contains('btn-cat-delete')) {
+                deleteCategory(id);
             }
-             const editBtn = e.target.closest('.btn-cat-edit');
-             const deleteBtn = e.target.closest('.btn-cat-delete');
-             if (editBtn) {
-                 const id = parseInt(editBtn.dataset.id);
-                 const category = appData.categories.find(c => c.id === id);
-                 if (category) {
-                     editingCategoryId = id;
-                     document.getElementById('cat-name').value = category.name;
-                     document.getElementById('cat-min-order').value = category.minOrderQuantity;
-                     document.getElementById('submit-cat-btn').textContent = translations[appData.shopSettings.language].saveBtn;
-                     document.getElementById('cancel-cat-edit-btn').style.display = 'inline-block';
-                 }
-             }
-             if (deleteBtn) deleteCategory(parseInt(deleteBtn.dataset.id));
+        });
+
+        document.getElementById('save-price-settings-btn').addEventListener('click', async () => {
+            const category = appData.categories.find(c => c.id === editingCategoryId);
+            if(category) {
+                const newPrices = [];
+                document.getElementById('per-piece-price-form').querySelectorAll('input').forEach(input => {
+                    const quantity = parseInt(input.dataset.quantity);
+                    const price = parseInt(input.value);
+                    if (!isNaN(price) && price > 0) newPrices.push({ quantity, price });
+                });
+                category.perPiecePrices = newPrices;
+                await saveState();
+                renderAdminCategories();
+                document.getElementById('price-settings-modal').style.display = 'none';
+            }
+        });
+        document.getElementById('close-price-settings-modal-btn').addEventListener('click', () => {
+            document.getElementById('price-settings-modal').style.display = 'none';
+        });
+
+        document.getElementById('submit-cat-btn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            showSaveFeedback(e.target);
+            const name = document.getElementById('cat-name').value.trim();
+            const minOrder = parseInt(document.getElementById('cat-min-order').value) || 0;
+            if (!name) { alert('กรุณากรอกชื่อหมวดหมู่'); return; }
+            let iconData = null;
+            if (catIconFile) iconData = await readFileAsBase64(catIconFile);
+            if (editingCategoryId) {
+                const index = appData.categories.findIndex(c => c.id === editingCategoryId);
+                if (index !== -1) {
+                    appData.categories[index].name = name;
+                    appData.categories[index].minOrderQuantity = minOrder;
+                    if (iconData) appData.categories[index].icon = iconData;
+                }
+            } else appData.categories.push({ id: generateId(), name, icon: iconData, perPiecePrices: [], minOrderQuantity: minOrder });
+            await saveState();
+            resetCategoryForm();
+            renderAdminPanel();
         });
     };
     
@@ -1317,25 +1389,18 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.display = 'flex';
     };
 
-    document.getElementById('save-price-settings-btn').addEventListener('click', async () => {
-        const category = appData.categories.find(c => c.id === editingCategoryId);
-        if(category) {
-            const newPrices = [];
-            document.getElementById('per-piece-price-form').querySelectorAll('input').forEach(input => {
-                const quantity = parseInt(input.dataset.quantity);
-                const price = parseInt(input.value);
-                if (!isNaN(price) && price > 0) newPrices.push({ quantity, price });
-            });
-            category.perPiecePrices = newPrices;
+    const deleteCategory = async (id) => {
+        if (confirm('การลบหมวดหมู่จะลบสินค้าทั้งหมดในหมวดหมู่นั้นด้วย ยืนยันหรือไม่?')) {
+            appData.categories = appData.categories.filter(c => c.id !== id);
+            appData.products = appData.products.filter(p => p.categoryId !== id);
             await saveState();
-            renderAdminCategories();
-            document.getElementById('price-settings-modal').style.display = 'none';
+            renderAdminPanel();
         }
-    });
-    document.getElementById('close-price-settings-modal-btn').addEventListener('click', () => {
-        document.getElementById('price-settings-modal').style.display = 'none';
-    });
-
+    };
+    const resetCategoryForm = () => {
+        editingCategoryId = null;
+        document.getElementById('category-form').reset();
+    };
 
     // =================================================================================
     // ===== INITIALIZATION =====
@@ -1352,12 +1417,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const init = async () => {
-        applyLoadingBackground(); // Apply loading theme immediately
+        applyLoadingBackground();
         await loadState();
-        checkSystemStatus(); // Check if shop is open before rendering anything else
+        checkSystemStatus();
         if (!appData.shopSettings.systemOpen) {
              document.getElementById('loader-overlay').style.display = 'none';
-             return; // Stop initialization if shop is closed
+             return;
         }
         
         if (appData.categories.length > 0) {
@@ -1374,6 +1439,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const populateFontSelectors = () => {
         const fontSelect = document.getElementById('shop-font');
         const globalFontSelect = document.getElementById('shop-global-font');
+        fontSelect.innerHTML = ''; globalFontSelect.innerHTML = '';
         FONT_OPTIONS.forEach(font => {
             const option = document.createElement('option');
             option.value = font.value;
