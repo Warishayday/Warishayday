@@ -1,9 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const API_ENDPOINT = '/.netlify/functions/data';
 
-    // =================================================================================
-    // ===== DATA STRUCTURE (appData) =====
-    // =================================================================================
     let appData = {
         categories: [],
         products: [],
@@ -13,8 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
         shopSettings: {
             shopName: "WARISHAYDAY",
             slogan: "ร้านค้าไอเท็ม Hay Day",
-            managerName: "", 
-            shareholderName: "", 
+            managerName: "", // NEW
+            shareholderName: "", // NEW
             themeColor: "#28a745",
             fontFamily: "'Kanit', sans-serif",
             globalFontFamily: "'Kanit', sans-serif",
@@ -37,20 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingBackgroundOpacity: 0.7,
             language: 'th',
             lowStockThreshold: 50,
-            copyrightText: "Copyright © 2025 Warishayday", 
-            copyrightOpacity: 1,
-            globalFontSize: 100,
-            shopNameFontSize: 100,
-            sloganFontSize: 100,
-            festivalEffects: {
-                rain: { enabled: false, intensity: 20, opacity: 1 },
-                snow: { enabled: false, intensity: 20, opacity: 1 },
-                fireworks: { enabled: false, duration: 1, opacity: 1 },
-                custom: 'none'
-            },
-            systemOpen: true,
-            maintenanceMessage: "ขณะนี้ร้านค้ากำลังปิดปรับปรุงชั่วคราว ขออภัยในความไม่สะดวกครับ",
-            loadingBarStyle: 'style-1'
+            copyrightText: "Copyright © 2025 Warishayday", // NEW
+            copyrightOpacity: 1, // NEW
         },
         analytics: {
             dailyTraffic: Array(7).fill(0),
@@ -61,41 +46,50 @@ document.addEventListener('DOMContentLoaded', () => {
             monthlyProfit: 0
         },
         menuOrder: [
-            'admin', 'stock', 'order-number', 'dashboard', 'tax', 'manage-account'
+            'admin', 'stock', 'order-number', 'dashboard', 'manage-account'
         ]
     };
 
-    // =================================================================================
-    // ===== FONT & TRANSLATION DATA =====
-    // =================================================================================
     const FONT_OPTIONS = [
-        { name: "Kanit", value: "'Kanit', sans-serif" }, { name: "Chakra Petch", value: "'Chakra Petch', sans-serif" },
-        { name: "IBM Plex Sans Thai", value: "'IBM Plex Sans Thai', sans-serif" }, { name: "Sarabun", value: "'Sarabun', sans-serif" },
-        { name: "Prompt", value: "'Prompt', sans-serif" }, { name: "Mali", value: "'Mali', sans-serif" },
-        { name: "Anuphan", value: "'Anuphan', sans-serif" }, { name: "Taviraj", value: "'Taviraj', serif" },
+        { name: "Kanit", value: "'Kanit', sans-serif" },
+        { name: "Chakra Petch", value: "'Chakra Petch', sans-serif" },
+        { name: "IBM Plex Sans Thai", value: "'IBM Plex Sans Thai', sans-serif" },
+        { name: "Sarabun", value: "'Sarabun', sans-serif" },
+        { name: "Prompt", value: "'Prompt', sans-serif" },
+        { name: "Mali", value: "'Mali', sans-serif" },
+        { name: "Anuphan", value: "'Anuphan', sans-serif" },
+        { name: "Taviraj", value: "'Taviraj', serif" },
         { name: "Trirong", value: "'Trirong', serif" },
     ];
     
     const translations = {
         th: {
-            loadingMessage: "กำลังดาวน์โหลดข้อมูลล่าสุด...",
+            loadingMessage: "กำลังโหลดข้อมูลล่าสุด...",
             closeBtn: "ปิด", cancelBtn: "ยกเลิก", confirmBtn: "ยืนยัน", saveBtn: "บันทึก", editBtn: "แก้ไข", deleteBtn: "ลบ",
             searchPlaceholder: "ค้นหาสินค้า...", itemsListTitle: "รายการสินค้า", tableHeaderItem: "สินค้า", tableHeaderLevel: "เลเวล", tableHeaderQuantity: "จำนวน", tableHeaderManage: "จัดการ",
             viewOrderBtn: "รายการสั่งซื้อ", confirmOrderBtn: "ยืนยันสั่งซื้อ", totalAmount: "ยอดรวม",
             adminLoginTitle: "เข้าสู่ระบบหลังบ้าน", pinLabel: "PIN", loginBtn: "เข้าสู่ระบบ", backToShopBtn: "กลับหน้าหลักสั่งสินค้า", invalidPinError: "PIN ไม่ถูกต้อง!",
             adminPanelTitle: "Admin Panel", viewShopBtn: "มุมมองหน้าร้าน", logoutBtn: "ออกจากระบบ",
-            menuAdmin: "ตั้งค่าร้าน", menuStock: "สต๊อกสินค้า", menuOrderNumber: "Order Number", menuDashboard: "Dashboard", menuTax: "ตรวจสอบภาษี", menuManageAccount: "Manage account", editMenuOrderBtn: "EDIT",
-            shopInfoTitle: "ข้อมูลร้าน", systemFontsTitle: "System Fonts", fontPreviewText: "ตัวอย่างฟอนต์ระบบ",
-            shopNameLabel: "ชื่อร้านค้า", shopSloganLabel: "สโลแกนร้าน", managerNameLabel: "ชื่อผู้จัดการระบบ", shareholderNameLabel: "ชื่อผู้ถือหุ้นใหญ่",
-            globalFontLabel: "ฟอนต์ระบบทั้งหมด", shopNameFontLabel: "ฟอนต์ชื่อร้าน", enableEffectLabel: "เปิดใช้เอฟเฟกต์ชื่อร้าน",
-            effectOffsetX: "เงาแนวนอน (X)", effectOffsetY: "เงาแนวตั้ง (Y)", effectBlur: "ความเบลอ", effectColor: "สีเงา",
+            menuAdmin: "ตั้งค่าร้าน", menuStock: "สต๊อกสินค้า", menuOrderNumber: "Order Number", menuDashboard: "Dashboard", menuManageAccount: "Manage account", editMenuOrderBtn: "EDIT",
+            
+            shopInfoTitle: "ข้อมูลร้าน",
+            systemFontsTitle: "System Fonts",
+            fontPreviewText: "ตัวอย่างฟอนต์ระบบ",
+            shopNameLabel: "ชื่อร้านค้า", shopSloganLabel: "สโลแกนร้าน", 
+            managerNameLabel: "ชื่อผู้จัดการระบบ",
+            shareholderNameLabel: "ชื่อผู้ถือหุ้นใหญ่",
+            globalFontLabel: "ฟอนต์ระบบทั้งหมด", shopNameFontLabel: "ฟอนต์ชื่อร้าน",
+            enableEffectLabel: "เปิดใช้เอฟเฟกต์ชื่อร้าน", effectOffsetX: "เงาแนวนอน (X)", effectOffsetY: "เงาแนวตั้ง (Y)", effectBlur: "ความเบลอ", effectColor: "สีเงา",
             orderFormatLabel: "รูปแบบเลขที่ออเดอร์", useLogoLabel: "ใช้โลโก้", uploadLogoLabel: "อัปโหลดโลโก้ (PNG)",
             backgroundSettingsTitle: "ตั้งค่าพื้นหลัง", uploadBgLabel: "อัปโหลดภาพพื้นหลัง", bgOpacityLabel: "ความโปร่งใส (จาง-ชัด)", bgBlurLabel: "ความเบลอ (น้อย-มาก)",
             removeBgBtn: "ลบพื้นหลัง", previewBgBtn: "ดูตัวอย่าง", themeColorLabel: "ธีมสี (Theme)", saveSettingsBtn: "บันทึกการตั้งค่า",
-            copyrightTextLabel: "ข้อความ Copyright", copyrightOpacityLabel: "ความคมชัด", changePinTitle: "เปลี่ยนรหัสผ่าน", newPinLabel: "PIN ใหม่", saveNewPinBtn: "บันทึก PIN ใหม่",
+            copyrightTextLabel: "ข้อความ Copyright",
+            copyrightOpacityLabel: "ความคมชัด",
+
+            changePinTitle: "เปลี่ยนรหัสผ่าน", newPinLabel: "PIN ใหม่", saveNewPinBtn: "บันทึก PIN ใหม่",
             manageCategoriesTitle: "จัดการหมวดหมู่", categoryNameLabel: "ชื่อหมวดหมู่", categoryIconLabel: "ไอค่อนหมวดหมู่ (ไฟล์ PNG)", minOrderLabel: "จำนวนสั่งซื้อขั้นต่ำ",
-            tableHeaderPriceSettings: "ตั้งค่าราคา", saveCategoryBtn: "เพิ่ม/บันทึกหมวดหมู่", categoryListTitle: "รายการหมวดหมู่",
-            tableHeaderIcon: "ไอค่อน", tableHeaderName: "ชื่อ", tableHeaderMinOrder: "ขั้นต่ำ",
+            setPriceLabel: "ตั้งค่าราคา", setPerPiecePriceBtn: "ตั้งราคาต่อชิ้น", saveCategoryBtn: "เพิ่ม/บันทึกหมวดหมู่", categoryListTitle: "รายการหมวดหมู่",
+            tableHeaderIcon: "ไอค่อน", tableHeaderName: "ชื่อ", tableHeaderMinOrder: "ขั้นต่ำ", tableHeaderPrice: "ราคา",
             manageProductsTitle: "จัดการสินค้า", productNameLabel: "ชื่อสินค้า", levelLabel: "เลเวล", stockQuantityLabel: "จำนวนคงเหลือ", categoryLabel: "หมวดหมู่",
             productIconLabel: "ไอค่อนสินค้า (ไฟล์ PNG)", productAvailableLabel: "เปิดขายสินค้านี้", saveProductBtn: "บันทึกสินค้า", cancelEditBtn: "ยกเลิกแก้ไข",
             tableHeaderStock: "คงเหลือ", tableHeaderStatus: "สถานะ", statusAvailable: "เปิดขาย", statusUnavailable: "ปิดขาย",
@@ -109,19 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
             orderSummaryTitle: "สรุปออเดอร์", copyOrderPrompt: "กรุณาคัดลอกข้อความด้านล่างเพื่อส่งให้ทางร้าน", copyOrderBtn: "คัดลอกออเดอร์", copySuccessMessage: "คัดลอกออเดอร์สำเร็จ",
             yourOrderListTitle: "รายการสั่งซื้อของคุณ", confirmPinTitle: "ยืนยันรหัส PIN", enterPinPrompt: "กรอกรหัส PIN เพื่อยืนยัน",
             confirmResetTitle: "ยืนยันการรีเซ็ทข้อมูล", selectResetPeriodPrompt: "กรุณาเลือกช่วงเวลาที่ต้องการรีเซ็ทข้อมูล", periodWeek: "สัปดาห์นี้", periodAll: "ข้อมูลทั้งหมด",
-            priceSettingsTitle: "ตั้งค่าราคา", priceSettingsInfo: "กำหนดราคาสำหรับหมวดหมู่:", savePriceBtn: "บันทึกราคา",
+            setPerPiecePriceTitle: "ตั้งราคาต่อชิ้น", setPerPiecePriceInfo: "กำหนดราคาสำหรับทุกๆ 10 ชิ้น", savePriceBtn: "บันทึกราคา",
             reorderMenuTitle: "จัดเรียงเมนู", reorderMenuInfo: "ลากและวางเพื่อจัดลำดับเมนูตามต้องการ", saveOrderBtn: "บันทึกการจัดเรียง",
             setPermissionsTitle: "ตั้งค่าสิทธิ์การเข้าถึง", savePermissionsBtn: "บันทึกสิทธิ์",
             loadingBackgroundTitle: "พื้นหลัง Loading", uploadLoadingBgLabel: "อัปโหลดภาพพื้นหลัง Loading",
-            saveSuccessMessage: "บันทึกสำเร็จ!", systemStatusLabel: "สถานะร้าน",
-            shopNameFontSizeLabel: "ขนาดฟอนต์ชื่อร้าน", sloganFontSizeLabel: "ขนาดฟอนต์สโลแกน", globalFontSizeLabel: "ขนาดฟอนต์ทั้งระบบ",
-            festivalTitle: "Festival Effects", rainEffectLabel: "เอฟเฟกต์ฝนตก", rainIntensityLabel: "ความหนัก", effectOpacityLabel: "ความชัด",
-            snowEffectLabel: "เอฟเฟกต์หิมะตก", snowIntensityLabel: "ความหนัก", fireworksEffectLabel: "เอฟเฟกต์พลุ", fireworksDurationLabel: "ระยะเวลา (นาที)",
-            customEffectLabel: "เอฟเฟกต์อื่นๆ", systemStatusSettingsTitle: "ตั้งค่าการเปิด/ปิดระบบ", maintenanceMessageLabel: "ข้อความที่จะแสดงเมื่อปิดระบบ",
-            loadingBarStyleLabel: "รูปแบบแถบดาวน์โหลด", newOrdersTitle: "ออเดอร์ใหม่",
-            taxCalculationTitle: "คำนวณภาษี (ภ.ง.ด. 90/94)", taxInfoText: "ระบบจะดึงยอดขายรวมทั้งปีมาคำนวณเบื้องต้น กรุณากรอกค่าลดหย่อนอื่นๆ เพื่อความถูกต้อง",
-            taxTotalSalesLabel: "รายได้รวมจากระบบ (ทั้งปี)", taxOtherIncomeLabel: "รายได้อื่นๆ", taxDeductionLabel: "ค่าลดหย่อนส่วนตัวและอื่นๆ",
-            calculateTaxBtn: "คำนวณภาษี", taxResultTitle: "ผลการคำนวณภาษี",
         },
         en: {
             loadingMessage: "Loading latest data...",
@@ -130,18 +115,26 @@ document.addEventListener('DOMContentLoaded', () => {
             viewOrderBtn: "View Order", confirmOrderBtn: "Confirm Order", totalAmount: "Total",
             adminLoginTitle: "Admin Login", pinLabel: "PIN", loginBtn: "Login", backToShopBtn: "Back to Shop", invalidPinError: "Invalid PIN!",
             adminPanelTitle: "Admin Panel", viewShopBtn: "View Shop", logoutBtn: "Logout",
-            menuAdmin: "Shop Settings", menuStock: "Stock", menuOrderNumber: "Order Number", menuDashboard: "Dashboard", menuTax: "Tax Calculator", menuManageAccount: "Manage Account", editMenuOrderBtn: "EDIT",
-            shopInfoTitle: "Shop Information", systemFontsTitle: "System Fonts", fontPreviewText: "System Font Preview",
-            shopNameLabel: "Shop Name", shopSloganLabel: "Shop Slogan", managerNameLabel: "System Manager Name", shareholderNameLabel: "Major Shareholder Name",
-            globalFontLabel: "Global Font", shopNameFontLabel: "Shop Name Font", enableEffectLabel: "Enable Shop Name Effect",
-            effectOffsetX: "Offset X", effectOffsetY: "Offset Y", effectBlur: "Blur", effectColor: "Color",
+            menuAdmin: "Shop Settings", menuStock: "Stock", menuOrderNumber: "Order Number", menuDashboard: "Dashboard", menuManageAccount: "Manage Account", editMenuOrderBtn: "EDIT",
+            
+            shopInfoTitle: "Shop Information",
+            systemFontsTitle: "System Fonts",
+            fontPreviewText: "System Font Preview",
+            shopNameLabel: "Shop Name", shopSloganLabel: "Shop Slogan",
+            managerNameLabel: "System Manager Name",
+            shareholderNameLabel: "Major Shareholder Name",
+            globalFontLabel: "Global Font", shopNameFontLabel: "Shop Name Font",
+            enableEffectLabel: "Enable Shop Name Effect", effectOffsetX: "Offset X", effectOffsetY: "Offset Y", effectBlur: "Blur", effectColor: "Color",
             orderFormatLabel: "Order Number Format", useLogoLabel: "Use Logo", uploadLogoLabel: "Upload Logo (PNG)",
             backgroundSettingsTitle: "Background Settings", uploadBgLabel: "Upload Background Image", bgOpacityLabel: "Opacity (Faint-Clear)", bgBlurLabel: "Blur (Less-More)",
             removeBgBtn: "Remove Background", previewBgBtn: "Preview", themeColorLabel: "Theme Color", saveSettingsBtn: "Save Settings",
-            copyrightTextLabel: "Copyright Text", copyrightOpacityLabel: "Opacity", changePinTitle: "Change PIN", newPinLabel: "New PIN", saveNewPinBtn: "Save New PIN",
+            copyrightTextLabel: "Copyright Text",
+            copyrightOpacityLabel: "Opacity",
+
+            changePinTitle: "Change PIN", newPinLabel: "New PIN", saveNewPinBtn: "Save New PIN",
             manageCategoriesTitle: "Manage Categories", categoryNameLabel: "Category Name", categoryIconLabel: "Category Icon (PNG)", minOrderLabel: "Minimum Order Quantity",
-            tableHeaderPriceSettings: "Price Settings", saveCategoryBtn: "Add/Save Category", categoryListTitle: "Category List",
-            tableHeaderIcon: "Icon", tableHeaderName: "Name", tableHeaderMinOrder: "Min. Qty",
+            setPriceLabel: "Set Prices", setPerPiecePriceBtn: "Set Per-Piece Price", saveCategoryBtn: "Add/Save Category", categoryListTitle: "Category List",
+            tableHeaderIcon: "Icon", tableHeaderName: "Name", tableHeaderMinOrder: "Min. Qty", tableHeaderPrice: "Price",
             manageProductsTitle: "Manage Products", productNameLabel: "Product Name", levelLabel: "Level", stockQuantityLabel: "Stock Quantity", categoryLabel: "Category",
             productIconLabel: "Product Icon (PNG)", productAvailableLabel: "This product is available", saveProductBtn: "Save Product", cancelEditBtn: "Cancel Edit",
             tableHeaderStock: "Stock", tableHeaderStatus: "Status", statusAvailable: "Available", statusUnavailable: "Unavailable",
@@ -155,38 +148,33 @@ document.addEventListener('DOMContentLoaded', () => {
             orderSummaryTitle: "Order Summary", copyOrderPrompt: "Please copy the text below to send to the shop.", copyOrderBtn: "Copy Order", copySuccessMessage: "Order copied successfully",
             yourOrderListTitle: "Your Order List", confirmPinTitle: "Confirm PIN", enterPinPrompt: "Enter PIN to confirm",
             confirmResetTitle: "Confirm Data Reset", selectResetPeriodPrompt: "Please select the period for data reset.", periodWeek: "This Week", periodAll: "All Data",
-            priceSettingsTitle: "Price Settings", priceSettingsInfo: "Set prices for category:", savePriceBtn: "Save Prices",
+            setPerPiecePriceTitle: "Set Per-Piece Price", setPerPiecePriceInfo: "Set the price for every 10 pieces.", savePriceBtn: "Save Prices",
             reorderMenuTitle: "Reorder Menu", reorderMenuInfo: "Drag and drop to reorder the menu.", saveOrderBtn: "Save Order",
             setPermissionsTitle: "Set Permissions", savePermissionsBtn: "Save Permissions",
             loadingBackgroundTitle: "Loading Background", uploadLoadingBgLabel: "Upload Loading Background",
-            saveSuccessMessage: "Saved!", systemStatusLabel: "Shop Status",
-            shopNameFontSizeLabel: "Shop Name Font Size", sloganFontSizeLabel: "Slogan Font Size", globalFontSizeLabel: "Global Font Size",
-            festivalTitle: "Festival Effects", rainEffectLabel: "Rain Effect", rainIntensityLabel: "Intensity", effectOpacityLabel: "Opacity",
-            snowEffectLabel: "Snow Effect", snowIntensityLabel: "Intensity", fireworksEffectLabel: "Fireworks Effect", fireworksDurationLabel: "Duration (min)",
-            customEffectLabel: "Other Effects", systemStatusSettingsTitle: "System Status Settings", maintenanceMessageLabel: "Message to display when closed",
-            loadingBarStyleLabel: "Loading Bar Style", newOrdersTitle: "New Orders",
-            taxCalculationTitle: "Tax Calculator (P.N.D. 90/94)", taxInfoText: "The system uses total annual sales for initial calculation. Please enter other deductions for accuracy.",
-            taxTotalSalesLabel: "Total Sales from System (Annual)", taxOtherIncomeLabel: "Other Income", taxDeductionLabel: "Personal & Other Allowances",
-            calculateTaxBtn: "Calculate Tax", taxResultTitle: "Tax Calculation Result",
         }
     };
 
     const MENU_NAMES = {
-        'admin': 'menuAdmin', 'stock': 'menuStock', 'order-number': 'menuOrderNumber',
-        'dashboard': 'menuDashboard', 'tax': 'menuTax', 'manage-account': 'menuManageAccount'
+        'admin': 'menuAdmin',
+        'stock': 'menuStock',
+        'order-number': 'menuOrderNumber',
+        'dashboard': 'menuDashboard',
+        'manage-account': 'menuManageAccount'
     };
+    
     const SUB_MENUS = {
         'admin': { 
-            'shop-info': 'shopInfoTitle', 'system-fonts': 'systemFontsTitle', 'background': 'backgroundSettingsTitle', 
-            'loading-bg': 'loadingBackgroundTitle', 'festival': 'festivalTitle', 'system-status': 'systemStatusSettingsTitle', 'pin': 'changePinTitle' 
+            'shop-info': 'shopInfoTitle', 
+            'system-fonts': 'systemFontsTitle',
+            'background': 'backgroundSettingsTitle', 
+            'loading-bg': 'loadingBackgroundTitle', 
+            'pin': 'changePinTitle' 
         },
         'stock': { 'categories': 'manageCategoriesTitle', 'products': 'manageProductsTitle' },
-        'order-number': { 'new-orders': 'newOrdersTitle', 'active-orders': 'activeOrdersTitle', 'cancelled-orders': 'cancelledOrdersTitle' }
+        'order-number': { 'active-orders': 'activeOrdersTitle', 'cancelled-orders': 'cancelledOrdersTitle' }
     };
 
-    // =================================================================================
-    // ===== CORE FUNCTIONS (Save, Load, Utilities) =====
-    // =================================================================================
     const generateId = () => Date.now() + Math.floor(Math.random() * 1000);
 
     const saveState = async () => {
@@ -225,19 +213,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     loadingBackgroundImage: null, loadingBackgroundOpacity: 0.7,
                     language: 'th', lowStockThreshold: 50,
                     copyrightText: "Copyright © 2025 Warishayday", copyrightOpacity: 1,
-                    globalFontSize: 100, shopNameFontSize: 100, sloganFontSize: 100,
-                    festivalEffects: { rain: { enabled: false, intensity: 20, opacity: 1 }, snow: { enabled: false, intensity: 20, opacity: 1 }, fireworks: { enabled: false, duration: 1, opacity: 1 }, custom: 'none' },
-                    systemOpen: true, maintenanceMessage: "ขณะนี้ร้านค้ากำลังปิดปรับปรุงชั่วคราว ขออภัยในความไม่สะดวกครับ",
-                    loadingBarStyle: 'style-1'
                 },
                 analytics: { dailyTraffic: Array(7).fill(0), hourlyTraffic: Array(24).fill(0), productSales: {}, orders: [], totalSales: 0, monthlyProfit: 0 },
                 subAdmins: [],
-                menuOrder: ['admin', 'stock', 'order-number', 'dashboard', 'tax', 'manage-account'],
+                menuOrder: ['admin', 'stock', 'order-number', 'dashboard', 'manage-account'],
                 categories: [], products: [],
             };
             appData = { ...defaultAppData, ...serverData };
-            appData.shopSettings = {...defaultAppData.shopSettings, ...(serverData.shopSettings || {})};
-            appData.shopSettings.festivalEffects = {...defaultAppData.shopSettings.festivalEffects, ...(serverData.shopSettings?.festivalEffects || {})};
+            appData.shopSettings = {...defaultAppData.shopSettings, ...appData.shopSettings};
             appData.analytics.orders = appData.analytics.orders || [];
             appData.analytics.orders.forEach(o => { if(!o.status) o.status = 'active'; });
             appData.categories.forEach(cat => { if (cat.minOrderQuantity === undefined) cat.minOrderQuantity = 30; });
@@ -247,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const validMenus = new Set(defaultAppData.menuOrder);
             appData.menuOrder = (appData.menuOrder || defaultAppData.menuOrder).filter(item => validMenus.has(item));
-            defaultAppData.menuOrder.forEach(item => { if (!appData.menuOrder.includes(item)) appData.menuOrder.push(item); });
             appData.subAdmins.forEach(sa => {
                 if (!sa.permissions) {
                     sa.permissions = {};
@@ -271,27 +253,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const showSaveFeedback = (buttonEl) => {
-        const feedbackEl = buttonEl.nextElementSibling;
-        if (feedbackEl && feedbackEl.classList.contains('save-feedback')) {
-            feedbackEl.textContent = translations[appData.shopSettings.language].saveSuccessMessage;
-            feedbackEl.classList.add('show');
-            setTimeout(() => {
-                feedbackEl.classList.remove('show');
-            }, 2000);
-        }
-    };
-
-    // =================================================================================
-    // ===== DOM ELEMENT SELECTORS =====
-    // =================================================================================
     const views = {
         customer: document.getElementById('customer-view'),
         adminLogin: document.getElementById('admin-login-view'),
         adminPanel: document.getElementById('admin-panel-view'),
-        maintenance: document.getElementById('maintenance-overlay')
     };
     const shopNameDisplay = document.getElementById('shop-name-display');
+    const shopLogoDisplay = document.getElementById('shop-logo-display');
+    const headerTitleContainer = document.getElementById('header-title-container');
     const sloganElement = document.getElementById('slogan');
     const categoryTabsContainer = document.getElementById('category-tabs');
     const productTableBody = document.getElementById('product-table-body');
@@ -310,13 +279,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const langToggleBtn = document.getElementById('lang-toggle-btn');
     const adminMenuContainer = document.querySelector('.admin-menu');
     const copyrightFooter = document.getElementById('copyright-footer');
-    const festivalContainer = document.getElementById('festival-effects-container');
     
-    // =================================================================================
-    // ===== STATE VARIABLES =====
-    // =================================================================================
     let activeAdminMenu = 'admin';
-    let activeAdminSubMenus = { admin: 'shop-info', stock: 'categories', 'order-number': 'new-orders' };
+    let activeAdminSubMenus = { admin: 'shop-info', stock: 'categories', 'order-number': 'active-orders' };
     let activeCategoryId = null;
     let adminActiveCategoryId = null;
     let editingProductId = null;
@@ -329,15 +294,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let loadingBgFile = null;
     let isAdminLoggedIn = false;
     let loggedInUser = null; 
+    
     let dailyTrafficChart, productSalesChart, categorySalesChart;
     const datePicker = document.getElementById('date-picker');
     let orderDatePicker, fp;
     let selectedDate = new Date().toISOString().slice(0, 10);
-    let festivalIntervals = {};
 
-    // =================================================================================
-    // ===== UI RENDERING & THEME APPLICATION =====
-    // =================================================================================
     const setLanguage = (lang) => {
         appData.shopSettings.language = lang;
         document.querySelectorAll('[data-translate-key]').forEach(el => {
@@ -351,6 +313,12 @@ document.addEventListener('DOMContentLoaded', () => {
         langToggleBtn.textContent = '🌎';
     };
 
+    langToggleBtn.addEventListener('click', async () => {
+        const newLang = appData.shopSettings.language === 'th' ? 'en' : 'th';
+        setLanguage(newLang);
+        await saveState();
+    });
+
     const applyBackground = () => {
         const bgOverlay = document.getElementById('background-overlay');
         if (appData.shopSettings.backgroundImage) {
@@ -359,6 +327,8 @@ document.addEventListener('DOMContentLoaded', () => {
             bgOverlay.style.filter = `blur(${appData.shopSettings.backgroundBlur}px)`;
         } else {
             bgOverlay.style.backgroundImage = 'none';
+            bgOverlay.style.opacity = 1;
+            bgOverlay.style.filter = 'none';
         }
     };
 
@@ -372,15 +342,6 @@ document.addEventListener('DOMContentLoaded', () => {
             loaderBg.style.backgroundImage = 'none';
             loaderOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
         }
-        const progressBar = document.querySelector('.progress-bar-container .progress-bar');
-        if(progressBar) progressBar.className = `progress-bar ${appData.shopSettings.loadingBarStyle}`;
-    };
-    
-    const applyFontSizes = () => {
-        const root = document.documentElement;
-        root.style.setProperty('--global-font-size-multiplier', appData.shopSettings.globalFontSize / 100);
-        root.style.setProperty('--shop-name-font-size-multiplier', appData.shopSettings.shopNameFontSize / 100);
-        root.style.setProperty('--slogan-font-size-multiplier', appData.shopSettings.sloganFontSize / 100);
     };
 
     const applyTheme = () => {
@@ -392,8 +353,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const effect = appData.shopSettings.shopNameEffect;
         shopNameDisplay.style.textShadow = effect.enabled ? `${effect.offsetX}px ${effect.offsetY}px ${effect.blur}px ${effect.color}` : '1px 1px 2px rgba(0,0,0,0.1)';
         
-        const shopLogoDisplay = document.getElementById('shop-logo-display');
-        const headerTitleContainer = document.getElementById('header-title-container');
         if (appData.shopSettings.useLogo && appData.shopSettings.logo) {
             shopLogoDisplay.src = appData.shopSettings.logo;
             shopLogoDisplay.style.display = 'block';
@@ -418,72 +377,17 @@ document.addEventListener('DOMContentLoaded', () => {
         copyrightFooter.textContent = appData.shopSettings.copyrightText;
         copyrightFooter.style.opacity = appData.shopSettings.copyrightOpacity;
 
-        applyFontSizes();
         applyBackground();
         applyLoadingBackground();
-        renderFestivalEffects();
         setLanguage(appData.shopSettings.language);
     };
+    
+    themeToggleBtn.addEventListener('click', async () => {
+        appData.shopSettings.darkMode = !appData.shopSettings.darkMode;
+        applyTheme();
+        await saveState();
+    });
 
-    // =================================================================================
-    // ===== FESTIVAL EFFECTS LOGIC =====
-    // =================================================================================
-    const createEffectElement = (type) => {
-        const el = document.createElement('div');
-        el.style.position = 'absolute';
-        el.style.left = `${Math.random() * 100}vw`;
-        el.style.animationDuration = `${Math.random() * 3 + 2}s`;
-        
-        switch(type) {
-            case 'rain':
-                el.style.width = '1px';
-                el.style.height = '15px';
-                el.style.backgroundColor = 'rgba(174,194,224,0.8)';
-                el.style.top = '-20px';
-                el.style.animationName = 'fall';
-                break;
-            case 'snow':
-                el.innerHTML = '❄️';
-                el.style.fontSize = `${Math.random() * 20 + 10}px`;
-                el.style.top = '-30px';
-                el.style.animationName = 'fall';
-                break;
-        }
-        
-        if (!document.getElementById('fall-animation')) {
-            const styleSheet = document.createElement("style");
-            styleSheet.id = 'fall-animation';
-            styleSheet.innerText = `@keyframes fall { to { transform: translateY(105vh); } }`;
-            document.head.appendChild(styleSheet);
-        }
-        
-        festivalContainer.appendChild(el);
-        setTimeout(() => el.remove(), 5000);
-    };
-
-    const renderFestivalEffects = () => {
-        festivalContainer.innerHTML = '';
-        Object.values(festivalIntervals).forEach(clearInterval);
-        festivalIntervals = {};
-
-        const effects = appData.shopSettings.festivalEffects;
-        if (effects.rain.enabled) {
-            festivalContainer.style.opacity = effects.rain.opacity;
-            festivalIntervals.rain = setInterval(() => {
-                createEffectElement('rain');
-            }, 1000 / effects.rain.intensity);
-        }
-        if (effects.snow.enabled) {
-            festivalContainer.style.opacity = effects.snow.opacity;
-            festivalIntervals.snow = setInterval(() => {
-                createEffectElement('snow');
-            }, 1000 / effects.snow.intensity);
-        }
-    };
-
-    // =================================================================================
-    // ===== CUSTOMER VIEW LOGIC =====
-    // =================================================================================
     const renderCustomerView = () => {
         applyTheme();
         renderCategoryTabs();
@@ -502,6 +406,11 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.className = `tab ${cat.id === activeCategoryId ? 'active' : ''}`;
             tab.dataset.id = cat.id;
             tab.innerHTML = `${cat.icon ? `<img src="${cat.icon}" alt="${cat.name}">` : ''}<span>${cat.name}</span>`;
+            tab.addEventListener('click', () => {
+                activeCategoryId = cat.id;
+                searchBox.value = '';
+                renderCustomerView();
+            });
             categoryTabsContainer.appendChild(tab);
         });
     };
@@ -550,24 +459,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    searchBox.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.trim();
+        renderProducts(searchTerm);
+        if (searchTerm) categoryTabsContainer.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        else renderCategoryTabs();
+    });
+
     const calculatePrice = (categoryId, quantity) => {
         const category = appData.categories.find(c => c.id === categoryId);
-        if (!category || !category.perPiecePrices) return { price: 0, type: 'ไม่ได้ตั้งราคา' };
-        
-        const sortedPrices = category.perPiecePrices.sort((a, b) => b.quantity - a.quantity);
-        let remainingQty = quantity;
-        let totalPrice = 0;
-        let priceDetails = [];
-
-        for (const priceTier of sortedPrices) {
-            if (remainingQty >= priceTier.quantity) {
-                const count = Math.floor(remainingQty / priceTier.quantity);
-                totalPrice += count * priceTier.price;
-                remainingQty -= count * priceTier.quantity;
-                priceDetails.push(`${count}x${priceTier.quantity}`);
+        if (!category) return { price: 0, type: 'ไม่มีราคา' };
+        let totalPrice = 0, priceType = '';
+        if (category.bulkPrices && category.bulkPrices.length > 0) {
+            const sortedBulkPrices = category.bulkPrices.sort((a, b) => b.min - a.min);
+            for (const range of sortedBulkPrices) {
+                if (quantity >= range.min && quantity <= range.max) {
+                    return { price: range.price, type: `ราคาเหมา: ${range.min}-${range.max} ชิ้น` };
+                }
             }
         }
-        return { price: totalPrice, type: priceDetails.join(' + ') || 'ราคาต่อชิ้น' };
+        if (category.perPiecePrices && category.perPiecePrices.length > 0) {
+            const sortedPerPiecePrices = category.perPiecePrices.sort((a, b) => b.quantity - a.quantity);
+            let remainingQuantity = quantity;
+            for (const priceItem of sortedPerPiecePrices) {
+                if (remainingQuantity >= priceItem.quantity && priceItem.price > 0) {
+                    const numBlocks = Math.floor(remainingQuantity / priceItem.quantity);
+                    totalPrice += numBlocks * priceItem.price;
+                    priceType += `${numBlocks} x ${priceItem.quantity} ชิ้น`;
+                    remainingQuantity %= priceItem.quantity;
+                    if (remainingQuantity > 0 && remainingQuantity < sortedPerPiecePrices[0].quantity) {
+                         priceType += ` (เหลือ ${remainingQuantity} ชิ้น)`;
+                         break;
+                    } else if (remainingQuantity > 0) priceType += ' + ';
+                }
+            }
+            if (totalPrice > 0) return { price: totalPrice, type: priceType.replace(/\s\+\s$/, '') };
+        }
+        return { price: 0, type: 'ไม่ได้ตั้งราคา' };
     };
 
     const checkOrderValidation = () => {
@@ -610,6 +538,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    orderValidationMsg.addEventListener('click', (e) => {
+        const link = e.target.closest('.validation-link');
+        if (link) {
+            activeCategoryId = parseInt(link.dataset.catId);
+            renderCustomerView();
+            const tab = document.querySelector(`.tab[data-id="${activeCategoryId}"]`);
+            if (tab) tab.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+
+    productTableBody.addEventListener('click', (e) => {
+        const button = e.target.closest('button[data-op]');
+        if (button) {
+            const productId = button.dataset.id;
+            const operation = parseInt(button.dataset.op);
+            let currentQuantity = appData.cart[productId] || 0;
+            currentQuantity = Math.max(0, currentQuantity + operation);
+            appData.cart[productId] = currentQuantity;
+            const quantityDisplay = button.closest('tr').querySelector('.quantity-display');
+            if (quantityDisplay) quantityDisplay.textContent = currentQuantity;
+            checkOrderValidation();
+        }
+    });
+
     const createOrderSummaryText = (orderNumber = null) => {
         let summaryText = `${appData.shopSettings.shopName}\n`;
         if (orderNumber) summaryText += `เลขที่ออเดอร์: ${orderNumber}\n\n`;
@@ -642,13 +594,143 @@ document.addEventListener('DOMContentLoaded', () => {
         return (totalOrderPrice === 0 && Object.values(appData.cart).every(q => q === 0)) ? 'ไม่มีสินค้าในรายการสั่งซื้อ' : summaryText;
     };
     
-    // =================================================================================
-    // ===== ADMIN PANEL LOGIC =====
-    // =================================================================================
+    const handleOrderAction = (isConfirm) => {
+        if (isConfirm) {
+            checkOrderValidation(); 
+            if (orderValidationMsg.innerHTML.includes('ต้องสั่งขั้นต่ำ') || confirmOrderBtn.disabled) return;
+        }
+        if (isConfirm) {
+            document.getElementById('order-modal-title').textContent = 'สรุปออเดอร์';
+            document.getElementById('order-modal-prompt').style.display = 'block';
+            document.getElementById('copy-order-btn').style.display = 'inline-block';
+            const orderNumber = generateOrderNumber();
+            orderDetails.textContent = createOrderSummaryText(orderNumber);
+            orderDetails.dataset.orderNumber = orderNumber;
+            orderModal.style.display = 'flex';
+        } else {
+            cartDetails.textContent = createOrderSummaryText();
+            cartModal.style.display = 'flex';
+        }
+    };
+
+    confirmOrderBtn.addEventListener('click', () => handleOrderAction(true));
+    viewOrderBtn.addEventListener('click', () => handleOrderAction(false));
+
+    document.getElementById('copy-order-btn').addEventListener('click', async () => {
+        orderModal.style.display = 'none';
+        const orderText = orderDetails.textContent;
+        try {
+            await navigator.clipboard.writeText(orderText);
+            const totalOrderPriceText = orderText.match(/ยอดรวมทั้งหมด: ([\d,]+) บาท/);
+            const totalOrderPrice = totalOrderPriceText ? parseFloat(totalOrderPriceText[1].replace(/,/g, '')) : 0;
+            if (!isNaN(totalOrderPrice) && totalOrderPrice > 0) {
+                const newOrder = { id: orderDetails.dataset.orderNumber, timestamp: new Date().toISOString(), total: totalOrderPrice, items: { ...appData.cart }, status: 'active' };
+                appData.analytics.orders.push(newOrder);
+                for (const prodId in appData.cart) {
+                    if (appData.cart[prodId] > 0) {
+                        const product = appData.products.find(p => p.id == prodId);
+                        if (product) {
+                            if (!appData.analytics.productSales[product.name]) appData.analytics.productSales[product.name] = 0;
+                            appData.analytics.productSales[product.name] += appData.cart[prodId];
+                            if (product.stock !== -1) product.stock = Math.max(0, product.stock - appData.cart[prodId]);
+                        }
+                    }
+                }
+            }
+            appData.cart = {};
+            await saveState();
+            const successModal = document.getElementById('copy-success-modal');
+            successModal.style.display = 'flex';
+            setTimeout(() => {
+                successModal.style.display = 'none';
+                renderCustomerView();
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+            alert('ไม่สามารถคัดลอกได้ กรุณาลองใหม่');
+        }
+    });
+    
+    document.getElementById('close-order-modal-btn').addEventListener('click', () => orderModal.style.display = 'none');
+    document.getElementById('close-cart-modal-btn').addEventListener('click', () => cartModal.style.display = 'none');
+    document.getElementById('reset-cart-btn').addEventListener('click', () => {
+         if (confirm('คุณต้องการรีเซ็ทรายการสั่งซื้อทั้งหมดหรือไม่?')) {
+            appData.cart = {};
+            renderCustomerView();
+            alert('รีเซ็ทรายการสั่งซื้อเรียบร้อยแล้ว!');
+        }
+    });
+
     const switchView = (viewName) => {
         Object.values(views).forEach(v => v.classList.remove('active'));
         views[viewName].classList.add('active');
     };
+
+    adminGearIcon.addEventListener('click', () => {
+        if (!isAdminLoggedIn) {
+            switchView('adminLogin');
+            themeToggleBtn.style.display = 'none';
+            langToggleBtn.style.display = 'none';
+        }
+    });
+
+    document.getElementById('back-to-customer-view-btn').addEventListener('click', () => {
+        switchView('customer');
+        renderCustomerView();
+    });
+    
+    document.getElementById('login-btn').addEventListener('click', async () => {
+        const pinInput = document.getElementById('pin-input');
+        const loginError = document.getElementById('login-error');
+        const pin = pinInput.value;
+        let loggedIn = false;
+        if (pin === appData.adminPin) {
+            isAdminLoggedIn = true;
+            loggedInUser = { name: 'Super Admin', isSuper: true };
+            loggedIn = true;
+        } else {
+            const subAdmin = appData.subAdmins.find(sa => sa.pin === pin);
+            if (subAdmin) {
+                isAdminLoggedIn = true;
+                loggedInUser = subAdmin;
+                loggedIn = true;
+            }
+        }
+        if (loggedIn) {
+            switchView('adminPanel');
+            renderAdminPanel();
+            pinInput.value = '';
+            loginError.textContent = '';
+            adminGearIcon.style.display = 'none';
+            backToAdminBtn.style.display = 'flex';
+            themeToggleBtn.style.display = 'none';
+            langToggleBtn.style.display = 'none';
+            const today = new Date().getDay();
+            appData.analytics.dailyTraffic[today] = (appData.analytics.dailyTraffic[today] || 0) + 1;
+            await saveState();
+        } else {
+            loginError.textContent = translations[appData.shopSettings.language].invalidPinError;
+        }
+    });
+    
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        isAdminLoggedIn = false;
+        loggedInUser = null;
+        switchView('customer');
+        renderCustomerView();
+    });
+    
+    document.getElementById('view-shop-btn').addEventListener('click', () => {
+        switchView('customer');
+        renderCustomerView();
+    });
+
+    backToAdminBtn.addEventListener('click', () => {
+        if (isAdminLoggedIn) {
+            switchView('adminPanel');
+            renderAdminPanel();
+        }
+    });
 
     const renderAdminMenu = () => {
         adminMenuContainer.innerHTML = '';
@@ -671,10 +753,14 @@ document.addEventListener('DOMContentLoaded', () => {
             reorderBtn.id = 'reorder-menu-btn';
             reorderBtn.textContent = translations[lang].editMenuOrderBtn;
             adminMenuContainer.appendChild(reorderBtn);
-            // FIX: Event listener for this button needs to be handled by delegation or re-added.
-            // For simplicity, we'll re-add it here as it's a single button.
             reorderBtn.addEventListener('click', renderReorderMenuModal);
         }
+        document.querySelectorAll('.admin-menu .menu-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                activeAdminMenu = e.currentTarget.dataset.menu;
+                renderAdminPanel();
+            });
+        });
     };
     
     const renderSubMenu = (menuKey, containerId) => {
@@ -689,6 +775,10 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.className = `tab ${subKey === activeAdminSubMenus[menuKey] ? 'active' : ''}`;
             tab.dataset.sub = subKey;
             tab.textContent = translations[lang][subMenuConfig[subKey]];
+            tab.addEventListener('click', () => {
+                activeAdminSubMenus[menuKey] = subKey;
+                renderAdminPanel();
+            });
             container.appendChild(tab);
         }
     };
@@ -697,6 +787,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.admin-menu-content').forEach(el => el.style.display = 'none');
         const isSuperAdmin = loggedInUser && loggedInUser.isSuper;
         renderAdminMenu();
+        document.querySelectorAll('.admin-menu .menu-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.querySelector(`.admin-menu .menu-btn[data-menu="${activeAdminMenu}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
 
         const permissions = (loggedInUser && loggedInUser.permissions) || {};
         const canAccess = (menu) => isSuperAdmin || permissions[menu];
@@ -706,6 +799,7 @@ document.addEventListener('DOMContentLoaded', () => {
             container.style.display = 'block';
             renderSubMenu('admin', 'admin-settings-tabs');
             container.querySelectorAll('.admin-sub-content').forEach(el => el.classList.remove('active'));
+            
             const activeSub = activeAdminSubMenus.admin;
             document.getElementById(`admin-sub-${activeSub}`).classList.add('active');
             
@@ -716,15 +810,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('shareholder-name').value = appData.shopSettings.shareholderName;
                 document.getElementById('order-format-select').value = appData.shopSettings.orderNumberFormat;
             } else if (activeSub === 'system-fonts') {
-                document.getElementById('global-font-size-slider').value = appData.shopSettings.globalFontSize;
-                document.getElementById('shop-name-font-size-slider').value = appData.shopSettings.shopNameFontSize;
-                document.getElementById('slogan-font-size-slider').value = appData.shopSettings.sloganFontSize;
-                document.getElementById('global-font-size-value').textContent = appData.shopSettings.globalFontSize;
-                document.getElementById('shop-name-font-size-value').textContent = appData.shopSettings.shopNameFontSize;
-                document.getElementById('slogan-font-size-value').textContent = appData.shopSettings.sloganFontSize;
                 document.getElementById('shop-global-font').value = appData.shopSettings.globalFontFamily;
                 document.getElementById('shop-font').value = appData.shopSettings.fontFamily;
+                document.getElementById('font-preview').style.fontFamily = appData.shopSettings.fontFamily;
+                document.getElementById('global-font-preview').style.fontFamily = appData.shopSettings.globalFontFamily;
                 document.getElementById('logo-toggle').checked = appData.shopSettings.useLogo;
+                document.getElementById('logo-preview').style.display = appData.shopSettings.logo ? 'block' : 'none';
                 if(appData.shopSettings.logo) document.getElementById('logo-preview').src = appData.shopSettings.logo;
                 const effect = appData.shopSettings.shopNameEffect;
                 document.getElementById('effect-toggle').checked = effect.enabled;
@@ -735,24 +826,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('effect-controls-container').style.display = effect.enabled ? 'grid' : 'none';
                 document.getElementById('copyright-text').value = appData.shopSettings.copyrightText;
                 document.getElementById('copyright-opacity').value = appData.shopSettings.copyrightOpacity;
+                updateFontPreviewEffect();
             } else if (activeSub === 'background') {
                 document.getElementById('bg-opacity').value = appData.shopSettings.backgroundOpacity;
                 document.getElementById('bg-blur').value = appData.shopSettings.backgroundBlur;
-                if(appData.shopSettings.backgroundImage) document.getElementById('bg-preview').style.backgroundImage = `url(${appData.shopSettings.backgroundImage})`;
+                const bgPreview = document.getElementById('bg-preview');
+                bgPreview.style.display = appData.shopSettings.backgroundImage ? 'block' : 'none';
+                if(appData.shopSettings.backgroundImage) bgPreview.style.backgroundImage = `url(${appData.shopSettings.backgroundImage})`;
             } else if (activeSub === 'loading-bg') {
                 document.getElementById('loading-bg-opacity').value = appData.shopSettings.loadingBackgroundOpacity;
-                document.getElementById('loading-bar-style-select').value = appData.shopSettings.loadingBarStyle;
-                if(appData.shopSettings.loadingBackgroundImage) document.getElementById('loading-bg-preview').style.backgroundImage = `url(${appData.shopSettings.loadingBackgroundImage})`;
-            } else if (activeSub === 'festival') {
-                const effects = appData.shopSettings.festivalEffects;
-                document.getElementById('rain-effect-toggle').checked = effects.rain.enabled;
-                document.getElementById('rain-intensity').value = effects.rain.intensity;
-                document.getElementById('rain-opacity').value = effects.rain.opacity;
-                document.getElementById('snow-effect-toggle').checked = effects.snow.enabled;
-                document.getElementById('snow-intensity').value = effects.snow.intensity;
-                document.getElementById('snow-opacity').value = effects.snow.opacity;
-            } else if (activeSub === 'system-status') {
-                document.getElementById('maintenance-message-input').value = appData.shopSettings.maintenanceMessage;
+                const loadingBgPreview = document.getElementById('loading-bg-preview');
+                loadingBgPreview.style.display = appData.shopSettings.loadingBackgroundImage ? 'block' : 'none';
+                if(appData.shopSettings.loadingBackgroundImage) loadingBgPreview.style.backgroundImage = `url(${appData.shopSettings.loadingBackgroundImage})`;
             }
         } else if (activeAdminMenu === 'stock' && canAccess('stock')) {
             const container = document.getElementById('admin-menu-stock');
@@ -783,9 +868,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('low-stock-threshold').value = appData.shopSettings.lowStockThreshold;
             if (!fp) fp = flatpickr(datePicker, { defaultDate: selectedDate, dateFormat: "Y-m-d", onChange: (selectedDates, dateStr) => { selectedDate = dateStr; renderDashboard(); } });
             renderDashboard();
-        } else if (activeAdminMenu === 'tax' && canAccess('tax')) {
-            document.getElementById('admin-menu-tax').style.display = 'block';
-            renderTaxView();
         } else if (activeAdminMenu === 'manage-account' && canAccess('manage-account')) {
             document.getElementById('admin-menu-manage-account').style.display = 'block';
             renderSubAdmins();
@@ -798,27 +880,70 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        document.getElementById('system-status-toggle').checked = appData.shopSettings.systemOpen;
     };
 
-    // =================================================================================
-    // ===== SPECIFIC ADMIN VIEW RENDERERS (Dashboard, Tax, Orders, etc.) =====
-    // =================================================================================
     const renderDashboard = () => {
         const today = new Date(), currentMonth = today.getMonth(), currentYear = today.getFullYear();
-        const ordersToday = appData.analytics.orders.filter(o => o.timestamp.startsWith(selectedDate) && o.status !== 'new');
-        const ordersInMonth = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === currentYear && new Date(o.timestamp).getMonth() === currentMonth && o.status !== 'new');
-        const ordersInYear = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === currentYear && o.status !== 'new');
+        const ordersToday = appData.analytics.orders.filter(o => o.timestamp.startsWith(selectedDate));
+        const ordersInMonth = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === currentYear && new Date(o.timestamp).getMonth() === currentMonth);
+        const ordersInYear = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === currentYear);
         const monthlyProfit = ordersInMonth.reduce((sum, order) => sum + order.total, 0);
         const yearlySales = ordersInYear.reduce((sum, order) => sum + order.total, 0);
         document.getElementById('monthly-profit').textContent = `${monthlyProfit.toLocaleString()} บาท`;
         document.getElementById('daily-orders').textContent = ordersToday.length;
         document.getElementById('monthly-orders').textContent = ordersInMonth.length;
         document.getElementById('yearly-sales').textContent = `${yearlySales.toLocaleString()} บาท`;
+        const days = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัส', 'ศุกร์', 'เสาร์'];
+        const maxTraffic = Math.max(...appData.analytics.dailyTraffic);
+        document.getElementById('most-active-day').textContent = `วันที่มีคนเข้าชมมากที่สุด: ${days[appData.analytics.dailyTraffic.indexOf(maxTraffic)]} (${maxTraffic} ครั้ง)`;
+        const maxHourTraffic = Math.max(...appData.analytics.hourlyTraffic);
+        const mostActiveHourIndex = appData.analytics.hourlyTraffic.indexOf(maxHourTraffic);
+        document.getElementById('most-active-time').textContent = `ช่วงเวลาที่มีคนเข้าชมมากที่สุด: ${mostActiveHourIndex}:00 - ${mostActiveHourIndex + 1}:00 น. (${maxHourTraffic} ครั้ง)`;
+        renderTrafficChart(days);
+        renderProductSalesChart();
+        renderCategorySalesChart(ordersInYear);
         renderLowStockList();
         renderTopItems('month');
+        document.querySelectorAll('#top-items-controls .btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('#top-items-controls .btn[data-period="month"]').classList.add('active');
     };
-    
+
+    const renderTrafficChart = (days) => {
+        if (dailyTrafficChart) dailyTrafficChart.destroy();
+        dailyTrafficChart = new Chart(document.getElementById('dailyTrafficChart'), { type: 'bar', data: { labels: days, datasets: [{ label: 'จำนวนผู้เข้าชม', data: appData.analytics.dailyTraffic, backgroundColor: 'rgba(40, 167, 69, 0.5)', borderColor: 'rgba(40, 167, 69, 1)', borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
+    };
+    const renderProductSalesChart = () => {
+        const productNames = Object.keys(appData.analytics.productSales);
+        const productQuantities = Object.values(appData.analytics.productSales);
+        document.getElementById('best-selling-product').textContent = `สินค้าที่สั่งเยอะสุด (ทั้งหมด): ${productNames.length > 0 ? productNames[productQuantities.indexOf(Math.max(...productQuantities))] : 'ไม่มีข้อมูล'}`;
+        document.getElementById('least-selling-product').textContent = `สินค้าที่สั่งน้อยสุด (ทั้งหมด): ${productNames.length > 0 ? productNames[productQuantities.indexOf(Math.min(...productQuantities))] : 'ไม่มีข้อมูล'}`;
+        if (productSalesChart) productSalesChart.destroy();
+        productSalesChart = new Chart(document.getElementById('productSalesChart'), { type: 'doughnut', data: { labels: productNames, datasets: [{ label: 'ยอดสั่งสินค้า', data: productQuantities, backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff', '#ff9f40'] }] }, options: { responsive: true, maintainAspectRatio: false } });
+    };
+    const renderCategorySalesChart = (orders) => {
+        const salesByCategory = {};
+        orders.forEach(order => {
+            const itemsByCategoryInOrder = {};
+            for (const prodId in order.items) {
+                const product = appData.products.find(p => p.id == prodId);
+                if (product && product.categoryId) {
+                    if (!itemsByCategoryInOrder[product.categoryId]) itemsByCategoryInOrder[product.categoryId] = 0;
+                    itemsByCategoryInOrder[product.categoryId] += order.items[prodId];
+                }
+            }
+             for (const catId in itemsByCategoryInOrder) {
+                const cat = appData.categories.find(c => c.id == catId);
+                if (cat) {
+                    const priceResult = calculatePrice(parseInt(catId), itemsByCategoryInOrder[catId]);
+                    if (!salesByCategory[cat.name]) salesByCategory[cat.name] = 0;
+                    salesByCategory[cat.name] += priceResult.price;
+                }
+            }
+        });
+        if (categorySalesChart) categorySalesChart.destroy();
+        categorySalesChart = new Chart(document.getElementById('categorySalesChart'), { type: 'pie', data: { labels: Object.keys(salesByCategory), datasets: [{ label: 'ยอดขาย', data: Object.values(salesByCategory), backgroundColor: ['#28a745', '#ffc107', '#17a2b8', '#dc3545', '#6610f2', '#fd7e14', '#e83e8c', '#6c757d'] }] }, options: { responsive: true, maintainAspectRatio: false } });
+    };
+
     const renderLowStockList = () => {
         const listEl = document.getElementById('low-stock-list');
         listEl.innerHTML = '';
@@ -836,14 +961,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    document.getElementById('low-stock-threshold').addEventListener('change', async (e) => {
+        const newThreshold = parseInt(e.target.value);
+        if (!isNaN(newThreshold) && newThreshold >= 0) {
+            appData.shopSettings.lowStockThreshold = newThreshold;
+            await saveState();
+            renderLowStockList();
+        }
+    });
+
     const renderTopItems = (period) => {
         const listEl = document.getElementById('top-items-list');
         listEl.innerHTML = '';
         const today = new Date();
         let ordersToAnalyze = [];
-        if(period === 'day') ordersToAnalyze = appData.analytics.orders.filter(o => o.timestamp.startsWith(today.toISOString().slice(0, 10)) && o.status !== 'new');
-        else if (period === 'month') ordersToAnalyze = appData.analytics.orders.filter(o => new Date(o.timestamp).getMonth() === today.getMonth() && new Date(o.timestamp).getFullYear() === today.getFullYear() && o.status !== 'new');
-        else ordersToAnalyze = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === today.getFullYear() && o.status !== 'new');
+        if(period === 'day') ordersToAnalyze = appData.analytics.orders.filter(o => o.timestamp.startsWith(today.toISOString().slice(0, 10)));
+        else if (period === 'month') ordersToAnalyze = appData.analytics.orders.filter(o => new Date(o.timestamp).getMonth() === today.getMonth() && new Date(o.timestamp).getFullYear() === today.getFullYear());
+        else ordersToAnalyze = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === today.getFullYear());
         const itemCounts = {};
         ordersToAnalyze.forEach(order => {
             for(const prodId in order.items) {
@@ -865,22 +999,16 @@ document.addEventListener('DOMContentLoaded', () => {
             listEl.appendChild(li);
         });
     };
-    
-    const renderAdminCategories = () => {
-        const list = document.getElementById('admin-cat-list');
-        list.innerHTML = '';
-        appData.categories.forEach(cat => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${cat.icon ? `<img src="${cat.icon}" alt="icon" style="width:24px; height:24px;">` : 'ไม่มี'}</td>
-                <td>${cat.name}</td>
-                <td>${cat.minOrderQuantity}</td>
-                <td><button class="btn btn-info btn-small btn-price-settings" data-id="${cat.id}">ตั้งค่า</button></td>
-                <td><button class="btn btn-secondary btn-small btn-cat-edit" data-id="${cat.id}">แก้ไข</button><button class="btn btn-danger btn-small btn-cat-delete" data-id="${cat.id}">ลบ</button></td>`;
-            list.appendChild(row);
-        });
-    };
-    
+
+    document.getElementById('top-items-controls').addEventListener('click', (e) => {
+        if(e.target.matches('.btn')) {
+            document.querySelectorAll('#top-items-controls .btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            renderTopItems(e.target.dataset.period);
+        }
+    });
+
+
     const renderAdminProductTabs = () => {
         const tabsContainer = document.getElementById('admin-product-tabs');
         tabsContainer.innerHTML = '';
@@ -889,10 +1017,28 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.className = `tab ${cat.id === adminActiveCategoryId ? 'active' : ''}`;
             tab.dataset.id = cat.id;
             tab.textContent = cat.name;
+            tab.addEventListener('click', () => {
+                adminActiveCategoryId = cat.id;
+                renderAdminProducts();
+                renderAdminProductTabs();
+            });
             tabsContainer.appendChild(tab);
         });
     };
 
+    const renderAdminCategories = () => {
+        const list = document.getElementById('admin-cat-list');
+        list.innerHTML = '';
+        appData.categories.forEach(cat => {
+            const priceText = [];
+            if (cat.perPiecePrices && cat.perPiecePrices.length > 0) priceText.push(`ราคาต่อชิ้น:`, ...cat.perPiecePrices.sort((a,b) => a.quantity - b.quantity).map(p => `- ${p.quantity} ชิ้น = ${p.price} บาท`));
+            if (cat.bulkPrices && cat.bulkPrices.length > 0) priceText.push(`ราคาเหมา:`, ...cat.bulkPrices.sort((a,b) => a.min - b.min).map(p => `- ${p.min}-${p.max} ชิ้น = ${p.price} บาท`));
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${cat.icon ? `<img src="${cat.icon}" alt="icon" style="width:24px; height:24px;">` : 'ไม่มี'}</td><td>${cat.name}</td><td>${cat.minOrderQuantity}</td><td><ul class="price-list">${priceText.length > 0 ? `<li>${priceText.join('</li><li>')}</li>` : '<li>ไม่ได้ตั้งราคา</li>'}</ul></td><td><button class="btn btn-secondary btn-small btn-cat-edit" data-id="${cat.id}">แก้ไข</button><button class="btn btn-danger btn-small btn-cat-delete" data-id="${cat.id}">ลบ</button></td>`;
+            list.appendChild(row);
+        });
+    };
+    
     const renderAdminProducts = () => {
         const list = document.getElementById('admin-prod-list');
         list.innerHTML = '';
@@ -910,11 +1056,576 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
+    const populateCategoryDropdown = () => {
+        const select = document.getElementById('prod-category');
+        select.innerHTML = '';
+        appData.categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            select.appendChild(option);
+        });
+    };
+
+    const fontSelect = document.getElementById('shop-font');
+    const globalFontSelect = document.getElementById('shop-global-font');
+    const fontPreview = document.getElementById('font-preview');
+    const globalFontPreview = document.getElementById('global-font-preview');
+
+    const populateFontSelectors = () => {
+        FONT_OPTIONS.forEach(font => {
+            const option = document.createElement('option');
+            option.value = font.value;
+            option.textContent = font.name;
+            fontSelect.appendChild(option.cloneNode(true));
+            globalFontSelect.appendChild(option.cloneNode(true));
+        });
+    };
+    populateFontSelectors();
+
+    fontSelect.addEventListener('change', (e) => fontPreview.style.fontFamily = e.target.value);
+    globalFontSelect.addEventListener('change', (e) => globalFontPreview.style.fontFamily = e.target.value);
+
+    document.querySelectorAll('.color-btn').forEach(btn => btn.addEventListener('click', (e) => {
+        appData.shopSettings.themeColor = e.target.dataset.color;
+        applyTheme();
+    }));
+
+    document.getElementById('logo-upload').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            logoFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('logo-preview').src = e.target.result;
+                document.getElementById('logo-preview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else logoFile = null;
+    });
+
+    document.getElementById('bg-upload').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            bgFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('bg-preview').style.backgroundImage = `url(${e.target.result})`;
+                document.getElementById('bg-preview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else bgFile = null;
+    });
+    
+    document.getElementById('loading-bg-upload').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            loadingBgFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('loading-bg-preview').style.backgroundImage = `url(${e.target.result})`;
+                document.getElementById('loading-bg-preview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else loadingBgFile = null;
+    });
+
+    document.getElementById('remove-bg-btn').addEventListener('click', () => {
+        bgFile = null;
+        appData.shopSettings.backgroundImage = null;
+        document.getElementById('bg-preview').style.display = 'none';
+        document.getElementById('bg-upload').value = '';
+        applyBackground();
+    });
+    
+    document.getElementById('remove-loading-bg-btn').addEventListener('click', () => {
+        loadingBgFile = null;
+        appData.shopSettings.loadingBackgroundImage = null;
+        document.getElementById('loading-bg-preview').style.display = 'none';
+        document.getElementById('loading-bg-upload').value = '';
+        applyLoadingBackground();
+    });
+
+    document.getElementById('preview-bg-btn').addEventListener('click', async () => {
+        if (bgFile) appData.shopSettings.backgroundImage = await readFileAsBase64(bgFile);
+        appData.shopSettings.backgroundOpacity = document.getElementById('bg-opacity').value;
+        appData.shopSettings.backgroundBlur = document.getElementById('bg-blur').value;
+        switchView('customer');
+        renderCustomerView();
+    });
+
+    const updateFontPreviewEffect = () => {
+        const effect = {
+            enabled: document.getElementById('effect-toggle').checked,
+            offsetX: document.getElementById('effect-offset-x').value,
+            offsetY: document.getElementById('effect-offset-y').value,
+            blur: document.getElementById('effect-blur').value,
+            color: document.getElementById('effect-color').value
+        };
+        fontPreview.style.textShadow = effect.enabled ? `${effect.offsetX}px ${effect.offsetY}px ${effect.blur}px ${effect.color}` : 'none';
+    };
+
+    document.getElementById('effect-controls-container').addEventListener('input', updateFontPreviewEffect);
+    document.getElementById('effect-toggle').addEventListener('change', (e) => {
+        document.getElementById('effect-controls-container').style.display = e.target.checked ? 'grid' : 'none';
+        updateFontPreviewEffect();
+    });
+
+    document.getElementById('save-shop-info-btn').addEventListener('click', async () => {
+        appData.shopSettings.shopName = document.getElementById('shop-name').value;
+        appData.shopSettings.slogan = document.getElementById('shop-slogan').value;
+        appData.shopSettings.managerName = document.getElementById('manager-name').value;
+        appData.shopSettings.shareholderName = document.getElementById('shareholder-name').value;
+        appData.shopSettings.orderNumberFormat = document.getElementById('order-format-select').value;
+        await saveState();
+        applyTheme();
+        alert('บันทึกข้อมูลร้านแล้ว!');
+    });
+
+    document.getElementById('save-system-fonts-btn').addEventListener('click', async () => {
+        appData.shopSettings.fontFamily = document.getElementById('shop-font').value;
+        appData.shopSettings.globalFontFamily = document.getElementById('shop-global-font').value;
+        appData.shopSettings.useLogo = document.getElementById('logo-toggle').checked;
+        appData.shopSettings.shopNameEffect = {
+            enabled: document.getElementById('effect-toggle').checked,
+            offsetX: document.getElementById('effect-offset-x').value,
+            offsetY: document.getElementById('effect-offset-y').value,
+            blur: document.getElementById('effect-blur').value,
+            color: document.getElementById('effect-color').value
+        };
+        if (logoFile) appData.shopSettings.logo = await readFileAsBase64(logoFile);
+        appData.shopSettings.copyrightText = document.getElementById('copyright-text').value;
+        appData.shopSettings.copyrightOpacity = document.getElementById('copyright-opacity').value;
+
+        await saveState();
+        applyTheme();
+        alert('บันทึกการตั้งค่าฟอนต์และโลโก้แล้ว!');
+    });
+    
+    document.getElementById('save-background-settings-btn').addEventListener('click', async () => {
+        appData.shopSettings.backgroundOpacity = document.getElementById('bg-opacity').value;
+        appData.shopSettings.backgroundBlur = document.getElementById('bg-blur').value;
+        if (bgFile) appData.shopSettings.backgroundImage = await readFileAsBase64(bgFile);
+        await saveState();
+        applyTheme();
+        alert('บันทึกพื้นหลังแล้ว!');
+    });
+    
+    document.getElementById('save-loading-bg-settings-btn').addEventListener('click', async () => {
+        appData.shopSettings.loadingBackgroundOpacity = document.getElementById('loading-bg-opacity').value;
+        if (loadingBgFile) appData.shopSettings.loadingBackgroundImage = await readFileAsBase64(loadingBgFile);
+        await saveState();
+        applyTheme();
+        alert('บันทึกพื้นหลัง Loading แล้ว!');
+    });
+
+    document.getElementById('change-pin-btn').addEventListener('click', async () => {
+        const newPin = document.getElementById('new-pin').value;
+        if (newPin && newPin.length >= 4) {
+            if (confirm(`คุณต้องการเปลี่ยน PIN เป็น "${newPin}" ใช่หรือไม่?`)) {
+                appData.adminPin = newPin;
+                await saveState();
+                alert('เปลี่ยน PIN สำเร็จ!');
+                document.getElementById('new-pin').value = '';
+            }
+        } else alert('PIN ต้องมีอย่างน้อย 4 ตัวอักษร');
+    });
+    
+    document.getElementById('cat-icon-upload').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            catIconFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => document.getElementById('cat-icon-preview').style.backgroundImage = `url(${e.target.result})`;
+            reader.readAsDataURL(file);
+        } else catIconFile = null;
+    });
+
+    document.getElementById('category-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('cat-name').value.trim();
+        const minOrder = parseInt(document.getElementById('cat-min-order').value) || 0;
+        if (!name) { alert('กรุณากรอกชื่อหมวดหมู่'); return; }
+        let iconData = null;
+        if (catIconFile) iconData = await readFileAsBase64(catIconFile);
+        if (editingCategoryId) {
+            const index = appData.categories.findIndex(c => c.id === editingCategoryId);
+            if (index !== -1) {
+                appData.categories[index].name = name;
+                appData.categories[index].minOrderQuantity = minOrder;
+                if (iconData) appData.categories[index].icon = iconData;
+            }
+        } else appData.categories.push({ id: generateId(), name, icon: iconData, perPiecePrices: [], bulkPrices: [], minOrderQuantity: minOrder });
+        await saveState();
+        resetCategoryForm();
+        renderAdminPanel();
+    });
+    
+    const deleteCategory = async (id) => {
+        if (confirm('การลบหมวดหมู่จะลบสินค้าทั้งหมดในหมวดหมู่นั้นด้วย ยืนยันหรือไม่?')) {
+            appData.categories = appData.categories.filter(c => c.id !== id);
+            appData.products = appData.products.filter(p => p.categoryId !== id);
+            if (appData.categories.length > 0) {
+                if (!appData.categories.find(c => c.id === activeCategoryId)) activeCategoryId = appData.categories[0].id;
+                if (!appData.categories.find(c => c.id === adminActiveCategoryId)) adminActiveCategoryId = appData.categories[0].id;
+            } else { activeCategoryId = null; adminActiveCategoryId = null; }
+            await saveState();
+            renderAdminPanel();
+        }
+    };
+
+    const resetCategoryForm = () => {
+        editingCategoryId = null;
+        document.getElementById('category-form').reset();
+        document.getElementById('cat-min-order').value = 30;
+        document.getElementById('submit-cat-btn').textContent = translations[appData.shopSettings.language].saveCategoryBtn;
+        document.getElementById('cancel-cat-edit-btn').style.display = 'none';
+        document.getElementById('cat-icon-preview').style.backgroundImage = 'none';
+        catIconFile = null;
+    }
+
+    document.getElementById('cancel-cat-edit-btn').addEventListener('click', resetCategoryForm);
+    
+    document.getElementById('admin-cat-list').addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.btn-cat-edit');
+        const deleteBtn = e.target.closest('.btn-cat-delete');
+        if (editBtn) {
+            const id = parseInt(editBtn.dataset.id);
+            const category = appData.categories.find(c => c.id === id);
+            if (category) {
+                editingCategoryId = id;
+                document.getElementById('cat-name').value = category.name;
+                document.getElementById('cat-min-order').value = category.minOrderQuantity;
+                document.getElementById('cat-icon-preview').style.backgroundImage = category.icon ? `url(${category.icon})` : 'none';
+                document.getElementById('submit-cat-btn').textContent = translations[appData.shopSettings.language].saveBtn;
+                document.getElementById('cancel-cat-edit-btn').style.display = 'inline-block';
+                document.getElementById('category-form').scrollIntoView();
+            }
+        }
+        if (deleteBtn) deleteCategory(parseInt(deleteBtn.dataset.id));
+    });
+    
+    document.getElementById('prod-icon-upload').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            prodIconFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => document.getElementById('prod-icon-preview').style.backgroundImage = `url(${e.target.result})`;
+            reader.readAsDataURL(file);
+        } else prodIconFile = null;
+    });
+
+    document.getElementById('product-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const product = { id: editingProductId || generateId(), name: document.getElementById('prod-name').value, level: parseInt(document.getElementById('prod-level').value), categoryId: parseInt(document.getElementById('prod-category').value), stock: parseInt(document.getElementById('prod-stock').value), isAvailable: document.getElementById('prod-available').checked, icon: null };
+        if (prodIconFile) product.icon = await readFileAsBase64(prodIconFile);
+        if (editingProductId) {
+            const index = appData.products.findIndex(p => p.id === editingProductId);
+            if (index !== -1) {
+                const existingIcon = appData.products[index].icon;
+                appData.products[index] = { ...appData.products[index], ...product, icon: product.icon || existingIcon };
+            }
+        } else appData.products.push(product);
+        await saveState();
+        resetProductForm();
+        renderAdminProducts();
+    });
+    
+    document.getElementById('cancel-edit-btn').addEventListener('click', resetProductForm);
+
+    document.getElementById('admin-prod-list').addEventListener('click', async (e) => {
+        const editBtn = e.target.closest('.btn-edit');
+        const deleteBtn = e.target.closest('.btn-delete');
+        if (editBtn) {
+            const id = parseInt(editBtn.dataset.id);
+            const product = appData.products.find(p => p.id === id);
+            if (product) {
+                editingProductId = id;
+                document.getElementById('product-id').value = product.id;
+                document.getElementById('prod-name').value = product.name;
+                document.getElementById('prod-level').value = product.level;
+                document.getElementById('prod-stock').value = product.stock;
+                document.getElementById('prod-available').checked = product.isAvailable;
+                document.getElementById('prod-category').value = product.categoryId;
+                document.getElementById('prod-icon-preview').style.backgroundImage = product.icon ? `url(${product.icon})` : 'none';
+                document.getElementById('cancel-edit-btn').style.display = 'inline-block';
+                document.getElementById('product-form').scrollIntoView();
+            }
+        }
+        if (deleteBtn) {
+            const id = parseInt(deleteBtn.dataset.id);
+            if (confirm('คุณต้องการลบสินค้านี้ใช่หรือไม่?')) {
+                appData.products = appData.products.filter(p => p.id !== id);
+                await saveState();
+                renderAdminProducts();
+            }
+        }
+    });
+
+    function resetProductForm() {
+        editingProductId = null;
+        document.getElementById('product-form').reset();
+        document.getElementById('prod-stock').value = -1;
+        document.getElementById('prod-available').checked = true;
+        document.getElementById('cancel-edit-btn').style.display = 'none';
+        document.getElementById('prod-icon-preview').style.backgroundImage = 'none';
+        prodIconFile = null;
+    }
+
+    const resetConfirmModal = document.getElementById('reset-confirm-modal');
+    const confirmResetBtn = document.getElementById('confirm-reset-btn');
+    const cancelResetBtn = document.getElementById('cancel-reset-btn');
+    let currentResetContext = null;
+
+    const openResetModal = (context) => {
+        currentResetContext = context;
+        resetConfirmModal.style.display = 'flex';
+    };
+
+    document.getElementById('reset-analytics-btn').addEventListener('click', () => openResetModal('analytics'));
+    document.getElementById('reset-orders-btn').addEventListener('click', () => openResetModal('orders'));
+    cancelResetBtn.addEventListener('click', () => resetConfirmModal.style.display = 'none');
+
+    confirmResetBtn.addEventListener('click', async () => {
+        const period = document.getElementById('reset-period-select').value;
+        const now = new Date();
+        const today = now.toISOString().slice(0, 10);
+        const weekStart = new Date(now);
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+        const weekStartStr = weekStart.toISOString().slice(0, 10);
+        const monthStartStr = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+        if (confirm(`คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตข้อมูล (${period})? การกระทำนี้ไม่สามารถย้อนกลับได้`)) {
+            if (currentResetContext === 'analytics') {
+                if (period === 'all') appData.analytics = { dailyTraffic: Array(7).fill(0), hourlyTraffic: Array(24).fill(0), productSales: {}, orders: [], totalSales: 0, monthlyProfit: 0 };
+                else {
+                    alert('การรีเซ็ตสถิติตามช่วงเวลาจะรีเซ็ตเฉพาะกราฟและตัวเลขสรุป แต่ข้อมูลออเดอร์จะยังคงอยู่');
+                    appData.analytics.dailyTraffic = Array(7).fill(0);
+                    appData.analytics.hourlyTraffic = Array(24).fill(0);
+                    appData.analytics.productSales = {};
+                }
+                renderDashboard();
+            } else if (currentResetContext === 'orders') {
+                if (period === 'all') appData.analytics.orders = [];
+                else {
+                    appData.analytics.orders = appData.analytics.orders.filter(order => {
+                        const orderDate = order.timestamp.slice(0, 10);
+                        if (period === 'day') return orderDate !== today;
+                        if (period === 'week') return orderDate < weekStartStr;
+                        if (period === 'month') return orderDate < monthStartStr;
+                        return true;
+                    });
+                }
+                renderOrderNumberView();
+            }
+            await saveState();
+            alert('ข้อมูลถูกรีเซ็ตเรียบร้อยแล้ว');
+        }
+        resetConfirmModal.style.display = 'none';
+    });
+
+    const perPiecePriceModal = document.getElementById('per-piece-price-modal');
+    const perPiecePriceForm = document.getElementById('per-piece-price-form');
+    document.getElementById('set-per-piece-price-btn').addEventListener('click', () => {
+        if (!editingCategoryId) { alert('กรุณาเลือกหมวดหมู่ที่ต้องการแก้ไขก่อน'); return; }
+        perPiecePriceForm.innerHTML = '';
+        const category = appData.categories.find(c => c.id === editingCategoryId);
+        const prices = category.perPiecePrices || [];
+        for (let i = 10; i <= 1000; i += 10) {
+            const priceItem = prices.find(p => p.quantity === i);
+            const div = document.createElement('div');
+            div.className = 'form-group';
+            div.innerHTML = `<label>${i} ชิ้น: <input type="number" data-quantity="${i}" value="${priceItem ? priceItem.price : ''}" placeholder="ราคา (บาท)"></label>`;
+            perPiecePriceForm.appendChild(div);
+        }
+        perPiecePriceModal.style.display = 'flex';
+    });
+    document.getElementById('close-per-piece-price-modal-btn').addEventListener('click', () => perPiecePriceModal.style.display = 'none');
+    document.getElementById('save-per-piece-price-btn').addEventListener('click', async () => {
+        const category = appData.categories.find(c => c.id === editingCategoryId);
+        const newPrices = [];
+        perPiecePriceForm.querySelectorAll('input').forEach(input => {
+            const quantity = parseInt(input.dataset.quantity);
+            const price = parseInt(input.value);
+            if (price > 0) newPrices.push({ quantity, price });
+        });
+        category.perPiecePrices = newPrices;
+        await saveState();
+        renderAdminCategories();
+        perPiecePriceModal.style.display = 'none';
+        alert('บันทึกราคาต่อชิ้นเรียบร้อยแล้ว');
+    });
+
+    const renderSubAdmins = () => {
+        const list = document.getElementById('sub-admin-list');
+        list.innerHTML = '';
+        if (appData.subAdmins.length === 0) list.innerHTML = '<tr><td colspan="3">ยังไม่มีผู้ใช้ย่อย</td></tr>';
+        else {
+            appData.subAdmins.forEach(sa => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${sa.name}</td><td>${sa.pin}</td><td><button class="btn btn-secondary btn-small btn-sub-admin-edit" data-id="${sa.id}">แก้ไข</button><button class="btn btn-danger btn-small btn-sub-admin-delete" data-id="${sa.id}">ลบ</button></td>`;
+                list.appendChild(row);
+            });
+        }
+    };
+
+    const subAdminForm = document.getElementById('sub-admin-form');
+    subAdminForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('sub-admin-name').value.trim();
+        const pin = document.getElementById('sub-admin-pin').value;
+        if (pin.length < 4) { alert('PIN ต้องมีอย่างน้อย 4 ตัวอักษร'); return; }
+        if (editingSubAdminId) {
+            const subAdmin = appData.subAdmins.find(sa => sa.id === editingSubAdminId);
+            if (subAdmin) {
+                 if (appData.subAdmins.find(sa => sa.pin === pin && sa.id !== editingSubAdminId)) { alert('PIN นี้มีผู้ใช้งานอื่นแล้ว'); return; }
+                subAdmin.name = name;
+                subAdmin.pin = pin;
+            }
+        } else {
+            if (appData.subAdmins.length >= 20) { alert('ไม่สามารถเพิ่มผู้ใช้ย่อยได้เกิน 20 คน'); return; }
+            if (appData.subAdmins.find(sa => sa.pin === pin)) { alert('PIN นี้มีผู้ใช้งานแล้ว'); return; }
+            const newSubAdmin = { id: generateId(), name, pin, permissions: {'admin': true, 'stock': true, 'order-number': true, 'dashboard': true, 'manage-account': true} };
+            appData.subAdmins.push(newSubAdmin);
+        }
+        await saveState();
+        resetSubAdminForm();
+        renderSubAdmins();
+        alert('บันทึกข้อมูลผู้ใช้ย่อยเรียบร้อยแล้ว');
+    });
+
+    const resetSubAdminForm = () => {
+        editingSubAdminId = null;
+        subAdminForm.reset();
+        document.getElementById('add-sub-admin-btn').textContent = translations[appData.shopSettings.language].addUserBtn;
+        document.getElementById('cancel-sub-admin-edit').style.display = 'none';
+    };
+
+    document.getElementById('cancel-sub-admin-edit').addEventListener('click', resetSubAdminForm);
+
+    document.getElementById('sub-admin-list').addEventListener('click', async (e) => {
+        const id = parseInt(e.target.dataset.id);
+        if (e.target.classList.contains('btn-sub-admin-edit')) {
+            const subAdmin = appData.subAdmins.find(sa => sa.id === id);
+            if (subAdmin) {
+                editingSubAdminId = id;
+                document.getElementById('sub-admin-name').value = subAdmin.name;
+                document.getElementById('sub-admin-pin').value = subAdmin.pin;
+                document.getElementById('add-sub-admin-btn').textContent = translations[appData.shopSettings.language].saveBtn;
+                document.getElementById('cancel-sub-admin-edit').style.display = 'inline-block';
+            }
+        }
+        if (e.target.classList.contains('btn-sub-admin-delete')) {
+            if (confirm('ยืนยันการลบผู้ใช้ย่อยนี้หรือไม่?')) {
+                appData.subAdmins = appData.subAdmins.filter(sa => sa.id !== id);
+                await saveState();
+                renderSubAdmins();
+            }
+        }
+    });
+
+    const permissionModal = document.getElementById('permission-modal');
+    document.getElementById('view-permissions-btn').addEventListener('click', () => {
+        if (appData.subAdmins.length === 0) { alert('ยังไม่มีผู้ใช้ย่อย'); return; }
+        const permissionList = document.getElementById('permission-list');
+        permissionList.innerHTML = '';
+        const subAdmin = appData.subAdmins[0];
+        if (!subAdmin) return;
+        currentSubAdminPermissionsId = subAdmin.id;
+        document.getElementById('permission-user-name').textContent = `ตั้งค่าสิทธิ์สำหรับ: ${subAdmin.name}`;
+        const lang = appData.shopSettings.language;
+        appData.menuOrder.forEach(key => {
+            const translationKey = MENU_NAMES[key];
+            const li = document.createElement('li');
+            li.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;';
+            li.innerHTML = `<span>${translations[lang][translationKey]}</span><label class="toggle-switch"><input type="checkbox" data-menu-key="${key}" ${subAdmin.permissions[key] ? 'checked' : ''}><span class="slider"></span></label>`;
+            permissionList.appendChild(li);
+        });
+        permissionModal.style.display = 'flex';
+    });
+    
+    document.getElementById('save-permissions-btn').addEventListener('click', async () => {
+        const subAdmin = appData.subAdmins.find(sa => sa.id === currentSubAdminPermissionsId);
+        if (subAdmin) {
+            const newPermissions = {};
+            document.getElementById('permission-list').querySelectorAll('input[type="checkbox"]').forEach(input => {
+                newPermissions[input.dataset.menuKey] = input.checked;
+            });
+            subAdmin.permissions = newPermissions;
+            await saveState();
+            permissionModal.style.display = 'none';
+            alert('บันทึกสิทธิ์เรียบร้อยแล้ว');
+            if (loggedInUser && loggedInUser.id === currentSubAdminPermissionsId) renderAdminPanel();
+        }
+    });
+
+    document.getElementById('close-permission-modal-btn').addEventListener('click', () => permissionModal.style.display = 'none');
+
+    const reorderMenuModal = document.getElementById('reorder-menu-modal');
+    const renderReorderMenuModal = () => {
+        const reorderMenuList = document.getElementById('reorder-menu-list');
+        reorderMenuList.innerHTML = '';
+        const lang = appData.shopSettings.language;
+        appData.menuOrder.forEach(key => {
+            const translationKey = MENU_NAMES[key];
+            const li = document.createElement('li');
+            li.textContent = translations[lang][translationKey];
+            li.dataset.menu = key;
+            li.draggable = true;
+            li.classList.add('sortable');
+            reorderMenuList.appendChild(li);
+        });
+        reorderMenuModal.style.display = 'flex';
+        addDragDropListeners();
+    };
+
+    const addDragDropListeners = () => {
+        const container = document.getElementById('reorder-menu-list');
+        let draggedItem = null;
+        container.querySelectorAll('.sortable').forEach(item => {
+            item.addEventListener('dragstart', () => { draggedItem = item; setTimeout(() => item.classList.add('dragging'), 0); });
+            item.addEventListener('dragend', () => { if(draggedItem) draggedItem.classList.remove('dragging'); draggedItem = null; });
+        });
+        container.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const afterElement = [...container.querySelectorAll('.sortable:not(.dragging)')].reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = e.clientY - box.top - box.height / 2;
+                return (offset < 0 && offset > closest.offset) ? { offset: offset, element: child } : closest;
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+            if (afterElement == null) container.appendChild(draggedItem);
+            else container.insertBefore(draggedItem, afterElement);
+        });
+    };
+
+    document.getElementById('save-menu-order-btn').addEventListener('click', async () => {
+        appData.menuOrder = [...document.getElementById('reorder-menu-list').children].map(li => li.dataset.menu);
+        await saveState();
+        reorderMenuModal.style.display = 'none';
+        renderAdminPanel();
+        alert('บันทึกการจัดเรียงเมนูเรียบร้อยแล้ว');
+    });
+
+    document.getElementById('close-reorder-menu-modal-btn').addEventListener('click', () => reorderMenuModal.style.display = 'none');
+
+    const generateOrderNumber = () => {
+        const format = appData.shopSettings.orderNumberFormat;
+        const counters = appData.shopSettings.orderNumberCounters;
+        const now = new Date();
+        let num = counters[format] || 1;
+        counters[format] = num + 1;
+        const pad = (n, width) => n.toString().padStart(width, '0');
+        switch(format) {
+            case 'format1': return `WHD${(now.getFullYear() + 543).toString().slice(-2)}/${pad(now.getMonth() + 1, 2)}/${pad(num, 4)}`;
+            case 'format2': return `WHD-${now.getFullYear()}${pad(now.getMonth() + 1, 2)}${pad(now.getDate(), 2)}-${pad(num, 4)}`;
+            default: return `WHD-${Math.floor(Math.random() * 90000) + 10000}`;
+        }
+    };
+
     const renderOrderNumberView = (dateRange = []) => {
-        const newList = document.getElementById('new-orders-list');
         const activeList = document.getElementById('active-orders-list');
         const cancelledList = document.getElementById('cancelled-orders-list');
-        newList.innerHTML = ''; activeList.innerHTML = ''; cancelledList.innerHTML = '';
+        activeList.innerHTML = '';
+        cancelledList.innerHTML = '';
         const lang = appData.shopSettings.language;
         let orders = [...appData.analytics.orders];
         if (dateRange.length > 0) {
@@ -926,527 +1637,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const date = new Date(order.timestamp);
             const formattedDate = `${date.toLocaleDateString('th-TH')} ${date.toLocaleTimeString('th-TH')}`;
             const row = document.createElement('tr');
-            row.innerHTML = `<td>${order.id}</td><td>${formattedDate}</td><td>${order.total.toLocaleString()} บาท</td>`;
-            const actionsCell = document.createElement('td');
-            
-            if (order.status === 'new') {
-                actionsCell.innerHTML = `<button class="btn btn-success btn-small confirm-new-order" data-id="${order.id}">Confirm</button><button class="btn btn-danger btn-small cancel-new-order" data-id="${order.id}">Cancel</button>`;
-                row.appendChild(actionsCell);
-                newList.appendChild(row);
-            } else if (order.status === 'active') {
-                actionsCell.innerHTML = `<button class="btn btn-info btn-small view-order-details" data-id="${order.id}">${translations[lang].viewDetailsBtn}</button><button class="btn btn-danger btn-small cancel-active-order" data-id="${order.id}">${translations[lang].cancelOrderBtn}</button>`;
-                row.appendChild(actionsCell);
+            if (order.status === 'active') {
+                row.innerHTML = `<td>${order.id}</td><td>${formattedDate}</td><td>${order.total.toLocaleString()} บาท</td><td><button class="btn btn-info btn-small view-order-details" data-id="${order.id}">${translations[lang].viewDetailsBtn}</button><button class="btn btn-danger btn-small cancel-order" data-id="${order.id}">${translations[lang].cancelOrderBtn}</button></td>`;
                 activeList.appendChild(row);
-            } else { // cancelled
-                actionsCell.innerHTML = `<button class="btn btn-info btn-small view-order-details" data-id="${order.id}">${translations[lang].viewDetailsBtn}</button>`;
-                row.appendChild(actionsCell);
+            } else {
+                row.innerHTML = `<td>${order.id}</td><td>${formattedDate}</td><td>${order.total.toLocaleString()} บาท</td><td><button class="btn btn-info btn-small view-order-details" data-id="${order.id}">${translations[lang].viewDetailsBtn}</button></td>`;
                 cancelledList.appendChild(row);
             }
         });
-    };
-
-    const renderTaxView = () => {
-        const currentYear = new Date().getFullYear();
-        const ordersInYear = appData.analytics.orders.filter(o => new Date(o.timestamp).getFullYear() === currentYear && o.status !== 'new');
-        const yearlySales = ordersInYear.reduce((sum, order) => sum + order.total, 0);
-        document.getElementById('tax-total-sales').value = yearlySales.toLocaleString();
-        document.getElementById('tax-result-container').style.display = 'none';
-    };
-
-    const calculateTax = () => {
-        const yearlySales = parseFloat(document.getElementById('tax-total-sales').value.replace(/,/g, '')) || 0;
-        const otherIncome = parseFloat(document.getElementById('tax-other-income').value) || 0;
-        const deductions = parseFloat(document.getElementById('tax-deduction').value) || 0;
-        
-        const totalIncome = yearlySales + otherIncome;
-        const assessableIncome = totalIncome * 0.4;
-        const netIncome = assessableIncome - deductions;
-
-        if (netIncome <= 0) {
-            document.getElementById('tax-net-income').textContent = `รายได้สุทธิ: ${netIncome.toLocaleString()} บาท (ไม่ต้องเสียภาษี)`;
-            document.getElementById('tax-total-tax').textContent = `ภาษีที่ต้องชำระ: 0 บาท`;
-            document.getElementById('tax-result-container').style.display = 'block';
-            return;
-        }
-
-        let tax = 0;
-        let incomeLeft = netIncome;
-
-        const taxBrackets = [
-            { limit: 5000000, rate: 0.35 }, { limit: 2000000, rate: 0.30 },
-            { limit: 1000000, rate: 0.25 }, { limit: 750000, rate: 0.20 },
-            { limit: 500000, rate: 0.15 }, { limit: 300000, rate: 0.10 },
-            { limit: 150000, rate: 0.05 }, { limit: 0, rate: 0.00 }
-        ];
-
-        for (const bracket of taxBrackets) {
-            if (incomeLeft > bracket.limit) {
-                tax += (incomeLeft - bracket.limit) * bracket.rate;
-                incomeLeft = bracket.limit;
-            }
-        }
-
-        document.getElementById('tax-net-income').textContent = `รายได้สุทธิ (หลังหักค่าใช้จ่ายและลดหย่อน): ${netIncome.toLocaleString()} บาท`;
-        document.getElementById('tax-total-tax').textContent = `ภาษีที่ต้องชำระ: ${tax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท`;
-        document.getElementById('tax-result-container').style.display = 'block';
-    };
-
-    // =================================================================================
-    // ===== EVENT LISTENERS =====
-    // =================================================================================
-    const addEventListeners = () => {
-        // FIX: Use event delegation for main admin menu
-        adminMenuContainer.addEventListener('click', (e) => {
-            const menuBtn = e.target.closest('.menu-btn');
-            if (menuBtn && menuBtn.dataset.menu) {
-                activeAdminMenu = menuBtn.dataset.menu;
-                renderAdminPanel();
-            }
-        });
-
-        // FIX: Use event delegation for sub-menus
-        document.getElementById('admin-settings-tabs').addEventListener('click', (e) => {
-            const tab = e.target.closest('.tab');
-            if (tab && tab.dataset.sub) {
-                activeAdminSubMenus.admin = tab.dataset.sub;
-                renderAdminPanel();
-            }
-        });
-
-        document.getElementById('admin-stock-tabs').addEventListener('click', (e) => {
-            const tab = e.target.closest('.tab');
-            if (tab && tab.dataset.sub) {
-                activeAdminSubMenus.stock = tab.dataset.sub;
-                renderAdminPanel();
-            }
-        });
-        
-        document.getElementById('admin-order-tabs').addEventListener('click', (e) => {
-            const tab = e.target.closest('.tab');
-            if (tab && tab.dataset.sub) {
-                activeAdminSubMenus['order-number'] = tab.dataset.sub;
-                renderAdminPanel();
-            }
-        });
-        
-        // FIX: Use event delegation for dynamically generated product category tabs
-        document.getElementById('admin-product-tabs').addEventListener('click', (e) => {
-            const tab = e.target.closest('.tab');
-            if (tab && tab.dataset.id) {
-                adminActiveCategoryId = parseInt(tab.dataset.id);
-                renderAdminProducts();
-                renderAdminProductTabs(); // Re-render to update active state
-            }
-        });
-
-        // FIX: Use event delegation for customer category tabs
-        categoryTabsContainer.addEventListener('click', (e) => {
-            const tab = e.target.closest('.tab');
-            if (tab && tab.dataset.id) {
-                activeCategoryId = parseInt(tab.dataset.id);
-                searchBox.value = '';
-                renderCustomerView();
-            }
-        });
-
-        langToggleBtn.addEventListener('click', async () => {
-            const newLang = appData.shopSettings.language === 'th' ? 'en' : 'th';
-            setLanguage(newLang);
-            await saveState();
-        });
-
-        themeToggleBtn.addEventListener('click', async () => {
-            appData.shopSettings.darkMode = !appData.shopSettings.darkMode;
-            applyTheme();
-            await saveState();
-        });
-
-        searchBox.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.trim();
-            renderProducts(searchTerm);
-            if (searchTerm) categoryTabsContainer.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            else renderCategoryTabs();
-        });
-
-        productTableBody.addEventListener('click', (e) => {
-            const button = e.target.closest('button[data-op]');
-            if (button) {
-                const productId = button.dataset.id;
-                const operation = parseInt(button.dataset.op);
-                let currentQuantity = appData.cart[productId] || 0;
-                currentQuantity = Math.max(0, currentQuantity + operation);
-                appData.cart[productId] = currentQuantity;
-                const quantityDisplay = button.closest('tr').querySelector('.quantity-display');
-                if (quantityDisplay) quantityDisplay.textContent = currentQuantity;
-                checkOrderValidation();
-            }
-        });
-
-        confirmOrderBtn.addEventListener('click', () => {
-            if (confirmOrderBtn.disabled) return;
-            document.getElementById('order-modal-title').textContent = 'สรุปออเดอร์';
-            document.getElementById('order-modal-prompt').style.display = 'block';
-            document.getElementById('copy-order-btn').style.display = 'inline-block';
-            const orderNumber = generateOrderNumber();
-            orderDetails.textContent = createOrderSummaryText(orderNumber);
-            orderDetails.dataset.orderNumber = orderNumber;
-            orderModal.style.display = 'flex';
-        });
-
-        viewOrderBtn.addEventListener('click', () => {
-            cartDetails.textContent = createOrderSummaryText();
-            cartModal.style.display = 'flex';
-        });
-
-        document.getElementById('copy-order-btn').addEventListener('click', async (e) => {
-            const orderText = orderDetails.textContent;
-            try {
-                await navigator.clipboard.writeText(orderText);
-                const totalOrderPriceText = orderText.match(/ยอดรวมทั้งหมด: ([\d,]+) บาท/);
-                const totalOrderPrice = totalOrderPriceText ? parseFloat(totalOrderPriceText[1].replace(/,/g, '')) : 0;
-                if (!isNaN(totalOrderPrice) && totalOrderPrice > 0) {
-                    const newOrder = { id: orderDetails.dataset.orderNumber, timestamp: new Date().toISOString(), total: totalOrderPrice, items: { ...appData.cart }, status: 'new' };
-                    appData.analytics.orders.push(newOrder);
-                    for (const prodId in appData.cart) {
-                        if (appData.cart[prodId] > 0) {
-                            const product = appData.products.find(p => p.id == prodId);
-                            if (product && product.stock !== -1) product.stock = Math.max(0, product.stock - appData.cart[prodId]);
-                        }
-                    }
-                }
-                appData.cart = {};
-                await saveState();
-                orderModal.style.display = 'none';
-                const successModal = document.getElementById('copy-success-modal');
-                successModal.style.display = 'flex';
-                setTimeout(() => {
-                    successModal.style.display = 'none';
-                    renderCustomerView();
-                }, 2000);
-            } catch (err) {
-                console.error('Failed to copy text: ', err);
-            }
-        });
-        
-        document.getElementById('close-order-modal-btn').addEventListener('click', () => orderModal.style.display = 'none');
-        document.getElementById('close-cart-modal-btn').addEventListener('click', () => cartModal.style.display = 'none');
-        document.getElementById('reset-cart-btn').addEventListener('click', () => {
-             if (confirm('คุณต้องการรีเซ็ทรายการสั่งซื้อทั้งหมดหรือไม่?')) {
-                appData.cart = {};
-                renderCustomerView();
-            }
-        });
-
-        adminGearIcon.addEventListener('click', () => {
-            if (!isAdminLoggedIn) {
-                switchView('adminLogin');
-                themeToggleBtn.style.display = 'none';
-                langToggleBtn.style.display = 'none';
-            }
-        });
-
-        document.getElementById('back-to-customer-view-btn').addEventListener('click', () => {
-            switchView('customer');
-            renderCustomerView();
-        });
-        
-        document.getElementById('login-btn').addEventListener('click', async () => {
-            const pinInput = document.getElementById('pin-input');
-            const loginError = document.getElementById('login-error');
-            const pin = pinInput.value;
-            let loggedIn = false;
-            if (pin === appData.adminPin) {
-                isAdminLoggedIn = true;
-                loggedInUser = { name: 'Super Admin', isSuper: true };
-                loggedIn = true;
-            } else {
-                const subAdmin = appData.subAdmins.find(sa => sa.pin === pin);
-                if (subAdmin) {
-                    isAdminLoggedIn = true;
-                    loggedInUser = subAdmin;
-                    loggedIn = true;
-                }
-            }
-            if (loggedIn) {
-                switchView('adminPanel');
-                renderAdminPanel();
-                pinInput.value = '';
-                loginError.textContent = '';
-                adminGearIcon.style.display = 'none';
-                backToAdminBtn.style.display = 'flex';
-                themeToggleBtn.style.display = 'none';
-                langToggleBtn.style.display = 'none';
-                await saveState();
-            } else {
-                loginError.textContent = translations[appData.shopSettings.language].invalidPinError;
-            }
-        });
-        
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            isAdminLoggedIn = false;
-            loggedInUser = null;
-            switchView('customer');
-            renderCustomerView();
-        });
-        
-        document.getElementById('view-shop-btn').addEventListener('click', () => {
-            switchView('customer');
-            renderCustomerView();
-        });
-
-        backToAdminBtn.addEventListener('click', () => {
-            if (isAdminLoggedIn) {
-                switchView('adminPanel');
-                renderAdminPanel();
-            }
-        });
-
-        document.getElementById('save-shop-info-btn').addEventListener('click', async (e) => {
-            showSaveFeedback(e.target);
-            appData.shopSettings.shopName = document.getElementById('shop-name').value;
-            appData.shopSettings.slogan = document.getElementById('shop-slogan').value;
-            appData.shopSettings.managerName = document.getElementById('manager-name').value;
-            appData.shopSettings.shareholderName = document.getElementById('shareholder-name').value;
-            appData.shopSettings.orderNumberFormat = document.getElementById('order-format-select').value;
-            await saveState();
-            applyTheme();
-        });
-
-        ['global-font-size', 'shop-name-font-size', 'slogan-font-size'].forEach(id => {
-            const slider = document.getElementById(`${id}-slider`);
-            const valueDisplay = document.getElementById(`${id}-value`);
-            slider.addEventListener('input', () => {
-                valueDisplay.textContent = slider.value;
-                const key = id.replace(/-/g, '_').replace(/_slider$/, '').replace(/_([a-z])/g, g => g[1].toUpperCase());
-                appData.shopSettings[key] = slider.value;
-                applyFontSizes();
-            });
-        });
-
-        document.getElementById('save-system-fonts-btn').addEventListener('click', async (e) => {
-            showSaveFeedback(e.target);
-            appData.shopSettings.fontFamily = document.getElementById('shop-font').value;
-            appData.shopSettings.globalFontFamily = document.getElementById('shop-global-font').value;
-            appData.shopSettings.useLogo = document.getElementById('logo-toggle').checked;
-            appData.shopSettings.shopNameEffect = {
-                enabled: document.getElementById('effect-toggle').checked,
-                offsetX: document.getElementById('effect-offset-x').value,
-                offsetY: document.getElementById('effect-offset-y').value,
-                blur: document.getElementById('effect-blur').value,
-                color: document.getElementById('effect-color').value
-            };
-            if (logoFile) appData.shopSettings.logo = await readFileAsBase64(logoFile);
-            appData.shopSettings.copyrightText = document.getElementById('copyright-text').value;
-            appData.shopSettings.copyrightOpacity = document.getElementById('copyright-opacity').value;
-            await saveState();
-            applyTheme();
-        });
-
-        document.getElementById('save-festival-settings-btn').addEventListener('click', async (e) => {
-            showSaveFeedback(e.target);
-            const effects = appData.shopSettings.festivalEffects;
-            effects.rain.enabled = document.getElementById('rain-effect-toggle').checked;
-            effects.rain.intensity = document.getElementById('rain-intensity').value;
-            effects.rain.opacity = document.getElementById('rain-opacity').value;
-            effects.snow.enabled = document.getElementById('snow-effect-toggle').checked;
-            effects.snow.intensity = document.getElementById('snow-intensity').value;
-            effects.snow.opacity = document.getElementById('snow-opacity').value;
-            await saveState();
-            renderFestivalEffects();
-        });
-
-        document.getElementById('system-status-toggle').addEventListener('change', async (e) => {
-            appData.shopSettings.systemOpen = e.target.checked;
-            checkSystemStatus();
-            await saveState();
-        });
-        document.getElementById('save-system-status-btn').addEventListener('click', async (e) => {
-            showSaveFeedback(e.target);
-            appData.shopSettings.maintenanceMessage = document.getElementById('maintenance-message-input').value;
-            checkSystemStatus();
-            await saveState();
-        });
-
-        document.getElementById('save-loading-bg-settings-btn').addEventListener('click', async (e) => {
-            showSaveFeedback(e.target);
-            appData.shopSettings.loadingBackgroundOpacity = document.getElementById('loading-bg-opacity').value;
-            appData.shopSettings.loadingBarStyle = document.getElementById('loading-bar-style-select').value;
-            if (loadingBgFile) appData.shopSettings.loadingBackgroundImage = await readFileAsBase64(loadingBgFile);
-            await saveState();
-            applyLoadingBackground();
-        });
-        
-        document.getElementById('calculate-tax-btn').addEventListener('click', calculateTax);
-        
-        document.getElementById('admin-menu-order-number').addEventListener('click', async (e) => {
-            const target = e.target;
-            const orderId = target.dataset.id;
-            if (!orderId) return;
-
-            if (target.classList.contains('confirm-new-order')) {
-                const order = appData.analytics.orders.find(o => o.id === orderId);
-                if (order) {
-                    order.status = 'active';
-                    await saveState();
-                    renderOrderNumberView(orderDatePicker.selectedDates);
-                }
-            } else if (target.classList.contains('cancel-new-order')) {
-                if (confirm(`คุณต้องการลบออเดอร์ ${orderId} ทิ้งถาวรใช่หรือไม่?`)) {
-                    appData.analytics.orders = appData.analytics.orders.filter(o => o.id !== orderId);
-                    await saveState();
-                    renderOrderNumberView(orderDatePicker.selectedDates);
-                }
-            } else if (target.classList.contains('cancel-active-order')) {
-                const order = appData.analytics.orders.find(o => o.id === orderId);
-                if (order && confirm(`คุณต้องการยกเลิกออเดอร์ ${orderId} ใช่หรือไม่?`)) {
-                    order.status = 'cancelled';
-                    await saveState();
-                    renderOrderNumberView(orderDatePicker.selectedDates);
-                }
-            } else if (target.classList.contains('view-order-details')) {
-                viewOrderDetails(orderId);
-            }
-        });
-        
-        document.getElementById('admin-cat-list').addEventListener('click', (e) => {
-            const target = e.target.closest('button');
-            if(!target) return;
-            const id = parseInt(target.dataset.id);
-
-            if (target.classList.contains('btn-price-settings')) {
-                renderPriceSettingsModal(id);
-            } else if (target.classList.contains('btn-cat-edit')) {
-                const category = appData.categories.find(c => c.id === id);
-                if (category) {
-                    editingCategoryId = id;
-                    document.getElementById('cat-name').value = category.name;
-                    document.getElementById('cat-min-order').value = category.minOrderQuantity;
-                    document.getElementById('submit-cat-btn').textContent = translations[appData.shopSettings.language].saveBtn;
-                    document.getElementById('cancel-cat-edit-btn').style.display = 'inline-block';
-                }
-            } else if (target.classList.contains('btn-cat-delete')) {
-                deleteCategory(id);
-            }
-        });
-
-        document.getElementById('save-price-settings-btn').addEventListener('click', async () => {
-            const category = appData.categories.find(c => c.id === editingCategoryId);
-            if(category) {
-                const newPrices = [];
-                document.getElementById('per-piece-price-form').querySelectorAll('input').forEach(input => {
-                    const quantity = parseInt(input.dataset.quantity);
-                    const price = parseInt(input.value);
-                    if (!isNaN(price) && price > 0) newPrices.push({ quantity, price });
-                });
-                category.perPiecePrices = newPrices;
-                await saveState();
-                renderAdminCategories();
-                document.getElementById('price-settings-modal').style.display = 'none';
-            }
-        });
-        document.getElementById('close-price-settings-modal-btn').addEventListener('click', () => {
-            document.getElementById('price-settings-modal').style.display = 'none';
-        });
-
-        document.getElementById('submit-cat-btn').addEventListener('click', async (e) => {
-            e.preventDefault();
-            showSaveFeedback(e.target);
-            const name = document.getElementById('cat-name').value.trim();
-            const minOrder = parseInt(document.getElementById('cat-min-order').value) || 0;
-            if (!name) { alert('กรุณากรอกชื่อหมวดหมู่'); return; }
-            let iconData = null;
-            if (catIconFile) iconData = await readFileAsBase64(catIconFile);
-            if (editingCategoryId) {
-                const index = appData.categories.findIndex(c => c.id === editingCategoryId);
-                if (index !== -1) {
-                    appData.categories[index].name = name;
-                    appData.categories[index].minOrderQuantity = minOrder;
-                    if (iconData) appData.categories[index].icon = iconData;
-                }
-            } else appData.categories.push({ id: generateId(), name, icon: iconData, perPiecePrices: [], minOrderQuantity: minOrder });
-            await saveState();
-            resetCategoryForm();
-            renderAdminPanel();
-        });
-    };
-    
-    const renderPriceSettingsModal = (categoryId) => {
-        const category = appData.categories.find(c => c.id === categoryId);
-        if (!category) return;
-        editingCategoryId = categoryId;
-        const modal = document.getElementById('price-settings-modal');
-        document.getElementById('price-settings-category-name').textContent = category.name;
-        const form = document.getElementById('per-piece-price-form');
-        form.innerHTML = '';
-        const prices = category.perPiecePrices || [];
-        for (let i = 10; i <= 1000; i += 10) {
-            const priceItem = prices.find(p => p.quantity === i);
-            const div = document.createElement('div');
-            div.className = 'form-group';
-            div.innerHTML = `<label>${i} ชิ้น: <input type="number" data-quantity="${i}" value="${priceItem ? priceItem.price : ''}" placeholder="ราคา (บาท)"></label>`;
-            form.appendChild(div);
-        }
-        modal.style.display = 'flex';
-    };
-
-    const deleteCategory = async (id) => {
-        if (confirm('การลบหมวดหมู่จะลบสินค้าทั้งหมดในหมวดหมู่นั้นด้วย ยืนยันหรือไม่?')) {
-            appData.categories = appData.categories.filter(c => c.id !== id);
-            appData.products = appData.products.filter(p => p.categoryId !== id);
-            await saveState();
-            renderAdminPanel();
-        }
-    };
-    const resetCategoryForm = () => {
-        editingCategoryId = null;
-        document.getElementById('category-form').reset();
-    };
-
-    // =================================================================================
-    // ===== INITIALIZATION =====
-    // =================================================================================
-    const checkSystemStatus = () => {
-        const maintenanceOverlay = document.getElementById('maintenance-overlay');
-        if (appData.shopSettings.systemOpen) {
-            maintenanceOverlay.classList.remove('active');
-        } else {
-            document.getElementById('maintenance-shop-name').textContent = appData.shopSettings.shopName;
-            document.getElementById('maintenance-message').textContent = appData.shopSettings.maintenanceMessage;
-            maintenanceOverlay.classList.add('active');
-        }
-    };
-
-    const init = async () => {
-        applyLoadingBackground();
-        await loadState();
-        checkSystemStatus();
-        if (!appData.shopSettings.systemOpen) {
-             document.getElementById('loader-overlay').style.display = 'none';
-             return;
-        }
-        
-        if (appData.categories.length > 0) {
-            if (!appData.categories.find(c => c.id === activeCategoryId)) activeCategoryId = appData.categories[0].id;
-            adminActiveCategoryId = activeCategoryId;
-        } else { activeCategoryId = null; adminActiveCategoryId = null; }
-        
-        populateFontSelectors();
-        addEventListeners();
-        renderCustomerView();
-        document.getElementById('loader-overlay').style.display = 'none';
-    };
-
-    const populateFontSelectors = () => {
-        const fontSelect = document.getElementById('shop-font');
-        const globalFontSelect = document.getElementById('shop-global-font');
-        fontSelect.innerHTML = ''; globalFontSelect.innerHTML = '';
-        FONT_OPTIONS.forEach(font => {
-            const option = document.createElement('option');
-            option.value = font.value;
-            option.textContent = font.name;
-            fontSelect.appendChild(option.cloneNode(true));
-            globalFontSelect.appendChild(option.cloneNode(true));
-        });
+        document.querySelectorAll('.view-order-details').forEach(btn => btn.addEventListener('click', (e) => viewOrderDetails(e.target.dataset.id)));
+        document.querySelectorAll('.cancel-order').forEach(btn => btn.addEventListener('click', (e) => cancelOrder(e.target.dataset.id)));
     };
 
     const viewOrderDetails = (orderId) => {
@@ -1462,19 +1662,27 @@ document.addEventListener('DOMContentLoaded', () => {
         orderModal.style.display = 'flex';
     };
 
-    const generateOrderNumber = () => {
-        const format = appData.shopSettings.orderNumberFormat;
-        const counters = appData.shopSettings.orderNumberCounters;
-        const now = new Date();
-        let num = counters[format] || 1;
-        counters[format] = num + 1;
-        const pad = (n, width) => n.toString().padStart(width, '0');
-        switch(format) {
-            case 'format1': return `WHD${(now.getFullYear() + 543).toString().slice(-2)}/${pad(now.getMonth() + 1, 2)}/${pad(num, 4)}`;
-            case 'format2': return `WHD-${now.getFullYear()}${pad(now.getMonth() + 1, 2)}${pad(now.getDate(), 2)}-${pad(num, 4)}`;
-            default: return `WHD-${Math.floor(Math.random() * 90000) + 10000}`;
+    const cancelOrder = async (orderId) => {
+        if (confirm(`คุณต้องการยกเลิกออเดอร์เลขที่ ${orderId} ใช่หรือไม่?`)) {
+            const order = appData.analytics.orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'cancelled';
+                await saveState();
+                renderOrderNumberView(orderDatePicker.selectedDates);
+            }
         }
     };
     
+    const init = async () => {
+        await loadState();
+        applyLoadingBackground();
+        if (appData.categories.length > 0) {
+            if (!appData.categories.find(c => c.id === activeCategoryId)) activeCategoryId = appData.categories[0].id;
+            adminActiveCategoryId = activeCategoryId;
+        } else { activeCategoryId = null; adminActiveCategoryId = null; }
+        renderCustomerView();
+        document.getElementById('loader-overlay').style.display = 'none';
+    };
+
     init();
 });
