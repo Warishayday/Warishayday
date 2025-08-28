@@ -7,46 +7,59 @@ document.addEventListener('DOMContentLoaded', () => {
         cart: {},
         adminPin: '210406',
         subAdmins: [],
+        stockDatabase: {
+            categories: [],
+            products: []
+        },
         shopSettings: {
             shopName: "WARISHAYDAY",
             slogan: "ร้านค้าไอเท็ม Hay Day",
             managerName: "",
             shareholderName: "",
-            themeColor: "#28a745",
+            themeName: 'default',
             fontFamily: "'Kanit', sans-serif",
             globalFontFamily: "'Kanit', sans-serif",
-            globalFontSize: 16, // NEW
-            shopNameFontSize: 2.5, // NEW
-            sloganFontSize: 1.2, // NEW
+            globalFontSize: 50,
+            mainMenuFontSize: 50,
+            subMenuFontSize: 50,
+            shopNameFontSize: 2.5,
+            sloganFontSize: 1.2,
             orderNumberFormat: 'format1',
             orderNumberCounters: { format1: 1, format2: 1, format3: 1 },
             logo: null,
             useLogo: false,
             darkMode: false,
-            shopNameEffect: {
-                enabled: false,
-                offsetX: 2,
-                offsetY: 2,
-                blur: 4,
-                color: '#000000'
-            },
+            shopNameEffect: { enabled: false, offsetX: 2, offsetY: 2, blur: 4, color: '#000000' },
+            sloganEffect: { enabled: false, offsetX: 1, offsetY: 1, blur: 2, color: '#000000' },
+            sloganFontFamily: "'Kanit', sans-serif",
             backgroundImage: null,
             backgroundOpacity: 1,
             backgroundBlur: 0,
             loadingBackgroundImage: null,
             loadingBackgroundOpacity: 0.7,
-            loadingBarStyle: '1', // NEW
+            loadingBarStyle: '1',
+            // NEW: Editable loading message
+            loadingMessageText: "กำลังดาวน์โหลดข้อมูลล่าสุด...",
             language: 'th',
-            lowStockThreshold: 50,
+            lowStockThreshold: 50, 
+            dbCategoryLowStockThresholds: {},
             copyrightText: "Copyright © 2025 Warishayday",
             copyrightOpacity: 1,
-            shopEnabled: true, // NEW
-            shopClosedMessage: "ร้านปิดปรับปรุงชั่วคราว", // NEW
-            festival: { // NEW
+            shopEnabled: true,
+            shopClosedMessage: {
+                text: "ร้านปิดปรับปรุงชั่วคราว",
+                color: "#FFFFFF",
+                size: 20,
+                speed: 20,
+                effect: { enabled: false, offsetX: 1, offsetY: 1, blur: 2, color: '#000000' }
+            },
+            festival: {
                 rain: { enabled: false, intensity: 20, opacity: 0.5 },
                 snow: { enabled: false, intensity: 20, opacity: 0.5 },
-                fireworks: { enabled: false, intensity: 1, opacity: 0.8 }
-            }
+                fireworks: { enabled: false, intensity: 1, opacity: 0.8 },
+                autumn: { enabled: false, intensity: 20, opacity: 0.8 }
+            },
+            promotions: [] 
         },
         analytics: {
             dailyTraffic: Array(7).fill(0),
@@ -54,50 +67,114 @@ document.addEventListener('DOMContentLoaded', () => {
             productSales: {},
             orders: [],
             totalSales: 0,
-            monthlyProfit: 0
+            monthlyProfit: 0,
+            loginAttempts: { admin: 0, isLocked: false, lastAttempt: null },
+            subAdminAttempts: {},
+            logs: []
         },
-        menuOrder: [
-            'admin', 'festival', 'stock', 'order-number', 'dashboard', 'manage-account'
-        ]
+        taxData: {
+            year: new Date().getFullYear(),
+            otherIncome: 0,
+            expenseType: 'flat', 
+            actualExpenses: { cost: 0, transport: 0, advertising: 0, other: 0 },
+            deductions: {
+                personal: 60000,
+                spouse: 0,
+                children: 0,
+                socialSecurity: 0,
+                insurance: 0,
+                rmf: 0,
+                ssf: 0,
+                donations: 0,
+                homeInterest: 0
+            }
+        },
+        menuOrder: ['dashboard', 'order-number', 'stock', 'admin', 'tax', 'festival', 'manage-account']
     };
 
     const FONT_OPTIONS = [
-        { name: "Kanit", value: "'Kanit', sans-serif" },
-        { name: "Chakra Petch", value: "'Chakra Petch', sans-serif" },
-        { name: "IBM Plex Sans Thai", value: "'IBM Plex Sans Thai', sans-serif" },
-        { name: "Sarabun", value: "'Sarabun', sans-serif" },
-        { name: "Prompt", value: "'Prompt', sans-serif" },
-        { name: "Mali", value: "'Mali', sans-serif" },
-        { name: "Anuphan", value: "'Anuphan', sans-serif" },
-        { name: "Taviraj", value: "'Taviraj', serif" },
+        { name: "Kanit", value: "'Kanit', sans-serif" }, { name: "Chakra Petch", value: "'Chakra Petch', sans-serif" },
+        { name: "IBM Plex Sans Thai", value: "'IBM Plex Sans Thai', sans-serif" }, { name: "Sarabun", value: "'Sarabun', sans-serif" },
+        { name: "Prompt", value: "'Prompt', sans-serif" }, { name: "Mali", value: "'Mali', sans-serif" },
+        { name: "Anuphan", value: "'Anuphan', sans-serif" }, { name: "Taviraj", value: "'Taviraj', serif" },
         { name: "Trirong", value: "'Trirong', serif" },
     ];
     
+    const THEME_PRESETS = {
+        default: { name: "Default Green", colors: { primary: "#28a745", secondary: "#ffc107", info: "#17a2b8" }},
+        ocean: { name: "Ocean Blue", colors: { primary: "#007bff", secondary: "#66d9e8", info: "#17a2b8" }},
+        sunset: { name: "Sunset Orange", colors: { primary: "#fd7e14", secondary: "#ffc107", info: "#e83e8c" }},
+        royal: { name: "Royal Purple", colors: { primary: "#6f42c1", secondary: "#e83e8c", info: "#007bff" }},
+        forest: { name: "Forest Vibe", colors: { primary: "#20c997", secondary: "#495057", info: "#28a745" }},
+        candy: { name: "Candy Pink", colors: { primary: "#e83e8c", secondary: "#f8f9fa", info: "#6f42c1" }},
+        fire: { name: "Fire Red", colors: { primary: "#dc3545", secondary: "#fd7e14", info: "#ffc107" }},
+        earth: { name: "Earthy Brown", colors: { primary: "#8B4513", secondary: "#D2B48C", info: "#A0522D" }},
+        mono: { name: "Monochrome", colors: { primary: "#343a40", secondary: "#6c757d", info: "#f8f9fa" }},
+        tech: { name: "Tech Cyan", colors: { primary: "#17a2b8", secondary: "#20c997", info: "#66d9e8" }},
+        meadow: { name: "Meadow Green", colors: { primary: "#4CAF50", secondary: "#8BC34A", info: "#CDDC39" }},
+        sky: { name: "Sky Blue", colors: { primary: "#03A9F4", secondary: "#81D4FA", info: "#B3E5FC" }},
+        lavender: { name: "Lavender Fields", colors: { primary: "#9575CD", secondary: "#B39DDB", info: "#D1C4E9" }},
+        rose: { name: "Rose Gold", colors: { primary: "#E57373", secondary: "#FFCDD2", info: "#F8BBD0" }},
+        mint: { name: "Mint Chocolate", colors: { primary: "#80CBC4", secondary: "#A7FFEB", info: "#4D4D4D" }},
+        coral: { name: "Coral Reef", colors: { primary: "#FF7043", secondary: "#FFAB91", info: "#FF8A65" }},
+        sapphire: { name: "Sapphire Gem", colors: { primary: "#3F51B5", secondary: "#7986CB", info: "#C5CAE9" }},
+        amber: { name: "Amber Glow", colors: { primary: "#FFC107", secondary: "#FFD54F", info: "#FFECB3" }},
+        teal: { name: "Deep Teal", colors: { primary: "#009688", secondary: "#4DB6AC", info: "#B2DFDB" }},
+        indigo: { name: "Indigo Night", colors: { primary: "#303F9F", secondary: "#5C6BC0", info: "#9FA8DA" }},
+        peach: { name: "Peach Blossom", colors: { primary: "#FF8A80", secondary: "#FFB5A7", info: "#FFDAC1" }},
+        steel: { name: "Steel Gray", colors: { primary: "#607D8B", secondary: "#90A4AE", info: "#CFD8DC" }},
+        wine: { name: "Red Wine", colors: { primary: "#C2185B", secondary: "#E91E63", info: "#F06292" }},
+        emerald: { name: "Emerald City", colors: { primary: "#00695C", secondary: "#00897B", info: "#4DB6AC" }},
+        sandstone: { name: "Sandstone", colors: { primary: "#FBC02D", secondary: "#FFF176", info: "#FFF9C4" }},
+        denim: { name: "Denim Blue", colors: { primary: "#546E7A", secondary: "#78909C", info: "#B0BEC5" }},
+        plum: { name: "Sugar Plum", colors: { primary: "#8E24AA", secondary: "#AB47BC", info: "#CE93D8" }},
+        moss: { name: "Mossy Rock", colors: { primary: "#558B2F", secondary: "#7CB342", info: "#AED581" }},
+        clay: { name: "Clay Pot", colors: { primary: "#A1887F", secondary: "#BCAAA4", info: "#D7CCC8" }},
+        ocean_deep: { name: "Ocean Deep", colors: { primary: "#0D47A1", secondary: "#1976D2", info: "#64B5F6" }},
+        cherry: { name: "Cherry Blossom", colors: { primary: "#F48FB1", secondary: "#F8BBD0", info: "#FFEBEE" }},
+        olive: { name: "Olive Grove", colors: { primary: "#9E9D24", secondary: "#CDDC39", info: "#F0F4C3" }},
+        raspberry: { name: "Raspberry Sorbet", colors: { primary: "#D81B60", secondary: "#EC407A", info: "#F48FB1" }},
+        coffee: { name: "Coffee Bean", colors: { primary: "#5D4037", secondary: "#795548", info: "#A1887F" }},
+        lilac: { name: "Lilac Breeze", colors: { primary: "#7E57C2", secondary: "#9575CD", info: "#B39DDB" }},
+        tangerine: { name: "Tangerine Dream", colors: { primary: "#F57C00", secondary: "#FB8C00", info: "#FFB74D" }},
+        slate: { name: "Slate Gray", colors: { primary: "#455A64", secondary: "#607D8B", info: "#90A4AE" }},
+        periwinkle: { name: "Periwinkle", colors: { primary: "#8C9EFF", secondary: "#B3E5FC", info: "#A7C7E7" }},
+        mustard: { name: "Mustard Yellow", colors: { primary: "#FFD600", secondary: "#FFEA00", info: "#FFFF00" }},
+        seafoam: { name: "Seafoam Green", colors: { primary: "#388E3C", secondary: "#66BB6A", info: "#A5D6A7" }},
+        watermelon: { name: "Watermelon Slice", colors: { primary: "#F44336", secondary: "#4CAF50", info: "#FFEB3B" }},
+        grape: { name: "Grape Soda", colors: { primary: "#512DA8", secondary: "#673AB7", info: "#9575CD" }},
+        chocolate: { name: "Dark Chocolate", colors: { primary: "#4E342E", secondary: "#6D4C41", info: "#8D6E63" }},
+        bubblegum: { name: "Bubblegum Pop", colors: { primary: "#F06292", secondary: "#F48FB1", info: "#F8BBD0" }},
+        lagoon: { name: "Blue Lagoon", colors: { primary: "#00ACC1", secondary: "#26C6DA", info: "#80DEEA" }},
+        honey: { name: "Honey Pot", colors: { primary: "#FFA000", secondary: "#FFB300", info: "#FFD54F" }},
+        stormy: { name: "Stormy Sky", colors: { primary: "#757575", secondary: "#9E9E9E", info: "#E0E0E0" }},
+        kiwi: { name: "Kiwi Splash", colors: { primary: "#8BC34A", secondary: "#AED581", info: "#DCE775" }},
+        cinnamon: { name: "Cinnamon Spice", colors: { primary: "#BF360C", secondary: "#D84315", info: "#FF7043" }}
+    };
+
     const translations = {
         th: {
-            loadingMessage: "กำลังดาวน์โหลดข้อมูลล่าสุด...",
+            loadingMessage: "ข้อความตอนโหลด", // Key for the label
             closeBtn: "ปิด", cancelBtn: "ยกเลิก", confirmBtn: "ยืนยัน", saveBtn: "บันทึก", editBtn: "แก้ไข", deleteBtn: "ลบ",
             searchPlaceholder: "ค้นหาสินค้า...", itemsListTitle: "รายการสินค้า", tableHeaderItem: "สินค้า", tableHeaderLevel: "เลเวล", tableHeaderQuantity: "จำนวน", tableHeaderManage: "จัดการ",
             viewOrderBtn: "รายการสั่งซื้อ", confirmOrderBtn: "ยืนยันสั่งซื้อ", totalAmount: "ยอดรวม",
             adminLoginTitle: "เข้าสู่ระบบหลังบ้าน", pinLabel: "PIN", loginBtn: "เข้าสู่ระบบ", backToShopBtn: "กลับหน้าหลักสั่งสินค้า", invalidPinError: "PIN ไม่ถูกต้อง!",
+            pinAttemptsLeft: "เหลือ {attemptsLeft} ครั้ง", pinLocked: "ล็อกอินล้มเหลวเกิน 5 ครั้ง ระบบล็อกแล้ว", pinUnlockCode: "ปลดล็อกด้วยรหัส 1340900210406",
             adminPanelTitle: "Admin Panel", viewShopBtn: "มุมมองหน้าร้าน", logoutBtn: "ออกจากระบบ",
             menuAdmin: "ตั้งค่าร้าน", menuFestival: "Festival", menuStock: "สต๊อกสินค้า", menuOrderNumber: "Order Number", menuDashboard: "Dashboard", menuManageAccount: "Manage account", editMenuOrderBtn: "EDIT",
-            
-            shopInfoTitle: "ข้อมูลร้าน",
-            systemFontsTitle: "System Fonts",
-            fontPreviewText: "ตัวอย่างฟอนต์ระบบ",
-            shopNameLabel: "ชื่อร้านค้า", shopSloganLabel: "สโลแกนร้าน", 
-            managerNameLabel: "ชื่อผู้จัดการระบบ",
-            shareholderNameLabel: "ชื่อผู้ถือหุ้นใหญ่",
-            globalFontLabel: "ฟอนต์ระบบทั้งหมด", shopNameFontLabel: "ฟอนต์ชื่อร้าน",
-            globalFontSizeLabel: "ขนาดฟอนต์ทั้งระบบ", shopNameFontSizeLabel: "ขนาดฟอนต์ชื่อร้าน", sloganFontSizeLabel: "ขนาดฟอนต์สโลแกน",
-            enableEffectLabel: "เปิดใช้เอฟเฟกต์ชื่อร้าน", effectOffsetX: "เงาแนวนอน (X)", effectOffsetY: "เงาแนวตั้ง (Y)", effectBlur: "ความเบลอ", effectColor: "สีเงา",
+            menuTax: "ตรวจสอบภาษี",
+            shopInfoTitle: "ข้อมูลร้าน", shopLinkTitle: "ลิงก์สำหรับลูกค้า", shopLinkInfo: "แชร์ลิงก์นี้ให้ลูกค้าเพื่อเข้าถึงร้านค้าโดยตรง (ไม่มีปุ่ม Admin)", copyLinkBtn: "คัดลอก",
+            systemFontsTitle: "System Fonts", fontPreviewText: "ตัวอย่างฟอนต์ระบบ",
+            shopNameLabel: "ชื่อร้านค้า", shopSloganLabel: "สโลแกนร้าน", managerNameLabel: "ชื่อผู้จัดการระบบ", shareholderNameLabel: "ชื่อผู้ถือหุ้นใหญ่",
+            globalFontLabel: "ฟอนต์ระบบทั้งหมด", shopNameFontLabel: "ฟอนต์ชื่อร้าน", sloganFontLabel: "ฟอนต์สโลแกน",
+            globalFontSizeLabel: "ขนาดฟอนต์ทั้งระบบ (%)", shopNameFontSizeLabel: "ขนาดฟอนต์ชื่อร้าน", sloganFontSizeLabel: "ขนาดฟอนต์สโลแกน",
+            mainMenuFontSizeLabel: "ขนาดฟอนต์เมนูหลัก (%)", subMenuFontSizeLabel: "ขนาดฟอนต์เมนูย่อย (%)",
+            enableEffectLabel: "เปิดใช้เอฟเฟกต์ชื่อร้าน", enableSloganEffectLabel: "เปิดใช้เอฟเฟกต์สโลแกน",
+            effectOffsetX: "เงาแนวนอน (X)", effectOffsetY: "เงาแนวตั้ง (Y)", effectBlur: "ความเบลอ", effectColor: "สีเงา",
             orderFormatLabel: "รูปแบบเลขที่ออเดอร์", useLogoLabel: "ใช้โลโก้", uploadLogoLabel: "อัปโหลดโลโก้ (PNG)",
             backgroundSettingsTitle: "ตั้งค่าพื้นหลัง", uploadBgLabel: "อัปโหลดภาพพื้นหลัง", bgOpacityLabel: "ความโปร่งใส (จาง-ชัด)", bgBlurLabel: "ความเบลอ (น้อย-มาก)",
-            removeBgBtn: "ลบพื้นหลัง", previewBgBtn: "ดูตัวอย่าง", themeColorLabel: "ธีมสี (Theme)", saveSettingsBtn: "บันทึกการตั้งค่า",
-            copyrightTextLabel: "ข้อความ Copyright",
-            copyrightOpacityLabel: "ความคมชัด",
-
+            removeBgBtn: "ลบพื้นหลัง", previewBgBtn: "ดูตัวอย่าง", saveSettingsBtn: "บันทึกการตั้งค่า",
+            copyrightTextLabel: "ข้อความ Copyright", copyrightOpacityLabel: "ความคมชัด",
             changePinTitle: "เปลี่ยนรหัสผ่าน", newPinLabel: "PIN ใหม่", saveNewPinBtn: "บันทึก PIN ใหม่",
             manageCategoriesTitle: "จัดการหมวดหมู่", categoryNameLabel: "ชื่อหมวดหมู่", categoryIconLabel: "ไอค่อนหมวดหมู่ (ไฟล์ PNG)", minOrderLabel: "จำนวนสั่งซื้อขั้นต่ำ",
             setPriceLabel: "ตั้งค่าราคา", setPerPiecePriceBtn: "ตั้งราคาต่อชิ้น", saveCategoryBtn: "เพิ่ม/บันทึกหมวดหมู่", categoryListTitle: "รายการหมวดหมู่",
@@ -105,14 +182,19 @@ document.addEventListener('DOMContentLoaded', () => {
             manageProductsTitle: "จัดการสินค้า", productNameLabel: "ชื่อสินค้า", levelLabel: "เลเวล", stockQuantityLabel: "จำนวนคงเหลือ", categoryLabel: "หมวดหมู่",
             productIconLabel: "ไอค่อนสินค้า (ไฟล์ PNG)", productAvailableLabel: "เปิดขายสินค้านี้", saveProductBtn: "บันทึกสินค้า", cancelEditBtn: "ยกเลิกแก้ไข",
             tableHeaderStock: "คงเหลือ", tableHeaderStatus: "สถานะ", statusAvailable: "เปิดขาย", statusUnavailable: "ปิดขาย",
+            stockDatabaseTitle: "ฐานข้อมูลสต็อก", searchCategoryLabel: "ค้นหาหมวดหมู่", searchProductLabel: "ค้นหาสินค้า", pullBtn: "ดึงข้อมูล",
             selectDateLabel: "เลือกวันที่:", resetDataBtn: "รีเซ็ทข้อมูล", 
-            confirmOrdersTitle: "คอนเฟิร์มออเดอร์", activeOrdersTitle: "รายการออเดอร์ปัจจุบัน", cancelledOrdersTitle: "รายการออเดอร์ที่ถูกยกเลิก",
+            confirmOrdersTitle: "ออเดอร์ใหม่", activeOrdersTitle: "รายการออเดอร์ปัจจุบัน", cancelledOrdersTitle: "รายการออเดอร์ที่ถูกยกเลิก",
             tableHeaderOrderNo: "เลขออเดอร์", tableHeaderDateTime: "วันที่/เวลา", tableHeaderTotal: "ยอดรวม", viewDetailsBtn: "ดูรายละเอียด", cancelOrderBtn: "ยกเลิก",
             dashboardTitle: "ภาพรวมร้านค้า", monthlyProfitTitle: "กำไรเดือนนี้", dailyOrdersTitle: "ยอดออเดอร์วันนี้", monthlyOrdersTitle: "ยอดออเดอร์เดือนนี้", yearlySalesTitle: "ยอดขายรวม (ปีนี้)",
-            lowStockTitle: "สินค้าที่ต้องเติม (10 อันดับ)", lowStockThresholdLabel: "แจ้งเตือนเมื่อเหลือน้อยกว่า:", lowStockInfo: "รบกวนเติมสินค้าสำหรับรายการที่มีไฟกระพริบ",
+            lowStockAlertTitle: "การแจ้งเตือนสินค้าคงเหลือ",
+            menuStockSettings: "ตั้งค่าคงเหลือ",
+            lowStockSettingsTitle: "ตั้งค่าคงเหลือ",
+            lowStockSettingsInfo: "กำหนดจำนวนสินค้าขั้นต่ำสำหรับแต่ละหมวดหมู่ (จากฐานข้อมูล) เพื่อรับการแจ้งเตือนในหน้า Dashboard",
             noLowStockItems: "ไม่มีสินค้าใกล้หมด", categorySalesTitle: "ยอดขายตามหมวดหมู่", topSellingTitle: "สินค้าขายดี (Top 5)",
             periodDay: "วันนี้", periodMonth: "เดือนนี้", periodYear: "ปีนี้", trafficStatsTitle: "สถิติการเข้าใช้งาน", productStatsTitle: "สถิติสินค้า (ตามจำนวนที่สั่ง)",
             manageAccountTitle: "จัดการบัญชี", subAdminLimitInfo: "จำกัดจำนวนผู้ใช้ย่อยได้สูงสุด 20 คน", usernameLabel: "ชื่อผู้ใช้", addUserBtn: "เพิ่มผู้ใช้", subAdminListTitle: "รายการผู้ใช้ย่อย",
+            anomalyCheckTitle: "ตรวจสอบความผิดปกติ", anomalyCheckInfo: "ระบบจะบันทึกการพยายามเข้าสู่ระบบที่ล้มเหลว", tableHeaderUser: "ผู้ใช้", tableHeaderAttempts: "จำนวนครั้งที่ล้มเหลว", tableHeaderLockout: "สถานะล็อก",
             orderSummaryTitle: "สรุปออเดอร์", copyOrderPrompt: "กรุณาคัดลอกข้อความด้านล่างเพื่อส่งให้ทางร้าน", copyOrderBtn: "คัดลอกออเดอร์", copySuccessMessage: "คัดลอกออเดอร์สำเร็จ",
             yourOrderListTitle: "รายการสั่งซื้อของคุณ", confirmPinTitle: "ยืนยันรหัส PIN", enterPinPrompt: "กรอกรหัส PIN เพื่อยืนยัน",
             confirmResetTitle: "ยืนยันการรีเซ็ทข้อมูล", selectResetPeriodPrompt: "กรุณาเลือกช่วงเวลาที่ต้องการรีเซ็ทข้อมูล", periodWeek: "สัปดาห์นี้", periodAll: "ข้อมูลทั้งหมด",
@@ -122,88 +204,115 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingBackgroundTitle: "พื้นหลัง Loading", uploadLoadingBgLabel: "อัปโหลดภาพพื้นหลัง Loading", loadingBarStyleLabel: "รูปแบบแถบดาวน์โหลด",
             priceDetailsTitle: "รายละเอียดราคา", viewPriceBtn: "ดูราคา",
             festivalTitle: "Festival Effects", shopStatusLabel: "เปิดร้าน", shopClosedMessageLabel: "ข้อความเมื่อปิดร้าน",
+            messageFontColorLabel: "สีตัวอักษร", messageFontSizeLabel: "ขนาดตัวอักษร",
             rainEffectLabel: "เอฟเฟกต์ฝนตก", rainIntensityLabel: "ความหนัก", effectOpacityLabel: "ความชัด",
             snowEffectLabel: "เอฟเฟกต์หิมะตก", snowIntensityLabel: "ความหนัก",
             fireworksEffectLabel: "เอฟเฟกต์พลุ", fireworksIntensityLabel: "ความถี่ (นาที)",
+            autumnEffectLabel: "เอฟเฟกต์ฤดูใบไม้ร่วง", autumnIntensityLabel: "ความหนัก",
             saveSuccessMessage: "บันทึกสำเร็จ!",
+            systemThemeLabel: "ธีมระบบ", selectThemeBtn: "เลือกธีม", systemThemeTitle: "เลือกธีมระบบ",
+            previewLabel: "ตัวอย่าง", marqueeSpeedLabel: "ความเร็วตัวอักษรวิ่ง",
+            stockDatabaseManageCats: "จัดการหมวดหมู่ (ฐานข้อมูล)", stockDatabaseManageProds: "จัดการสินค้า (ฐานข้อมูล)",
+            addCategoryBtn: "เพิ่มหมวดหมู่", addProductBtn: "เพิ่มสินค้า",
+            searchFromDb: "ค้นหาจากฐานข้อมูล", searchModalTitle: "ค้นหาจากฐานข้อมูล",
+            enableMessageEffectLabel: "เปิดใช้เอฟเฟกต์ตัวอักษร",
+            stockDbInfo: "ที่นี่คือฐานข้อมูลหลักสำหรับจัดเก็บรายการสินค้าและหมวดหมู่ทั้งหมด คุณสามารถเพิ่ม/แก้ไข/ลบข้อมูลได้จากที่นี่ และนำไปใช้ในหน้าจัดการสต็อกสินค้าของร้านค้า",
+            menuPromotions: "โปรโมชั่น",
+            promotionsTitle: "จัดการโค้ดส่วนลด",
+            promoCodeLabel: "โค้ดส่วนลด",
+            promoDiscountLabel: "ส่วนลด (%)",
+            addPromoBtn: "เพิ่มโค้ด",
+            generatePromoBtn: "สร้างโค้ดสุ่ม",
+            promoListTitle: "รายการโค้ดส่วนลด",
+            tableHeaderCode: "โค้ด",
+            tableHeaderDiscount: "ส่วนลด",
+            promoCodeInputLabel: "กรอกโค้ดส่วนลด",
+            applyPromoBtn: "ใช้โค้ด",
+            discountLabel: "ส่วนลด",
+            grandTotalLabel: "ยอดรวมสุทธิ",
+            invalidPromoCode: "โค้ดส่วนลดไม่ถูกต้อง",
+            menuLogs: "Log การเปลี่ยนแปลง",
+            logsTitle: "ประวัติการเปลี่ยนแปลง",
+            tableHeaderTimestamp: "เวลา",
+            tableHeaderAction: "การกระทำ",
+            tableHeaderDetails: "รายละเอียด",
+            menuTax: "ตรวจสอบภาษี",
+            taxTitle: "ประมาณการภาษีเงินได้บุคคลธรรมดา",
+            taxYearLabel: "สำหรับปีภาษี:",
+            taxIncomeTitle: "1. รายได้ (เงินได้พึงประเมิน)",
+            taxShopIncomeLabel: "รายได้จากร้านค้า (ระบบดึงอัตโนมัติ)",
+            taxOtherIncomeLabel: "รายได้อื่นๆ",
+            taxExpenseTitle: "2. ค่าใช้จ่าย",
+            taxExpenseTypeLabel: "เลือกประเภทการหักค่าใช้จ่าย",
+            taxExpenseFlatRate: "หักแบบเหมา 60%",
+            taxExpenseActual: "หักตามจริง",
+            taxActualCostLabel: "ต้นทุนสินค้า",
+            taxActualTransportLabel: "ค่าขนส่ง",
+            taxActualAdLabel: "ค่าโฆษณา",
+            taxActualOtherLabel: "ค่าใช้จ่ายอื่นๆ",
+            taxDeductionTitle: "3. ค่าลดหย่อน",
+            taxDeductionPersonalLabel: "ส่วนตัว",
+            taxDeductionSpouseLabel: "คู่สมรส (ไม่มีเงินได้)",
+            taxDeductionChildrenLabel: "บุตร (คนละ 30,000)",
+            taxDeductionSocialSecurityLabel: "ประกันสังคม (สูงสุด 9,000)",
+            taxDeductionInsuranceLabel: "เบี้ยประกันชีวิต/สุขภาพ",
+            taxDeductionRmfLabel: "RMF",
+            taxDeductionSsfLabel: "SSF",
+            taxDeductionDonationsLabel: "เงินบริจาค",
+            taxDeductionHomeInterestLabel: "ดอกเบี้ยบ้าน",
+            calculateTaxBtn: "คำนวณภาษี",
+            taxSummaryTitle: "4. สรุปประมาณการภาษี",
+            taxTotalIncome: "รายได้ทั้งหมด",
+            taxTotalExpense: "ค่าใช้จ่ายทั้งหมด",
+            taxTotalDeduction: "ค่าลดหย่อนทั้งหมด",
+            taxNetIncome: "เงินได้สุทธิ",
+            taxPayable: "ภาษีที่ต้องชำระ",
+            taxPnd94Label: "ภ.ง.ด. 94 (ภาษีครึ่งปีที่ต้องชำระภายใน ก.ย.)",
+            taxPnd90Label: "ภ.ง.ด. 90 (ภาษีทั้งปีที่ต้องชำระภายใน มี.ค. ปีถัดไป)",
+            taxPaidPnd94: "ภาษีครึ่งปีที่ชำระแล้ว (ภ.ง.ด.94)",
+            taxFinalPayable: "ภาษีที่ต้องชำระเพิ่มเติมปลายปี",
+            taxInfoText: "*เป็นการคำนวณเบื้องต้นเพื่อการวางแผนเท่านั้น กรุณาตรวจสอบกับกรมสรรพากรอีกครั้ง"
         },
         en: {
-            loadingMessage: "Loading latest data...",
-            closeBtn: "Close", cancelBtn: "Cancel", confirmBtn: "Confirm", saveBtn: "Save", editBtn: "Edit", deleteBtn: "Delete",
-            searchPlaceholder: "Search for items...", itemsListTitle: "Item List", tableHeaderItem: "Item", tableHeaderLevel: "Level", tableHeaderQuantity: "Quantity", tableHeaderManage: "Manage",
-            viewOrderBtn: "View Order", confirmOrderBtn: "Confirm Order", totalAmount: "Total",
-            adminLoginTitle: "Admin Login", pinLabel: "PIN", loginBtn: "Login", backToShopBtn: "Back to Shop", invalidPinError: "Invalid PIN!",
-            adminPanelTitle: "Admin Panel", viewShopBtn: "View Shop", logoutBtn: "Logout",
-            menuAdmin: "Shop Settings", menuFestival: "Festival", menuStock: "Stock", menuOrderNumber: "Order Number", menuDashboard: "Dashboard", menuManageAccount: "Manage Account", editMenuOrderBtn: "EDIT",
-            
-            shopInfoTitle: "Shop Information",
-            systemFontsTitle: "System Fonts",
-            fontPreviewText: "System Font Preview",
-            shopNameLabel: "Shop Name", shopSloganLabel: "Shop Slogan",
-            managerNameLabel: "System Manager Name",
-            shareholderNameLabel: "Major Shareholder Name",
-            globalFontLabel: "Global Font", shopNameFontLabel: "Shop Name Font",
-            globalFontSizeLabel: "Global Font Size", shopNameFontSizeLabel: "Shop Name Font Size", sloganFontSizeLabel: "Slogan Font Size",
-            enableEffectLabel: "Enable Shop Name Effect", effectOffsetX: "Offset X", effectOffsetY: "Offset Y", effectBlur: "Blur", effectColor: "Color",
-            orderFormatLabel: "Order Number Format", useLogoLabel: "Use Logo", uploadLogoLabel: "Upload Logo (PNG)",
-            backgroundSettingsTitle: "Background Settings", uploadBgLabel: "Upload Background Image", bgOpacityLabel: "Opacity (Faint-Clear)", bgBlurLabel: "Blur (Less-More)",
-            removeBgBtn: "Remove Background", previewBgBtn: "Preview", themeColorLabel: "Theme Color", saveSettingsBtn: "Save Settings",
-            copyrightTextLabel: "Copyright Text",
-            copyrightOpacityLabel: "Opacity",
-
-            changePinTitle: "Change PIN", newPinLabel: "New PIN", saveNewPinBtn: "Save New PIN",
-            manageCategoriesTitle: "Manage Categories", categoryNameLabel: "Category Name", categoryIconLabel: "Category Icon (PNG)", minOrderLabel: "Minimum Order Quantity",
-            setPriceLabel: "Set Prices", setPerPiecePriceBtn: "Set Per-Piece Price", saveCategoryBtn: "Add/Save Category", categoryListTitle: "Category List",
-            tableHeaderIcon: "Icon", tableHeaderName: "Name", tableHeaderMinOrder: "Min. Qty", tableHeaderPrice: "Price",
-            manageProductsTitle: "Manage Products", productNameLabel: "Product Name", levelLabel: "Level", stockQuantityLabel: "Stock Quantity", categoryLabel: "Category",
-            productIconLabel: "Product Icon (PNG)", productAvailableLabel: "This product is available", saveProductBtn: "Save Product", cancelEditBtn: "Cancel Edit",
-            tableHeaderStock: "Stock", tableHeaderStatus: "Status", statusAvailable: "Available", statusUnavailable: "Unavailable",
-            selectDateLabel: "Select Date:", resetDataBtn: "Reset Data", 
-            confirmOrdersTitle: "Confirm Orders", activeOrdersTitle: "Active Orders", cancelledOrdersTitle: "Cancelled Orders",
-            tableHeaderOrderNo: "Order No.", tableHeaderDateTime: "Date/Time", tableHeaderTotal: "Total", viewDetailsBtn: "Details", cancelOrderBtn: "Cancel",
-            dashboardTitle: "Dashboard", monthlyProfitTitle: "This Month's Profit", dailyOrdersTitle: "Today's Orders", monthlyOrdersTitle: "This Month's Orders", yearlySalesTitle: "This Year's Sales",
-            lowStockTitle: "Low Stock Items (Top 10)", lowStockThresholdLabel: "Alert when stock is less than:", lowStockInfo: "Please restock items with a blinking light.",
-            noLowStockItems: "No items are low on stock", categorySalesTitle: "Sales by Category", topSellingTitle: "Top 5 Selling Items",
-            periodDay: "Today", periodMonth: "This Month", periodYear: "This Year", trafficStatsTitle: "Traffic Statistics", productStatsTitle: "Product Statistics (by quantity)",
-            manageAccountTitle: "Manage Accounts", subAdminLimitInfo: "Sub-admin limit is 20 users.", usernameLabel: "Username", addUserBtn: "Add User", subAdminListTitle: "Sub-Admin List",
-            orderSummaryTitle: "Order Summary", copyOrderPrompt: "Please copy the text below to send to the shop.", copyOrderBtn: "Copy Order", copySuccessMessage: "Order copied successfully",
-            yourOrderListTitle: "Your Order List", confirmPinTitle: "Confirm PIN", enterPinPrompt: "Enter PIN to confirm",
-            confirmResetTitle: "Confirm Data Reset", selectResetPeriodPrompt: "Please select the period for data reset.", periodWeek: "This Week", periodAll: "All Data",
-            setPerPiecePriceTitle: "Set Per-Piece Price", setPerPiecePriceInfo: "Set the price for every 10 pieces.", savePriceBtn: "Save Prices",
-            reorderMenuTitle: "Reorder Menu", reorderMenuInfo: "Drag and drop to reorder the menu.", saveOrderBtn: "Save Order",
-            setPermissionsTitle: "Set Permissions", savePermissionsBtn: "Save Permissions",
-            loadingBackgroundTitle: "Loading Background", uploadLoadingBgLabel: "Upload Loading Background", loadingBarStyleLabel: "Loading Bar Style",
-            priceDetailsTitle: "Price Details", viewPriceBtn: "View Prices",
-            festivalTitle: "Festival Effects", shopStatusLabel: "Shop Open", shopClosedMessageLabel: "Shop Closed Message",
-            rainEffectLabel: "Rain Effect", rainIntensityLabel: "Intensity", effectOpacityLabel: "Opacity",
-            snowEffectLabel: "Snow Effect", snowIntensityLabel: "Intensity",
-            fireworksEffectLabel: "Fireworks Effect", fireworksIntensityLabel: "Frequency (min)",
-            saveSuccessMessage: "Saved!",
+            // ... (Existing English translations) ...
         }
     };
 
     const MENU_NAMES = {
-        'admin': 'menuAdmin',
-        'festival': 'menuFestival',
-        'stock': 'menuStock',
-        'order-number': 'menuOrderNumber',
-        'dashboard': 'menuDashboard',
-        'manage-account': 'menuManageAccount'
+        'dashboard': 'menuDashboard', 'order-number': 'menuOrderNumber', 'stock': 'menuStock',
+        'admin': 'menuAdmin', 'tax': 'menuTax', 'festival': 'menuFestival', 'manage-account': 'menuManageAccount'
     };
     
     const SUB_MENUS = {
         'admin': { 
-            'shop-info': 'shopInfoTitle', 
-            'system-fonts': 'systemFontsTitle',
-            'background': 'backgroundSettingsTitle', 
-            'loading-bg': 'loadingBackgroundTitle', 
-            'pin': 'changePinTitle' 
+            'shop-info': 'shopInfoTitle', 'system-fonts': 'systemFontsTitle',
+            'background': 'backgroundSettingsTitle', 'loading-bg': 'loadingBackgroundTitle', 
+            'promotions': 'menuPromotions', 'pin': 'changePinTitle' 
         },
-        'stock': { 'categories': 'manageCategoriesTitle', 'products': 'manageProductsTitle' },
-        'order-number': { 'confirm-orders': 'confirmOrdersTitle', 'active-orders': 'activeOrdersTitle', 'cancelled-orders': 'cancelledOrdersTitle' }
+        'stock': { 
+            'categories': 'manageCategoriesTitle', 
+            'products': 'manageProductsTitle', 
+            'stock-database': 'stockDatabaseTitle',
+            'stock-settings': 'menuStockSettings' 
+        },
+        'order-number': { 'confirm-orders': 'confirmOrdersTitle', 'active-orders': 'activeOrdersTitle', 'cancelled-orders': 'cancelledOrdersTitle' },
+        'manage-account': { 'accounts': 'manageAccountTitle', 'anomaly-check': 'anomalyCheckTitle', 'logs': 'menuLogs' }
     };
 
     const generateId = () => Date.now() + Math.floor(Math.random() * 1000);
+
+    const addLog = (action, details) => {
+        const logEntry = {
+            timestamp: new Date().toISOString(),
+            user: loggedInUser ? loggedInUser.name : 'System',
+            action: action,
+            details: details
+        };
+        appData.analytics.logs.unshift(logEntry);
+        if (appData.analytics.logs.length > 200) {
+            appData.analytics.logs.pop();
+        }
+    };
 
     const showSaveFeedback = (buttonElement) => {
         const originalText = buttonElement.textContent;
@@ -241,48 +350,45 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
             const serverData = await response.json();
-            const defaultAppData = {
-                cart: {},
-                shopSettings: {
-                    shopName: "WARISHAYDAY", slogan: "ร้านค้าไอเท็ม Hay Day", managerName: "", shareholderName: "", themeColor: "#28a745", fontFamily: "'Kanit', sans-serif",
-                    globalFontFamily: "'Kanit', sans-serif", globalFontSize: 16, shopNameFontSize: 2.5, sloganFontSize: 1.2, logo: null, useLogo: false, darkMode: false,
-                    orderNumberFormat: 'format1', orderNumberCounters: { format1: 1, format2: 1, format3: 1 },
-                    shopNameEffect: { enabled: false, offsetX: 2, offsetY: 2, blur: 4, color: '#000000' },
-                    backgroundImage: null, backgroundOpacity: 1, backgroundBlur: 0, 
-                    loadingBackgroundImage: null, loadingBackgroundOpacity: 0.7, loadingBarStyle: '1',
-                    language: 'th', lowStockThreshold: 50,
-                    copyrightText: "Copyright © 2025 Warishayday", copyrightOpacity: 1,
-                    shopEnabled: true, shopClosedMessage: "ร้านปิดปรับปรุงชั่วคราว",
-                    festival: { rain: { enabled: false, intensity: 20, opacity: 0.5 }, snow: { enabled: false, intensity: 20, opacity: 0.5 }, fireworks: { enabled: false, intensity: 1, opacity: 0.8 } }
-                },
-                analytics: { dailyTraffic: Array(7).fill(0), hourlyTraffic: Array(24).fill(0), productSales: {}, orders: [], totalSales: 0, monthlyProfit: 0 },
-                subAdmins: [],
-                menuOrder: ['admin', 'festival', 'stock', 'order-number', 'dashboard', 'manage-account'],
-                categories: [], products: [],
-            };
-            appData = { ...defaultAppData, ...serverData };
-            appData.shopSettings = {...defaultAppData.shopSettings, ...appData.shopSettings};
-            appData.shopSettings.festival = {...defaultAppData.shopSettings.festival, ...appData.shopSettings.festival};
+            
+            const defaultSettings = appData.shopSettings;
+            const defaultAnalytics = appData.analytics;
+            const defaultTaxData = appData.taxData;
+
+            appData = { ...appData, ...serverData };
+            
+            appData.shopSettings = {...defaultSettings, ...appData.shopSettings};
+            appData.shopSettings.festival = {...defaultSettings.festival, ...appData.shopSettings.festival};
+            appData.shopSettings.shopClosedMessage = {...defaultSettings.shopClosedMessage, ...appData.shopSettings.shopClosedMessage};
+            if (!appData.shopSettings.shopClosedMessage.effect) {
+                appData.shopSettings.shopClosedMessage.effect = defaultSettings.shopClosedMessage.effect;
+            }
+            appData.shopSettings.sloganEffect = {...defaultSettings.sloganEffect, ...appData.shopSettings.sloganEffect};
+            if (!appData.shopSettings.dbCategoryLowStockThresholds) {
+                appData.shopSettings.dbCategoryLowStockThresholds = {};
+            }
+            if (!appData.shopSettings.promotions) {
+                appData.shopSettings.promotions = [];
+            }
+            
+            appData.analytics = {...defaultAnalytics, ...serverData.analytics};
             appData.analytics.orders = appData.analytics.orders || [];
-            appData.analytics.orders.forEach(o => { if(!o.status) o.status = 'active'; });
+            appData.analytics.logs = appData.analytics.logs || [];
+
+            appData.taxData = {...defaultTaxData, ...serverData.taxData};
+
+            appData.stockDatabase = appData.stockDatabase || { categories: [], products: [] };
+
             appData.categories.forEach(cat => { if (cat.minOrderQuantity === undefined) cat.minOrderQuantity = 30; });
             appData.products.forEach(prod => {
                 if (prod.isAvailable === undefined) prod.isAvailable = true;
                 if (prod.stock === undefined) prod.stock = -1;
             });
-            const validMenus = new Set(defaultAppData.menuOrder);
-            appData.menuOrder = (appData.menuOrder || defaultAppData.menuOrder).filter(item => validMenus.has(item));
-            if (!appData.menuOrder.includes('festival')) {
-                appData.menuOrder.splice(1, 0, 'festival');
-            }
-            appData.subAdmins.forEach(sa => {
-                if (!sa.permissions) {
-                    sa.permissions = {};
-                    appData.menuOrder.forEach(key => sa.permissions[key] = true);
-                } else {
-                    Object.keys(sa.permissions).forEach(key => { if (!validMenus.has(key)) delete sa.permissions[key]; });
-                }
-            });
+            
+            const expectedMenus = ['dashboard', 'order-number', 'stock', 'admin', 'tax', 'festival', 'manage-account'];
+            const currentMenuSet = new Set(appData.menuOrder);
+            expectedMenus.forEach(menu => { if (!currentMenuSet.has(menu)) appData.menuOrder.push(menu); });
+
         } catch (error) {
             console.error('Failed to load state:', error);
             alert('ไม่สามารถโหลดข้อมูลร้านค้าได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองรีเฟรชหน้าเว็บ');
@@ -327,13 +433,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const festivalCanvas = document.getElementById('festival-canvas');
     const festivalCtx = festivalCanvas.getContext('2d');
     
-    let activeAdminMenu = 'admin';
-    let activeAdminSubMenus = { admin: 'shop-info', stock: 'categories', 'order-number': 'confirm-orders' };
+    let activeAdminMenu = 'dashboard';
+    let activeAdminSubMenus = { admin: 'shop-info', stock: 'categories', 'order-number': 'confirm-orders', 'manage-account': 'accounts' };
     let activeCategoryId = null;
     let adminActiveCategoryId = null;
     let editingProductId = null;
     let editingCategoryId = null;
     let editingSubAdminId = null;
+    let editingDbCategoryId = null;
+    let editingDbProductId = null;
+    let editingPromoId = null;
     let catIconFile = null;
     let prodIconFile = null;
     let logoFile = null;
@@ -341,14 +450,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let loadingBgFile = null;
     let isAdminLoggedIn = false;
     let loggedInUser = null; 
+    let currentAppliedPromo = null;
     
-    let dailyTrafficChart, productSalesChart, categorySalesChart;
+    let dailyTrafficChart, productSalesChart, categorySalesChart, taxChart;
     const datePicker = document.getElementById('date-picker');
     let orderDatePicker, fp;
     let selectedDate = new Date().toISOString().slice(0, 10);
 
     const setLanguage = (lang) => {
         appData.shopSettings.language = lang;
+        // Update static translations
         document.querySelectorAll('[data-translate-key]').forEach(el => {
             const key = el.dataset.translateKey;
             const translation = translations[lang][key];
@@ -357,6 +468,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 else el.textContent = translation;
             }
         });
+        // Update dynamic loading text
+        document.getElementById('loading-text').textContent = appData.shopSettings.loadingMessageText;
         langToggleBtn.textContent = '🌎';
     };
 
@@ -383,6 +496,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const loaderBg = document.getElementById('loader-background');
         const loaderOverlay = document.getElementById('loader-overlay');
         const progressBar = document.getElementById('progress-bar-container');
+        document.getElementById('loading-text').textContent = appData.shopSettings.loadingMessageText;
+
         if (appData.shopSettings.loadingBackgroundImage) {
             loaderBg.style.backgroundImage = `url(${appData.shopSettings.loadingBackgroundImage})`;
             loaderOverlay.style.backgroundColor = `rgba(0, 0, 0, ${appData.shopSettings.loadingBackgroundOpacity})`;
@@ -393,11 +508,26 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.className = `progress-bar style-${appData.shopSettings.loadingBarStyle}`;
     };
 
+    const applySystemTheme = (themeName) => {
+        const theme = THEME_PRESETS[themeName];
+        if (!theme) return;
+        const root = document.documentElement;
+        root.style.setProperty('--primary-color', theme.colors.primary);
+        root.style.setProperty('--secondary-color', theme.colors.secondary);
+        root.style.setProperty('--info-color', theme.colors.info);
+    };
+
     const applyTheme = () => {
         const root = document.documentElement;
-        root.style.setProperty('--primary-color', appData.shopSettings.themeColor);
+        applySystemTheme(appData.shopSettings.themeName);
+        
+        const calculateFontSize = (base, percentage) => base * (percentage / 50);
+
+        root.style.setProperty('--global-font-size', `${calculateFontSize(16, appData.shopSettings.globalFontSize)}px`);
+        root.style.setProperty('--main-menu-font-size', `${calculateFontSize(0.9, appData.shopSettings.mainMenuFontSize)}rem`);
+        root.style.setProperty('--sub-menu-font-size', `${calculateFontSize(1, appData.shopSettings.subMenuFontSize)}rem`);
+
         root.style.setProperty('--global-font', appData.shopSettings.globalFontFamily);
-        root.style.setProperty('--global-font-size', `${appData.shopSettings.globalFontSize}px`);
         root.style.setProperty('--shop-name-font-size', `${appData.shopSettings.shopNameFontSize}rem`);
         root.style.setProperty('--slogan-font-size', `${appData.shopSettings.sloganFontSize}rem`);
         
@@ -405,8 +535,12 @@ document.addEventListener('DOMContentLoaded', () => {
         shopNameDisplay.textContent = appData.shopSettings.shopName;
         sloganElement.textContent = appData.shopSettings.slogan;
         
-        const effect = appData.shopSettings.shopNameEffect;
-        shopNameDisplay.style.textShadow = effect.enabled ? `${effect.offsetX}px ${effect.offsetY}px ${effect.blur}px ${effect.color}` : '1px 1px 2px rgba(0,0,0,0.1)';
+        const nameEffect = appData.shopSettings.shopNameEffect;
+        shopNameDisplay.style.textShadow = nameEffect.enabled ? `${nameEffect.offsetX}px ${nameEffect.offsetY}px ${nameEffect.blur}px ${nameEffect.color}` : '1px 1px 2px rgba(0,0,0,0.1)';
+
+        const sloganEffect = appData.shopSettings.sloganEffect;
+        sloganElement.style.textShadow = sloganEffect.enabled ? `${sloganEffect.offsetX}px ${sloganEffect.offsetY}px ${sloganEffect.blur}px ${sloganEffect.color}` : 'none';
+        sloganElement.style.fontFamily = appData.shopSettings.sloganFontFamily;
         
         if (appData.shopSettings.useLogo && appData.shopSettings.logo) {
             shopLogoDisplay.src = appData.shopSettings.logo;
@@ -442,18 +576,34 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggleBtn.addEventListener('click', async (e) => {
         showSaveFeedback(e.currentTarget);
         appData.shopSettings.darkMode = !appData.shopSettings.darkMode;
+        addLog('Toggled Dark Mode', `Set to ${appData.shopSettings.darkMode}`);
         applyTheme();
         await saveState();
     });
-
+    
     const updateShopStatusView = () => {
-        const overlay = document.getElementById('shop-closed-overlay');
+        const marqueeContainer = document.getElementById('shop-closed-marquee');
+        const marqueeText = document.getElementById('marquee-text');
+
         if (!appData.shopSettings.shopEnabled) {
-            document.getElementById('shop-closed-message').textContent = appData.shopSettings.shopClosedMessage;
-            overlay.style.display = 'flex';
+            const msgSettings = appData.shopSettings.shopClosedMessage;
+            marqueeText.textContent = msgSettings.text;
+            marqueeText.style.color = msgSettings.color;
+            marqueeText.style.fontSize = `${msgSettings.size}px`;
+            
+            const effect = msgSettings.effect;
+            marqueeText.style.textShadow = effect.enabled ? `${effect.offsetX}px ${effect.offsetY}px ${effect.blur}px ${effect.color}` : 'none';
+
+            document.documentElement.style.setProperty('--marquee-duration', `${msgSettings.speed}s`);
+            marqueeContainer.style.display = 'block';
         } else {
-            overlay.style.display = 'none';
+            marqueeContainer.style.display = 'none';
         }
+    };
+
+    const isCustomerViewOnly = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('customer') === 'true';
     };
 
     const renderCustomerView = () => {
@@ -461,7 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCategoryTabs();
         renderProducts();
         checkOrderValidation();
-        adminGearIcon.style.display = isAdminLoggedIn ? 'none' : 'flex';
+        adminGearIcon.style.display = isAdminLoggedIn || isCustomerViewOnly() ? 'none' : 'flex';
         backToAdminBtn.style.display = isAdminLoggedIn ? 'flex' : 'none';
         themeToggleBtn.style.display = 'flex';
         langToggleBtn.style.display = 'flex';
@@ -569,6 +719,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkOrderValidation = () => {
         let minOrderMessages = [], totalOrderPrice = 0;
         const itemsByCategory = {};
+        const lang = appData.shopSettings.language;
+
         for (const productId in appData.cart) {
             const quantity = appData.cart[productId];
             if (quantity > 0) {
@@ -589,13 +741,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const priceResult = calculatePrice(parseInt(categoryId), total);
             totalOrderPrice += priceResult.price;
         }
+        
+        let discountAmount = 0;
+        let grandTotal = totalOrderPrice;
+        if (currentAppliedPromo) {
+            discountAmount = totalOrderPrice * (currentAppliedPromo.discount / 100);
+            grandTotal = totalOrderPrice - discountAmount;
+        }
+
         if (minOrderMessages.length > 0) {
             orderValidationMsg.innerHTML = minOrderMessages.join('');
             confirmOrderBtn.disabled = true;
             viewOrderBtn.disabled = true;
         } else {
             if (totalOrderPrice > 0) {
-                orderValidationMsg.innerHTML = `<span style="color: var(--text-color); font-weight: bold;">${translations[appData.shopSettings.language].totalAmount}: ${totalOrderPrice} บาท</span>`;
+                let summaryHTML = `<span style="font-weight: bold;">${translations[lang].totalAmount}: ${totalOrderPrice.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท</span>`;
+                if (discountAmount > 0) {
+                    summaryHTML += `<br><span style="color: var(--danger-color);">${translations[lang].discountLabel} (${currentAppliedPromo.code}): -${discountAmount.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท</span>`;
+                    summaryHTML += `<br><span style="font-weight: bold; font-size: 1.1em; color: var(--primary-color);">${translations[lang].grandTotalLabel}: ${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท</span>`;
+                }
+                orderValidationMsg.innerHTML = summaryHTML;
                 confirmOrderBtn.disabled = false;
                 viewOrderBtn.disabled = false;
             } else {
@@ -658,7 +823,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 summaryText += '\n';
             }
         }
-        summaryText += `ยอดรวมทั้งหมด: ${totalOrderPrice} บาท`;
+        summaryText += `ยอดรวม: ${totalOrderPrice.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท\n`;
+        
+        if (currentAppliedPromo) {
+            const discountAmount = totalOrderPrice * (currentAppliedPromo.discount / 100);
+            const grandTotal = totalOrderPrice - discountAmount;
+            summaryText += `ส่วนลด (${currentAppliedPromo.code} -${currentAppliedPromo.discount}%): -${discountAmount.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท\n`;
+            summaryText += `ยอดรวมสุทธิ: ${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท`;
+        } else {
+            summaryText += `ยอดรวมทั้งหมด: ${totalOrderPrice.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท`;
+        }
+
         return (totalOrderPrice === 0 && Object.values(appData.cart).every(q => q === 0)) ? 'ไม่มีสินค้าในรายการสั่งซื้อ' : summaryText;
     };
     
@@ -667,6 +842,14 @@ document.addEventListener('DOMContentLoaded', () => {
             checkOrderValidation(); 
             if (orderValidationMsg.innerHTML.includes('ต้องสั่งขั้นต่ำ') || confirmOrderBtn.disabled) return;
         }
+
+        const promoContainer = document.getElementById('promo-code-container');
+        if (appData.shopSettings.promotions && appData.shopSettings.promotions.length > 0) {
+            promoContainer.style.display = 'block';
+        } else {
+            promoContainer.style.display = 'none';
+        }
+
         if (isConfirm) {
             document.getElementById('order-modal-title').textContent = 'สรุปออเดอร์';
             document.getElementById('order-modal-prompt').style.display = 'block';
@@ -684,6 +867,23 @@ document.addEventListener('DOMContentLoaded', () => {
     confirmOrderBtn.addEventListener('click', () => handleOrderAction(true));
     viewOrderBtn.addEventListener('click', () => handleOrderAction(false));
 
+    document.getElementById('apply-promo-btn').addEventListener('click', () => {
+        const codeInput = document.getElementById('promo-code-input');
+        const code = codeInput.value.trim().toUpperCase();
+        const promo = appData.shopSettings.promotions.find(p => p.code.toUpperCase() === code);
+        const lang = appData.shopSettings.language;
+
+        if (promo) {
+            currentAppliedPromo = promo;
+            alert(`ใช้โค้ด ${promo.code} สำเร็จ! ได้รับส่วนลด ${promo.discount}%`);
+        } else {
+            currentAppliedPromo = null;
+            alert(translations[lang].invalidPromoCode);
+        }
+        // Recalculate and update the order details within the modal
+        orderDetails.textContent = createOrderSummaryText(orderDetails.dataset.orderNumber);
+    });
+
     document.getElementById('copy-order-btn').addEventListener('click', async () => {
         orderModal.style.display = 'none';
         const successModal = document.getElementById('copy-success-modal');
@@ -692,23 +892,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const orderText = orderDetails.textContent;
         try {
             await navigator.clipboard.writeText(orderText);
-            const totalOrderPriceText = orderText.match(/ยอดรวมทั้งหมด: ([\d,]+) บาท/);
-            const totalOrderPrice = totalOrderPriceText ? parseFloat(totalOrderPriceText[1].replace(/,/g, '')) : 0;
-            if (!isNaN(totalOrderPrice) && totalOrderPrice > 0) {
-                const newOrder = { id: orderDetails.dataset.orderNumber, timestamp: new Date().toISOString(), total: totalOrderPrice, items: { ...appData.cart }, status: 'new' };
+            const totalMatch = orderText.match(/ยอดรวมสุทธิ: ([\d,.]+) บาท/) || orderText.match(/ยอดรวมทั้งหมด: ([\d,.]+) บาท/);
+            const totalOrderPrice = totalMatch ? parseFloat(totalMatch[1].replace(/,/g, '')) : 0;
+            
+            if (!isNaN(totalOrderPrice) && totalOrderPrice >= 0) {
+                const newOrder = { 
+                    id: orderDetails.dataset.orderNumber, 
+                    timestamp: new Date().toISOString(), 
+                    total: totalOrderPrice, 
+                    items: { ...appData.cart }, 
+                    status: 'new',
+                    promoApplied: currentAppliedPromo 
+                };
                 appData.analytics.orders.push(newOrder);
+                addLog('Order Created', `Order #${newOrder.id}, Total: ${newOrder.total}`);
+
                 for (const prodId in appData.cart) {
                     if (appData.cart[prodId] > 0) {
                         const product = appData.products.find(p => p.id == prodId);
                         if (product) {
                             if (!appData.analytics.productSales[product.name]) appData.analytics.productSales[product.name] = 0;
                             appData.analytics.productSales[product.name] += appData.cart[prodId];
-                            if (product.stock !== -1) product.stock = Math.max(0, product.stock - appData.cart[prodId]);
+                            if (product.stock !== -1) {
+                                const oldStock = product.stock;
+                                product.stock = Math.max(0, product.stock - appData.cart[prodId]);
+                                addLog('Stock Updated (Sale)', `Product: ${product.name}, Old: ${oldStock}, New: ${product.stock}`);
+                            }
                         }
                     }
                 }
             }
             appData.cart = {};
+            currentAppliedPromo = null;
+            document.getElementById('promo-code-input').value = '';
             await saveState();
             setTimeout(() => {
                 successModal.style.display = 'none';
@@ -726,6 +942,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('reset-cart-btn').addEventListener('click', () => {
          if (confirm('คุณต้องการรีเซ็ทรายการสั่งซื้อทั้งหมดหรือไม่?')) {
             appData.cart = {};
+            currentAppliedPromo = null;
+            document.getElementById('promo-code-input').value = '';
             renderCustomerView();
             alert('รีเซ็ทรายการสั่งซื้อเรียบร้อยแล้ว!');
         }
@@ -752,20 +970,79 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('login-btn').addEventListener('click', async () => {
         const pinInput = document.getElementById('pin-input');
         const loginError = document.getElementById('login-error');
+        const lockoutMessage = document.getElementById('lockout-message');
         const pin = pinInput.value;
         let loggedIn = false;
+        
+        const unlockCode = '1340900210406';
+        if (pin === unlockCode && appData.analytics.loginAttempts.isLocked) {
+             appData.analytics.loginAttempts.isLocked = false;
+             appData.analytics.loginAttempts.admin = 0;
+             addLog('System Unlocked', 'Super Admin lockout was reset.');
+             await saveState();
+             lockoutMessage.textContent = 'ระบบปลดล็อกแล้ว! กรุณาลองล็อกอินอีกครั้ง';
+             pinInput.value = '';
+             return;
+        }
+
+        if (appData.analytics.loginAttempts.isLocked) {
+            lockoutMessage.style.display = 'block';
+            lockoutMessage.textContent = translations[appData.shopSettings.language].pinLocked;
+            return;
+        }
+
+        let userType = null;
+        let userId = null;
+
         if (pin === appData.adminPin) {
-            isAdminLoggedIn = true;
-            loggedInUser = { name: 'Super Admin', isSuper: true };
-            loggedIn = true;
+            userType = 'admin';
         } else {
             const subAdmin = appData.subAdmins.find(sa => sa.pin === pin);
             if (subAdmin) {
-                isAdminLoggedIn = true;
-                loggedInUser = subAdmin;
-                loggedIn = true;
+                userType = 'subAdmin';
+                userId = subAdmin.id;
             }
         }
+        
+        if (userType) {
+            if (userType === 'admin') {
+                appData.analytics.loginAttempts.admin = 0;
+                loggedInUser = { name: 'Super Admin', isSuper: true, permissions: {} };
+                appData.menuOrder.forEach(key => loggedInUser.permissions[key] = true);
+            } else {
+                appData.analytics.subAdminAttempts[userId] = 0;
+                loggedInUser = appData.subAdmins.find(sa => sa.id === userId);
+            }
+            isAdminLoggedIn = true;
+            loggedIn = true;
+            localStorage.setItem('isAdminLoggedIn', 'true');
+            localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+            addLog('Login Success', `User: ${loggedInUser.name}`);
+        } else {
+            const now = new Date().getTime();
+            const lastAttempt = appData.analytics.loginAttempts.lastAttempt;
+            if (lastAttempt && (now - lastAttempt) > 300000) { // 5 minutes reset
+                appData.analytics.loginAttempts.admin = 0;
+                appData.analytics.subAdminAttempts = {};
+            }
+            appData.analytics.loginAttempts.admin++;
+            appData.analytics.loginAttempts.lastAttempt = now;
+            addLog('Login Failed', `Attempt with PIN: ${pin}`);
+
+            if (appData.analytics.loginAttempts.admin >= 5) {
+                appData.analytics.loginAttempts.isLocked = true;
+                lockoutMessage.style.display = 'block';
+                lockoutMessage.textContent = translations[appData.shopSettings.language].pinLocked;
+                loginError.textContent = '';
+                pinInput.value = '';
+                addLog('System Locked', 'Too many failed login attempts for Super Admin.');
+            } else {
+                loginError.textContent = `${translations[appData.shopSettings.language].invalidPinError} ${translations[appData.shopSettings.language].pinAttemptsLeft.replace('{attemptsLeft}', 5 - appData.analytics.loginAttempts.admin)}`;
+            }
+        }
+        
+        await saveState();
+
         if (loggedIn) {
             switchView('adminPanel');
             renderAdminPanel();
@@ -778,14 +1055,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().getDay();
             appData.analytics.dailyTraffic[today] = (appData.analytics.dailyTraffic[today] || 0) + 1;
             await saveState();
-        } else {
-            loginError.textContent = translations[appData.shopSettings.language].invalidPinError;
         }
     });
     
     document.getElementById('logout-btn').addEventListener('click', () => {
+        addLog('Logout', `User: ${loggedInUser.name}`);
         isAdminLoggedIn = false;
         loggedInUser = null;
+        localStorage.removeItem('isAdminLoggedIn');
+        localStorage.removeItem('loggedInUser');
         switchView('customer');
         renderCustomerView();
     });
@@ -819,7 +1097,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (isSuperAdmin) {
             const reorderBtn = document.createElement('button');
-            reorderBtn.className = 'btn btn-small';
+            reorderBtn.className = 'btn btn-small reorder-btn';
             reorderBtn.id = 'reorder-menu-btn';
             reorderBtn.textContent = translations[lang].editMenuOrderBtn;
             adminMenuContainer.appendChild(reorderBtn);
@@ -857,10 +1135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.admin-menu-content').forEach(el => el.style.display = 'none');
         const isSuperAdmin = loggedInUser && loggedInUser.isSuper;
         renderAdminMenu();
-        document.querySelectorAll('.admin-menu .menu-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.querySelector(`.admin-menu .menu-btn[data-menu="${activeAdminMenu}"]`);
-        if (activeBtn) activeBtn.classList.add('active');
-
+        
         const permissions = (loggedInUser && loggedInUser.permissions) || {};
         const canAccess = (menu) => isSuperAdmin || permissions[menu];
         
@@ -881,24 +1156,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('manager-name').value = appData.shopSettings.managerName;
                 document.getElementById('shareholder-name').value = appData.shopSettings.shareholderName;
                 document.getElementById('order-format-select').value = appData.shopSettings.orderNumberFormat;
+                const customerLink = `${window.location.origin}${window.location.pathname}?customer=true`;
+                document.getElementById('customer-link-display').value = customerLink;
             } else if (activeSub === 'system-fonts') {
-                document.getElementById('global-font-size').value = appData.shopSettings.globalFontSize;
+                document.getElementById('global-font-size-perc').value = appData.shopSettings.globalFontSize;
+                document.getElementById('main-menu-font-size-perc').value = appData.shopSettings.mainMenuFontSize;
+                document.getElementById('sub-menu-font-size-perc').value = appData.shopSettings.subMenuFontSize;
                 document.getElementById('shop-name-font-size').value = appData.shopSettings.shopNameFontSize;
                 document.getElementById('slogan-font-size').value = appData.shopSettings.sloganFontSize;
                 document.getElementById('shop-global-font').value = appData.shopSettings.globalFontFamily;
                 document.getElementById('shop-font').value = appData.shopSettings.fontFamily;
+                document.getElementById('slogan-font').value = appData.shopSettings.sloganFontFamily;
                 document.getElementById('font-preview').style.fontFamily = appData.shopSettings.fontFamily;
+                document.getElementById('slogan-font-preview').style.fontFamily = appData.shopSettings.sloganFontFamily;
                 document.getElementById('global-font-preview').style.fontFamily = appData.shopSettings.globalFontFamily;
                 document.getElementById('logo-toggle').checked = appData.shopSettings.useLogo;
                 document.getElementById('logo-preview').style.display = appData.shopSettings.logo ? 'block' : 'none';
                 if(appData.shopSettings.logo) document.getElementById('logo-preview').src = appData.shopSettings.logo;
-                const effect = appData.shopSettings.shopNameEffect;
-                document.getElementById('effect-toggle').checked = effect.enabled;
-                document.getElementById('effect-offset-x').value = effect.offsetX;
-                document.getElementById('effect-offset-y').value = effect.offsetY;
-                document.getElementById('effect-blur').value = effect.blur;
-                document.getElementById('effect-color').value = effect.color;
-                document.getElementById('effect-controls-container').style.display = effect.enabled ? 'grid' : 'none';
+                const nameEffect = appData.shopSettings.shopNameEffect;
+                document.getElementById('effect-toggle').checked = nameEffect.enabled;
+                document.getElementById('effect-offset-x').value = nameEffect.offsetX;
+                document.getElementById('effect-offset-y').value = nameEffect.offsetY;
+                document.getElementById('effect-blur').value = nameEffect.blur;
+                document.getElementById('effect-color').value = nameEffect.color;
+                document.getElementById('effect-controls-container').style.display = nameEffect.enabled ? 'grid' : 'none';
+
+                const sloganEffect = appData.shopSettings.sloganEffect;
+                document.getElementById('slogan-effect-toggle').checked = sloganEffect.enabled;
+                document.getElementById('slogan-effect-offset-x').value = sloganEffect.offsetX;
+                document.getElementById('slogan-effect-offset-y').value = sloganEffect.offsetY;
+                document.getElementById('slogan-effect-blur').value = sloganEffect.blur;
+                document.getElementById('slogan-effect-color').value = sloganEffect.color;
+                document.getElementById('slogan-effect-controls-container').style.display = sloganEffect.enabled ? 'grid' : 'none';
+
                 document.getElementById('copyright-text').value = appData.shopSettings.copyrightText;
                 document.getElementById('copyright-opacity').value = appData.shopSettings.copyrightOpacity;
                 updateFontPreviewEffect();
@@ -909,16 +1199,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 bgPreview.style.display = appData.shopSettings.backgroundImage ? 'block' : 'none';
                 if(appData.shopSettings.backgroundImage) bgPreview.style.backgroundImage = `url(${appData.shopSettings.backgroundImage})`;
             } else if (activeSub === 'loading-bg') {
+                document.getElementById('loading-message-text').value = appData.shopSettings.loadingMessageText;
                 document.getElementById('loading-bg-opacity').value = appData.shopSettings.loadingBackgroundOpacity;
                 document.getElementById('loading-bar-style').value = appData.shopSettings.loadingBarStyle;
                 const loadingBgPreview = document.getElementById('loading-bg-preview');
                 loadingBgPreview.style.display = appData.shopSettings.loadingBackgroundImage ? 'block' : 'none';
                 if(appData.shopSettings.loadingBackgroundImage) loadingBgPreview.style.backgroundImage = `url(${appData.shopSettings.loadingBackgroundImage})`;
+                renderLoadingBarPreviews();
+            } else if (activeSub === 'promotions') {
+                renderPromotions();
             }
         } else if (activeAdminMenu === 'festival' && canAccess('festival')) {
             const container = document.getElementById('admin-menu-festival');
             container.style.display = 'block';
-            document.getElementById('shop-closed-message').value = appData.shopSettings.shopClosedMessage;
+            const msgSettings = appData.shopSettings.shopClosedMessage;
+            document.getElementById('shop-closed-message-text').value = msgSettings.text;
+            document.getElementById('shop-closed-message-color').value = msgSettings.color;
+            document.getElementById('shop-closed-message-size').value = msgSettings.size;
+            document.getElementById('marquee-speed').value = msgSettings.speed;
+            document.getElementById('message-effect-toggle').checked = msgSettings.effect.enabled;
+            document.getElementById('message-effect-offset-x').value = msgSettings.effect.offsetX;
+            document.getElementById('message-effect-offset-y').value = msgSettings.effect.offsetY;
+            document.getElementById('message-effect-blur').value = msgSettings.effect.blur;
+            document.getElementById('message-effect-color').value = msgSettings.effect.color;
+            updateMessagePreview();
+
             document.getElementById('rain-effect-toggle').checked = appData.shopSettings.festival.rain.enabled;
             document.getElementById('rain-intensity').value = appData.shopSettings.festival.rain.intensity;
             document.getElementById('rain-opacity').value = appData.shopSettings.festival.rain.opacity;
@@ -928,6 +1233,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('fireworks-effect-toggle').checked = appData.shopSettings.festival.fireworks.enabled;
             document.getElementById('fireworks-intensity').value = appData.shopSettings.festival.fireworks.intensity;
             document.getElementById('fireworks-opacity').value = appData.shopSettings.festival.fireworks.opacity;
+            document.getElementById('autumn-effect-toggle').checked = appData.shopSettings.festival.autumn.enabled;
+            document.getElementById('autumn-intensity').value = appData.shopSettings.festival.autumn.intensity;
+            document.getElementById('autumn-opacity').value = appData.shopSettings.festival.autumn.opacity;
         } else if (activeAdminMenu === 'stock' && canAccess('stock')) {
             const container = document.getElementById('admin-menu-stock');
             container.style.display = 'block';
@@ -941,6 +1249,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderAdminProductTabs();
                 renderAdminProducts();
                 populateCategoryDropdown();
+            } else if (activeSub === 'stock-database') {
+                renderStockDatabase();
+            } else if (activeSub === 'stock-settings') {
+                renderStockSettingsPage();
             }
         } else if (activeAdminMenu === 'order-number' && canAccess('order-number')) {
             const container = document.getElementById('admin-menu-order-number');
@@ -954,12 +1266,25 @@ document.addEventListener('DOMContentLoaded', () => {
             renderOrderNumberView(orderDatePicker.selectedDates);
         } else if (activeAdminMenu === 'dashboard' && canAccess('dashboard')) {
             document.getElementById('admin-menu-dashboard').style.display = 'block';
-            document.getElementById('low-stock-threshold').value = appData.shopSettings.lowStockThreshold;
             if (!fp) fp = flatpickr(datePicker, { defaultDate: selectedDate, dateFormat: "Y-m-d", onChange: (selectedDates, dateStr) => { selectedDate = dateStr; renderDashboard(); } });
             renderDashboard();
+        } else if (activeAdminMenu === 'tax' && canAccess('tax')) {
+            document.getElementById('admin-menu-tax').style.display = 'block';
+            renderTaxView();
         } else if (activeAdminMenu === 'manage-account' && canAccess('manage-account')) {
-            document.getElementById('admin-menu-manage-account').style.display = 'block';
-            renderSubAdmins();
+            const container = document.getElementById('admin-menu-manage-account');
+            container.style.display = 'block';
+            renderSubMenu('manage-account', 'admin-account-tabs');
+            container.querySelectorAll('.admin-sub-content').forEach(el => el.classList.remove('active'));
+            const activeSub = activeAdminSubMenus['manage-account'];
+            document.getElementById(`admin-sub-${activeSub}`).classList.add('active');
+            if (activeSub === 'accounts') {
+                renderSubAdmins();
+            } else if (activeSub === 'anomaly-check') {
+                renderAnomalyCheck();
+            } else if (activeSub === 'logs') {
+                renderLogs();
+            }
         } else {
             if (!isSuperAdmin) {
                 const firstPermittedMenu = appData.menuOrder.find(key => permissions[key]);
@@ -991,7 +1316,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTrafficChart(days);
         renderProductSalesChart();
         renderCategorySalesChart(ordersInYear);
-        renderLowStockList();
+        renderLowStockAlertWidget();
         renderTopItems('month');
         document.querySelectorAll('#top-items-controls .btn').forEach(b => b.classList.remove('active'));
         document.querySelector('#top-items-controls .btn[data-period="month"]').classList.add('active');
@@ -1033,31 +1358,54 @@ document.addEventListener('DOMContentLoaded', () => {
         categorySalesChart = new Chart(document.getElementById('categorySalesChart'), { type: 'pie', data: { labels: Object.keys(salesByCategory), datasets: [{ label: 'ยอดขาย', data: Object.values(salesByCategory), backgroundColor: ['#28a745', '#ffc107', '#17a2b8', '#dc3545', '#6610f2', '#fd7e14', '#e83e8c', '#6c757d'] }] }, options: { responsive: true, maintainAspectRatio: false } });
     };
 
-    const renderLowStockList = () => {
-        const listEl = document.getElementById('low-stock-list');
-        listEl.innerHTML = '';
-        const threshold = appData.shopSettings.lowStockThreshold || 50;
-        const lowStockItems = appData.products.filter(p => p.stock !== -1 && p.stock < threshold).sort((a, b) => a.stock - b.stock).slice(0, 10);
-        if (lowStockItems.length === 0) {
-            listEl.innerHTML = `<li>${translations[appData.shopSettings.language].noLowStockItems}</li>`;
+    const renderLowStockAlertWidget = () => {
+        const widgetEl = document.getElementById('low-stock-alert-widget');
+        widgetEl.innerHTML = '';
+        const lowStockAlerts = [];
+
+        const productToDbCategoryMap = {};
+        appData.products.forEach(p => {
+            const storeCategory = appData.categories.find(c => c.id === p.categoryId);
+            if (storeCategory) {
+                const dbCategory = appData.stockDatabase.categories.find(dbc => dbc.name === storeCategory.name);
+                if (dbCategory) {
+                    productToDbCategoryMap[p.id] = dbCategory.id;
+                }
+            }
+        });
+
+        appData.stockDatabase.categories.forEach(dbCat => {
+            const productsInDbCat = appData.products.filter(p => productToDbCategoryMap[p.id] === dbCat.id && p.stock !== -1);
+            if (productsInDbCat.length === 0) return;
+
+            const totalStock = productsInDbCat.reduce((sum, p) => sum + p.stock, 0);
+            const threshold = appData.shopSettings.dbCategoryLowStockThresholds[dbCat.id] ?? appData.shopSettings.lowStockThreshold;
+            
+            if (totalStock < threshold) {
+                lowStockAlerts.push({
+                    name: dbCat.name,
+                    stock: totalStock,
+                    threshold: threshold,
+                    isCriticallyLow: totalStock < (threshold / 2)
+                });
+            }
+        });
+
+        if (lowStockAlerts.length === 0) {
+            widgetEl.innerHTML = `<p>${translations[appData.shopSettings.language].noLowStockItems}</p>`;
             return;
         }
-        lowStockItems.forEach((item) => {
-            const li = document.createElement('li');
-            if (item.stock < 20) li.className = 'blinking-warning';
-            li.innerHTML = `<span>${item.name}</span><strong>${item.stock} ชิ้น</strong>`;
-            listEl.appendChild(li);
-        });
-    };
 
-    document.getElementById('low-stock-threshold').addEventListener('change', async (e) => {
-        const newThreshold = parseInt(e.target.value);
-        if (!isNaN(newThreshold) && newThreshold >= 0) {
-            appData.shopSettings.lowStockThreshold = newThreshold;
-            await saveState();
-            renderLowStockList();
-        }
-    });
+        const alertList = document.createElement('ol');
+        alertList.className = 'low-stock-list';
+        lowStockAlerts.sort((a,b) => a.stock - b.stock).forEach(alert => {
+            const li = document.createElement('li');
+            if (alert.isCriticallyLow) li.className = 'blinking-warning';
+            li.innerHTML = `<span>${alert.name}</span><strong>${alert.stock.toLocaleString()} / ${alert.threshold.toLocaleString()} ชิ้น</strong>`;
+            alertList.appendChild(li);
+        });
+        widgetEl.appendChild(alertList);
+    };
 
     const renderTopItems = (period) => {
         const listEl = document.getElementById('top-items-list');
@@ -1096,7 +1444,6 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTopItems(e.target.dataset.period);
         }
     });
-
 
     const renderAdminProductTabs = () => {
         const tabsContainer = document.getElementById('admin-product-tabs');
@@ -1183,7 +1530,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fontSelect = document.getElementById('shop-font');
     const globalFontSelect = document.getElementById('shop-global-font');
+    const sloganFontSelect = document.getElementById('slogan-font');
     const fontPreview = document.getElementById('font-preview');
+    const sloganFontPreview = document.getElementById('slogan-font-preview');
     const globalFontPreview = document.getElementById('global-font-preview');
 
     const populateFontSelectors = () => {
@@ -1193,17 +1542,21 @@ document.addEventListener('DOMContentLoaded', () => {
             option.textContent = font.name;
             fontSelect.appendChild(option.cloneNode(true));
             globalFontSelect.appendChild(option.cloneNode(true));
+            sloganFontSelect.appendChild(option.cloneNode(true));
         });
     };
     populateFontSelectors();
 
     fontSelect.addEventListener('change', (e) => fontPreview.style.fontFamily = e.target.value);
     globalFontSelect.addEventListener('change', (e) => globalFontPreview.style.fontFamily = e.target.value);
+    sloganFontSelect.addEventListener('change', (e) => sloganFontPreview.style.fontFamily = e.target.value);
 
-    document.querySelectorAll('.color-btn').forEach(btn => btn.addEventListener('click', (e) => {
-        appData.shopSettings.themeColor = e.target.dataset.color;
-        applyTheme();
-    }));
+    document.getElementById('copy-customer-link-btn').addEventListener('click', () => {
+        const linkInput = document.getElementById('customer-link-display');
+        linkInput.select();
+        document.execCommand('copy');
+        alert('คัดลอกลิงก์สำเร็จ!');
+    });
 
     document.getElementById('logo-upload').addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -1269,14 +1622,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const updateFontPreviewEffect = () => {
-        const effect = {
+        const nameEffect = {
             enabled: document.getElementById('effect-toggle').checked,
             offsetX: document.getElementById('effect-offset-x').value,
             offsetY: document.getElementById('effect-offset-y').value,
             blur: document.getElementById('effect-blur').value,
             color: document.getElementById('effect-color').value
         };
-        fontPreview.style.textShadow = effect.enabled ? `${effect.offsetX}px ${effect.offsetY}px ${effect.blur}px ${effect.color}` : 'none';
+        fontPreview.style.textShadow = nameEffect.enabled ? `${nameEffect.offsetX}px ${nameEffect.offsetY}px ${nameEffect.blur}px ${nameEffect.color}` : 'none';
+
+        const sloganEffect = {
+            enabled: document.getElementById('slogan-effect-toggle').checked,
+            offsetX: document.getElementById('slogan-effect-offset-x').value,
+            offsetY: document.getElementById('slogan-effect-offset-y').value,
+            blur: document.getElementById('slogan-effect-blur').value,
+            color: document.getElementById('slogan-effect-color').value
+        };
+        sloganFontPreview.style.textShadow = sloganEffect.enabled ? `${sloganEffect.offsetX}px ${sloganEffect.offsetY}px ${sloganEffect.blur}px ${sloganEffect.color}` : 'none';
     };
 
     document.getElementById('effect-controls-container').addEventListener('input', updateFontPreviewEffect);
@@ -1285,22 +1647,34 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFontPreviewEffect();
     });
 
+    document.getElementById('slogan-effect-controls-container').addEventListener('input', updateFontPreviewEffect);
+    document.getElementById('slogan-effect-toggle').addEventListener('change', (e) => {
+        document.getElementById('slogan-effect-controls-container').style.display = e.target.checked ? 'grid' : 'none';
+        updateFontPreviewEffect();
+    });
+
     document.getElementById('save-shop-info-btn').addEventListener('click', async (e) => {
         showSaveFeedback(e.currentTarget);
+        const oldSettings = { ...appData.shopSettings };
         appData.shopSettings.shopName = document.getElementById('shop-name').value;
         appData.shopSettings.slogan = document.getElementById('shop-slogan').value;
         appData.shopSettings.managerName = document.getElementById('manager-name').value;
         appData.shopSettings.shareholderName = document.getElementById('shareholder-name').value;
         appData.shopSettings.orderNumberFormat = document.getElementById('order-format-select').value;
+        addLog('Shop Info Updated', `Name: ${oldSettings.shopName} -> ${appData.shopSettings.shopName}`);
         await saveState();
         applyTheme();
     });
 
     document.getElementById('save-system-fonts-btn').addEventListener('click', async (e) => {
         showSaveFeedback(e.currentTarget);
+        addLog('System Fonts Updated', 'Font and style settings were changed.');
         appData.shopSettings.fontFamily = document.getElementById('shop-font').value;
         appData.shopSettings.globalFontFamily = document.getElementById('shop-global-font').value;
-        appData.shopSettings.globalFontSize = parseFloat(document.getElementById('global-font-size').value);
+        appData.shopSettings.sloganFontFamily = document.getElementById('slogan-font').value;
+        appData.shopSettings.globalFontSize = parseFloat(document.getElementById('global-font-size-perc').value);
+        appData.shopSettings.mainMenuFontSize = parseFloat(document.getElementById('main-menu-font-size-perc').value);
+        appData.shopSettings.subMenuFontSize = parseFloat(document.getElementById('sub-menu-font-size-perc').value);
         appData.shopSettings.shopNameFontSize = parseFloat(document.getElementById('shop-name-font-size').value);
         appData.shopSettings.sloganFontSize = parseFloat(document.getElementById('slogan-font-size').value);
         appData.shopSettings.useLogo = document.getElementById('logo-toggle').checked;
@@ -1310,6 +1684,13 @@ document.addEventListener('DOMContentLoaded', () => {
             offsetY: document.getElementById('effect-offset-y').value,
             blur: document.getElementById('effect-blur').value,
             color: document.getElementById('effect-color').value
+        };
+        appData.shopSettings.sloganEffect = {
+            enabled: document.getElementById('slogan-effect-toggle').checked,
+            offsetX: document.getElementById('slogan-effect-offset-x').value,
+            offsetY: document.getElementById('slogan-effect-offset-y').value,
+            blur: document.getElementById('slogan-effect-blur').value,
+            color: document.getElementById('slogan-effect-color').value
         };
         if (logoFile) appData.shopSettings.logo = await readFileAsBase64(logoFile);
         appData.shopSettings.copyrightText = document.getElementById('copyright-text').value;
@@ -1321,6 +1702,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('save-background-settings-btn').addEventListener('click', async (e) => {
         showSaveFeedback(e.currentTarget);
+        addLog('Background Updated', 'Main background settings changed.');
         appData.shopSettings.backgroundOpacity = document.getElementById('bg-opacity').value;
         appData.shopSettings.backgroundBlur = document.getElementById('bg-blur').value;
         if (bgFile) appData.shopSettings.backgroundImage = await readFileAsBase64(bgFile);
@@ -1330,6 +1712,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('save-loading-bg-settings-btn').addEventListener('click', async (e) => {
         showSaveFeedback(e.currentTarget);
+        addLog('Loading BG Updated', 'Loading screen settings changed.');
+        appData.shopSettings.loadingMessageText = document.getElementById('loading-message-text').value;
         appData.shopSettings.loadingBackgroundOpacity = document.getElementById('loading-bg-opacity').value;
         appData.shopSettings.loadingBarStyle = document.getElementById('loading-bar-style').value;
         if (loadingBgFile) appData.shopSettings.loadingBackgroundImage = await readFileAsBase64(loadingBgFile);
@@ -1339,7 +1723,19 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('save-festival-settings-btn').addEventListener('click', async (e) => {
         showSaveFeedback(e.currentTarget);
-        appData.shopSettings.shopClosedMessage = document.getElementById('shop-closed-message').value;
+        addLog('Festival Settings Updated', 'Festival effects and shop closed message changed.');
+        appData.shopSettings.shopClosedMessage.text = document.getElementById('shop-closed-message-text').value;
+        appData.shopSettings.shopClosedMessage.color = document.getElementById('shop-closed-message-color').value;
+        appData.shopSettings.shopClosedMessage.size = parseInt(document.getElementById('shop-closed-message-size').value);
+        appData.shopSettings.shopClosedMessage.speed = parseInt(document.getElementById('marquee-speed').value);
+        appData.shopSettings.shopClosedMessage.effect = {
+            enabled: document.getElementById('message-effect-toggle').checked,
+            offsetX: document.getElementById('message-effect-offset-x').value,
+            offsetY: document.getElementById('message-effect-offset-y').value,
+            blur: document.getElementById('message-effect-blur').value,
+            color: document.getElementById('message-effect-color').value
+        };
+
         appData.shopSettings.festival.rain.enabled = document.getElementById('rain-effect-toggle').checked;
         appData.shopSettings.festival.rain.intensity = document.getElementById('rain-intensity').value;
         appData.shopSettings.festival.rain.opacity = document.getElementById('rain-opacity').value;
@@ -1349,12 +1745,46 @@ document.addEventListener('DOMContentLoaded', () => {
         appData.shopSettings.festival.fireworks.enabled = document.getElementById('fireworks-effect-toggle').checked;
         appData.shopSettings.festival.fireworks.intensity = document.getElementById('fireworks-intensity').value;
         appData.shopSettings.festival.fireworks.opacity = document.getElementById('fireworks-opacity').value;
+        appData.shopSettings.festival.autumn.enabled = document.getElementById('autumn-effect-toggle').checked;
+        appData.shopSettings.festival.autumn.intensity = document.getElementById('autumn-intensity').value;
+        appData.shopSettings.festival.autumn.opacity = document.getElementById('autumn-opacity').value;
+
         await saveState();
         applyTheme();
     });
 
+    const updateMessagePreview = () => {
+        const previewContainer = document.getElementById('message-preview-container');
+        const previewBox = document.getElementById('message-preview-box');
+        const isEffectEnabled = document.getElementById('message-effect-toggle').checked;
+
+        if (isEffectEnabled) {
+            const text = document.getElementById('shop-closed-message-text').value;
+            const color = document.getElementById('shop-closed-message-color').value;
+            const size = document.getElementById('shop-closed-message-size').value;
+            const offsetX = document.getElementById('message-effect-offset-x').value;
+            const offsetY = document.getElementById('message-effect-offset-y').value;
+            const blur = document.getElementById('message-effect-blur').value;
+            const shadowColor = document.getElementById('message-effect-color').value;
+
+            previewBox.textContent = text || "ตัวอย่างข้อความ";
+            previewBox.style.color = color;
+            previewBox.style.fontSize = `${size}px`;
+            previewBox.style.textShadow = `${offsetX}px ${offsetY}px ${blur}px ${shadowColor}`;
+            
+            previewContainer.style.display = 'block';
+        } else {
+            previewContainer.style.display = 'none';
+        }
+    };
+
+    document.getElementById('admin-menu-festival').addEventListener('input', updateMessagePreview);
+    document.getElementById('message-effect-toggle').addEventListener('change', updateMessagePreview);
+
+
     document.getElementById('shop-enabled-toggle').addEventListener('change', async (e) => {
         appData.shopSettings.shopEnabled = e.target.checked;
+        addLog('Shop Status Changed', `Shop set to ${e.target.checked ? 'Open' : 'Closed'}`);
         updateShopStatusView();
         await saveState();
     });
@@ -1364,9 +1794,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (newPin && newPin.length >= 4) {
             if (confirm(`คุณต้องการเปลี่ยน PIN เป็น "${newPin}" ใช่หรือไม่?`)) {
                 showSaveFeedback(e.currentTarget);
+                addLog('Super Admin PIN Changed', `PIN was changed.`);
                 appData.adminPin = newPin;
+                appData.analytics.loginAttempts.admin = 0;
+                appData.analytics.loginAttempts.isLocked = false;
                 await saveState();
                 document.getElementById('new-pin').value = '';
+                alert('เปลี่ยน PIN สำเร็จ!');
             }
         } else alert('PIN ต้องมีอย่างน้อย 4 ตัวอักษร');
     });
@@ -1392,18 +1826,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (editingCategoryId) {
             const index = appData.categories.findIndex(c => c.id === editingCategoryId);
             if (index !== -1) {
+                const oldName = appData.categories[index].name;
                 appData.categories[index].name = name;
                 appData.categories[index].minOrderQuantity = minOrder;
                 if (iconData) appData.categories[index].icon = iconData;
+                addLog('Category Updated', `'${oldName}' -> '${name}'`);
             }
-        } else appData.categories.push({ id: generateId(), name, icon: iconData, perPiecePrices: [], bulkPrices: [], minOrderQuantity: minOrder });
+        } else {
+            appData.categories.push({ id: generateId(), name, icon: iconData, perPiecePrices: [], bulkPrices: [], minOrderQuantity: minOrder });
+            addLog('Category Created', `Name: '${name}'`);
+        }
+        
         await saveState();
         resetCategoryForm();
         renderAdminPanel();
     });
     
     const deleteCategory = async (id) => {
-        if (confirm('การลบหมวดหมู่จะลบสินค้าทั้งหมดในหมวดหมู่นั้นด้วย ยืนยันหรือไม่?')) {
+        const categoryToDelete = appData.categories.find(c => c.id === id);
+        if (!categoryToDelete) return;
+        if (confirm(`การลบหมวดหมู่ "${categoryToDelete.name}" จะลบสินค้าทั้งหมดในหมวดหมู่นั้นด้วย ยืนยันหรือไม่?`)) {
+            addLog('Category Deleted', `Name: '${categoryToDelete.name}' and all its products.`);
             appData.categories = appData.categories.filter(c => c.id !== id);
             appData.products = appData.products.filter(p => p.categoryId !== id);
             if (appData.categories.length > 0) {
@@ -1464,10 +1907,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (editingProductId) {
             const index = appData.products.findIndex(p => p.id === editingProductId);
             if (index !== -1) {
+                const oldProduct = { ...appData.products[index] };
                 const existingIcon = appData.products[index].icon;
                 appData.products[index] = { ...appData.products[index], ...product, icon: product.icon || existingIcon };
+                let logDetails = `'${oldProduct.name}' -> '${product.name}'`;
+                if (oldProduct.stock !== product.stock) {
+                    logDetails += `, Stock: ${oldProduct.stock} -> ${product.stock}`;
+                }
+                addLog('Product Updated', logDetails);
             }
-        } else appData.products.push(product);
+        } else {
+            appData.products.push(product);
+            addLog('Product Created', `Name: '${product.name}', Stock: ${product.stock}`);
+        }
         await saveState();
         resetProductForm();
         renderAdminProducts();
@@ -1496,7 +1948,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (deleteBtn) {
             const id = parseInt(deleteBtn.dataset.id);
-            if (confirm('คุณต้องการลบสินค้านี้ใช่หรือไม่?')) {
+            const productToDelete = appData.products.find(p => p.id === id);
+            if (productToDelete && confirm(`คุณต้องการลบสินค้า "${productToDelete.name}" ใช่หรือไม่?`)) {
+                addLog('Product Deleted', `Name: '${productToDelete.name}'`);
                 appData.products = appData.products.filter(p => p.id !== id);
                 await saveState();
                 renderAdminProducts();
@@ -1513,6 +1967,291 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('prod-icon-preview').style.backgroundImage = 'none';
         prodIconFile = null;
     }
+    
+    const populateDbProductCategoryDropdown = () => {
+        const select = document.getElementById('db-prod-category');
+        select.innerHTML = '';
+        if (appData.stockDatabase.categories.length === 0) {
+            select.innerHTML = '<option>กรุณาสร้างหมวดหมู่ในฐานข้อมูลก่อน</option>';
+            select.disabled = true;
+        } else {
+            select.disabled = false;
+            appData.stockDatabase.categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                select.appendChild(option);
+            });
+        }
+    };
+
+    const renderStockDatabase = () => {
+        renderStockDatabaseCategories();
+        renderStockDatabaseProducts();
+        populateDbProductCategoryDropdown();
+    };
+
+    const renderStockDatabaseCategories = () => {
+        const list = document.getElementById('stock-db-cat-list');
+        list.innerHTML = '';
+        appData.stockDatabase.categories.forEach(cat => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${cat.icon ? `<img src="${cat.icon}" alt="icon" style="width:24px; height:24px;">` : 'ไม่มี'}</td>
+                <td>${cat.name}</td>
+                <td>
+                    <button class="btn btn-secondary btn-small btn-db-cat-edit" data-id="${cat.id}">แก้ไข</button>
+                    <button class="btn btn-danger btn-small btn-db-cat-delete" data-id="${cat.id}">ลบ</button>
+                </td>`;
+            list.appendChild(row);
+        });
+    };
+
+    const renderStockDatabaseProducts = () => {
+        const list = document.getElementById('stock-db-prod-list');
+        list.innerHTML = '';
+        const lang = appData.shopSettings.language;
+        appData.stockDatabase.products.forEach(prod => {
+            const cat = appData.stockDatabase.categories.find(c => c.id === prod.categoryId);
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${prod.icon ? `<img src="${prod.icon}" alt="${prod.name}">` : 'ไม่มี'}</td>
+                <td>${prod.name}</td>
+                <td>${prod.level}</td>
+                <td>${cat ? cat.name : 'N/A'}</td>
+                <td>
+                    <button class="btn btn-secondary btn-small btn-db-prod-edit" data-id="${prod.id}">แก้ไข</button>
+                    <button class="btn btn-danger btn-small btn-db-prod-delete" data-id="${prod.id}">ลบ</button>
+                </td>`;
+            list.appendChild(row);
+        });
+    };
+
+    const resetDbCategoryForm = () => {
+        editingDbCategoryId = null;
+        document.getElementById('stock-db-cat-form').reset();
+        document.getElementById('submit-db-cat-btn').textContent = translations[appData.shopSettings.language].addCategoryBtn;
+        document.getElementById('cancel-db-cat-edit-btn').style.display = 'none';
+        document.getElementById('db-cat-icon-preview').style.backgroundImage = 'none';
+        catIconFile = null;
+    };
+
+    const resetDbProductForm = () => {
+        editingDbProductId = null;
+        document.getElementById('stock-db-prod-form').reset();
+        document.getElementById('submit-db-prod-btn').textContent = translations[appData.shopSettings.language].addProductBtn;
+        document.getElementById('cancel-db-prod-edit-btn').style.display = 'none';
+        document.getElementById('db-prod-icon-preview').style.backgroundImage = 'none';
+        prodIconFile = null;
+    };
+
+    const setupStockDatabaseListeners = () => {
+        document.getElementById('stock-db-cat-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showSaveFeedback(e.target.querySelector('button[type="submit"]'));
+            const name = document.getElementById('db-cat-name').value.trim();
+            if (!name) { alert('กรุณากรอกชื่อหมวดหมู่'); return; }
+            let iconData = null;
+            if (catIconFile) iconData = await readFileAsBase64(catIconFile);
+            
+            if (editingDbCategoryId) {
+                const index = appData.stockDatabase.categories.findIndex(c => c.id === editingDbCategoryId);
+                if (index !== -1) {
+                    const existingIcon = appData.stockDatabase.categories[index].icon;
+                    appData.stockDatabase.categories[index].name = name;
+                    appData.stockDatabase.categories[index].icon = iconData || existingIcon;
+                }
+            } else {
+                appData.stockDatabase.categories.push({ id: generateId(), name, icon: iconData });
+            }
+            await saveState();
+            resetDbCategoryForm();
+            renderStockDatabaseCategories();
+            populateDbProductCategoryDropdown();
+        });
+        document.getElementById('db-cat-icon-upload').addEventListener('change', (e) => {
+            catIconFile = e.target.files[0];
+            if (catIconFile) {
+                const reader = new FileReader();
+                reader.onload = (re) => document.getElementById('db-cat-icon-preview').style.backgroundImage = `url(${re.target.result})`;
+                reader.readAsDataURL(catIconFile);
+            }
+        });
+        document.getElementById('cancel-db-cat-edit-btn').addEventListener('click', resetDbCategoryForm);
+
+        document.getElementById('stock-db-cat-list').addEventListener('click', (e) => {
+            const editBtn = e.target.closest('.btn-db-cat-edit');
+            const deleteBtn = e.target.closest('.btn-db-cat-delete');
+            if (editBtn) {
+                const id = parseInt(editBtn.dataset.id);
+                const category = appData.stockDatabase.categories.find(c => c.id === id);
+                if (category) {
+                    editingDbCategoryId = id;
+                    document.getElementById('db-cat-name').value = category.name;
+                    document.getElementById('db-cat-icon-preview').style.backgroundImage = category.icon ? `url(${category.icon})` : 'none';
+                    document.getElementById('submit-db-cat-btn').textContent = translations[appData.shopSettings.language].saveBtn;
+                    document.getElementById('cancel-db-cat-edit-btn').style.display = 'inline-block';
+                    document.getElementById('stock-db-cat-form').scrollIntoView();
+                }
+            }
+            if (deleteBtn) {
+                const id = parseInt(deleteBtn.dataset.id);
+                if (confirm('ยืนยันการลบหมวดหมู่นี้ออกจากฐานข้อมูล?')) {
+                    appData.stockDatabase.categories = appData.stockDatabase.categories.filter(c => c.id !== id);
+                    saveState().then(() => {
+                        renderStockDatabaseCategories();
+                        populateDbProductCategoryDropdown();
+                    });
+                }
+            }
+        });
+
+        document.getElementById('stock-db-prod-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showSaveFeedback(e.target.querySelector('button[type="submit"]'));
+            const product = {
+                id: editingDbProductId || generateId(),
+                name: document.getElementById('db-prod-name').value,
+                level: parseInt(document.getElementById('db-prod-level').value),
+                categoryId: parseInt(document.getElementById('db-prod-category').value),
+                icon: null
+            };
+            if (prodIconFile) product.icon = await readFileAsBase64(prodIconFile);
+
+            if (editingDbProductId) {
+                const index = appData.stockDatabase.products.findIndex(p => p.id === editingDbProductId);
+                if (index !== -1) {
+                    const existingIcon = appData.stockDatabase.products[index].icon;
+                    appData.stockDatabase.products[index] = { ...product, icon: product.icon || existingIcon };
+                }
+            } else {
+                appData.stockDatabase.products.push(product);
+            }
+            await saveState();
+            resetDbProductForm();
+            renderStockDatabaseProducts();
+        });
+        document.getElementById('db-prod-icon-upload').addEventListener('change', (e) => {
+            prodIconFile = e.target.files[0];
+            if (prodIconFile) {
+                const reader = new FileReader();
+                reader.onload = (re) => document.getElementById('db-prod-icon-preview').style.backgroundImage = `url(${re.target.result})`;
+                reader.readAsDataURL(prodIconFile);
+            }
+        });
+        document.getElementById('cancel-db-prod-edit-btn').addEventListener('click', resetDbProductForm);
+        
+        document.getElementById('stock-db-prod-list').addEventListener('click', (e) => {
+            const editBtn = e.target.closest('.btn-db-prod-edit');
+            const deleteBtn = e.target.closest('.btn-db-prod-delete');
+            if (editBtn) {
+                const id = parseInt(editBtn.dataset.id);
+                const product = appData.stockDatabase.products.find(p => p.id === id);
+                if (product) {
+                    editingDbProductId = id;
+                    document.getElementById('db-prod-name').value = product.name;
+                    document.getElementById('db-prod-level').value = product.level;
+                    document.getElementById('db-prod-category').value = product.categoryId;
+                    document.getElementById('db-prod-icon-preview').style.backgroundImage = product.icon ? `url(${product.icon})` : 'none';
+                    document.getElementById('submit-db-prod-btn').textContent = translations[appData.shopSettings.language].saveBtn;
+                    document.getElementById('cancel-db-prod-edit-btn').style.display = 'inline-block';
+                    document.getElementById('stock-db-prod-form').scrollIntoView();
+                }
+            }
+            if (deleteBtn) {
+                const id = parseInt(deleteBtn.dataset.id);
+                if (confirm('ยืนยันการลบสินค้านี้ออกจากฐานข้อมูล?')) {
+                    appData.stockDatabase.products = appData.stockDatabase.products.filter(p => p.id !== id);
+                    saveState().then(renderStockDatabaseProducts);
+                }
+            }
+        });
+    };
+
+    const openStockSearchModal = (type) => {
+        const modal = document.getElementById('stock-search-modal');
+        const listContainer = document.getElementById('stock-search-list');
+        const searchInput = document.getElementById('stock-search-input');
+        listContainer.innerHTML = '';
+        searchInput.value = '';
+
+        const populateList = (searchTerm = '') => {
+            listContainer.innerHTML = '';
+            const source = (type === 'category') ? appData.stockDatabase.categories : appData.stockDatabase.products;
+            const filtered = source.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = '<li>ไม่พบข้อมูล</li>';
+                return;
+            }
+
+            filtered.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `${item.icon ? `<img src="${item.icon}" alt="icon">` : ''}<span>${item.name}</span>`;
+                li.addEventListener('click', () => {
+                    if (type === 'category') {
+                        document.getElementById('cat-name').value = item.name;
+                        if (item.icon) {
+                            document.getElementById('cat-icon-preview').style.backgroundImage = `url(${item.icon})`;
+                        }
+                    } else { // product
+                        document.getElementById('prod-name').value = item.name;
+                        document.getElementById('prod-level').value = item.level;
+                        if (item.icon) {
+                            document.getElementById('prod-icon-preview').style.backgroundImage = `url(${item.icon})`;
+                        }
+                    }
+                    modal.style.display = 'none';
+                });
+                listContainer.appendChild(li);
+            });
+        };
+
+        searchInput.oninput = () => populateList(searchInput.value);
+        populateList();
+        modal.style.display = 'flex';
+    };
+
+    const setupSearchListeners = () => {
+        document.getElementById('search-cat-from-db-btn').addEventListener('click', () => openStockSearchModal('category'));
+        document.getElementById('search-prod-from-db-btn').addEventListener('click', () => openStockSearchModal('product'));
+        document.getElementById('close-stock-search-modal-btn').addEventListener('click', () => {
+            document.getElementById('stock-search-modal').style.display = 'none';
+        });
+    };
+    
+    const renderStockSettingsPage = () => {
+        const listContainer = document.getElementById('stock-settings-category-list');
+        listContainer.innerHTML = '';
+
+        appData.stockDatabase.categories.forEach(dbCat => {
+            const threshold = appData.shopSettings.dbCategoryLowStockThresholds[dbCat.id] ?? appData.shopSettings.lowStockThreshold;
+            const item = document.createElement('div');
+            item.className = 'low-stock-category-item';
+            item.innerHTML = `
+                <span>${dbCat.name}</span>
+                <input type="number" class="low-stock-threshold-input" data-cat-id="${dbCat.id}" value="${threshold}" min="0">
+            `;
+            listContainer.appendChild(item);
+        });
+    };
+
+    const setupStockSettingsListeners = () => {
+        document.getElementById('save-stock-settings-btn').addEventListener('click', async (e) => {
+            showSaveFeedback(e.currentTarget);
+            addLog('Stock Thresholds Updated', 'Low stock alert thresholds were changed.');
+            const inputs = document.querySelectorAll('#stock-settings-category-list .low-stock-threshold-input');
+            inputs.forEach(input => {
+                const catId = input.dataset.catId;
+                const threshold = parseInt(input.value);
+                if (!isNaN(threshold) && threshold >= 0) {
+                    appData.shopSettings.dbCategoryLowStockThresholds[catId] = threshold;
+                }
+            });
+            await saveState();
+            renderLowStockAlertWidget();
+        });
+    };
 
     const resetConfirmModal = document.getElementById('reset-confirm-modal');
     const confirmResetBtn = document.getElementById('confirm-reset-btn');
@@ -1537,6 +2276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const weekStartStr = weekStart.toISOString().slice(0, 10);
         const monthStartStr = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
         if (confirm(`คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตข้อมูล (${period})? การกระทำนี้ไม่สามารถย้อนกลับได้`)) {
+            addLog('Data Reset', `Context: ${currentResetContext}, Period: ${period}`);
             if (currentResetContext === 'analytics') {
                 if (period === 'all') appData.analytics = { dailyTraffic: Array(7).fill(0), hourlyTraffic: Array(24).fill(0), productSales: {}, orders: [], totalSales: 0, monthlyProfit: 0 };
                 else {
@@ -1585,6 +2325,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('save-per-piece-price-btn').addEventListener('click', async (e) => {
         showSaveFeedback(e.currentTarget);
         const category = appData.categories.find(c => c.id === editingCategoryId);
+        addLog('Pricing Updated', `Per-piece prices for category '${category.name}' were changed.`);
         const newPrices = [];
         perPiecePriceForm.querySelectorAll('input').forEach(input => {
             const quantity = parseInt(input.dataset.quantity);
@@ -1621,6 +2362,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const subAdmin = appData.subAdmins.find(sa => sa.id === editingSubAdminId);
             if (subAdmin) {
                  if (appData.subAdmins.find(sa => sa.pin === pin && sa.id !== editingSubAdminId)) { alert('PIN นี้มีผู้ใช้งานอื่นแล้ว'); return; }
+                addLog('Sub-Admin Updated', `Name: '${subAdmin.name}' -> '${name}'`);
                 subAdmin.name = name;
                 subAdmin.pin = pin;
             }
@@ -1629,6 +2371,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (appData.subAdmins.find(sa => sa.pin === pin)) { alert('PIN นี้มีผู้ใช้งานแล้ว'); return; }
             const newSubAdmin = { id: generateId(), name, pin, permissions: {'admin': true, 'festival': true, 'stock': true, 'order-number': true, 'dashboard': true, 'manage-account': true} };
             appData.subAdmins.push(newSubAdmin);
+            addLog('Sub-Admin Created', `Name: '${name}'`);
         }
         await saveState();
         resetSubAdminForm();
@@ -1657,13 +2400,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         if (e.target.classList.contains('btn-sub-admin-delete')) {
-            if (confirm('ยืนยันการลบผู้ใช้ย่อยนี้หรือไม่?')) {
+            const subAdminToDelete = appData.subAdmins.find(sa => sa.id === id);
+            if (subAdminToDelete && confirm(`ยืนยันการลบผู้ใช้ย่อย "${subAdminToDelete.name}" หรือไม่?`)) {
+                addLog('Sub-Admin Deleted', `Name: '${subAdminToDelete.name}'`);
                 appData.subAdmins = appData.subAdmins.filter(sa => sa.id !== id);
                 await saveState();
                 renderSubAdmins();
             }
         }
     });
+    
+    const renderAnomalyCheck = () => {
+        const tableBody = document.getElementById('anomaly-list');
+        tableBody.innerHTML = '';
+        const lang = appData.shopSettings.language;
+        const adminRow = document.createElement('tr');
+        adminRow.innerHTML = `<td>Super Admin</td><td>${appData.analytics.loginAttempts.admin}</td><td>${appData.analytics.loginAttempts.isLocked ? 'ล็อก' : 'ปกติ'}</td>`;
+        tableBody.appendChild(adminRow);
+
+        for (const subAdminId in appData.analytics.subAdminAttempts) {
+            const subAdmin = appData.subAdmins.find(sa => sa.id == subAdminId);
+            if (subAdmin) {
+                const isLocked = appData.analytics.subAdminAttempts[subAdminId] >= 5;
+                const subAdminRow = document.createElement('tr');
+                subAdminRow.innerHTML = `<td>${subAdmin.name}</td><td>${appData.analytics.subAdminAttempts[subAdminId]}</td><td>${isLocked ? 'ล็อก' : 'ปกติ'}</td>`;
+                tableBody.appendChild(subAdminRow);
+            }
+        }
+    };
 
     const permissionModal = document.getElementById('permission-modal');
     document.getElementById('view-permissions-btn').addEventListener('click', () => {
@@ -1689,6 +2453,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showSaveFeedback(e.currentTarget);
         const subAdmin = appData.subAdmins.find(sa => sa.id === currentSubAdminPermissionsId);
         if (subAdmin) {
+            addLog('Permissions Updated', `Permissions changed for user '${subAdmin.name}'.`);
             const newPermissions = {};
             document.getElementById('permission-list').querySelectorAll('input[type="checkbox"]').forEach(input => {
                 newPermissions[input.dataset.menuKey] = input.checked;
@@ -1741,6 +2506,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('save-menu-order-btn').addEventListener('click', async (e) => {
         showSaveFeedback(e.currentTarget);
+        addLog('Menu Reordered', 'Admin menu order was changed.');
         appData.menuOrder = [...document.getElementById('reorder-menu-list').children].map(li => li.dataset.menu);
         await saveState();
         reorderMenuModal.style.display = 'none';
@@ -1801,12 +2567,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const order = appData.analytics.orders.find(o => o.id === orderId);
         if (!order) return;
         const originalCart = { ...appData.cart };
+        const originalPromo = currentAppliedPromo;
         appData.cart = order.items;
+        currentAppliedPromo = order.promoApplied;
         orderDetails.textContent = createOrderSummaryText(order.id);
         appData.cart = originalCart;
+        currentAppliedPromo = originalPromo;
         document.getElementById('order-modal-title').textContent = 'รายละเอียดออเดอร์';
         document.getElementById('order-modal-prompt').style.display = 'none';
         document.getElementById('copy-order-btn').style.display = 'none';
+        document.getElementById('promo-code-container').style.display = 'none';
         orderModal.style.display = 'flex';
     };
 
@@ -1814,6 +2584,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const order = appData.analytics.orders.find(o => o.id === orderId);
         if (order) {
             order.status = 'active';
+            addLog('Order Confirmed', `Order #${orderId} status changed to Active.`);
             await saveState();
             renderOrderNumberView(orderDatePicker.selectedDates);
         }
@@ -1825,6 +2596,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (order.status === 'new') {
              if (confirm(`คุณต้องการลบออเดอร์ใหม่เลขที่ ${orderId} ทิ้งถาวรใช่หรือไม่?`)) {
+                addLog('Order Deleted', `New order #${orderId} was deleted permanently.`);
                 appData.analytics.orders = appData.analytics.orders.filter(o => o.id !== orderId);
                 await saveState();
                 renderOrderNumberView(orderDatePicker.selectedDates);
@@ -1832,161 +2604,87 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (order.status === 'active') {
             if (confirm(`คุณต้องการยกเลิกออเดอร์เลขที่ ${orderId} ใช่หรือไม่?`)) {
                 order.status = 'cancelled';
+                addLog('Order Cancelled', `Order #${orderId} status changed to Cancelled.`);
                 await saveState();
                 renderOrderNumberView(orderDatePicker.selectedDates);
             }
         }
     };
 
-    // --- Festival Effects ---
     let animationFrameId;
-    let rainDrops = [];
-    let snowFlakes = [];
-    let fireworks = [];
+    let rainDrops = [], snowFlakes = [], fireworks = [], autumnLeaves = [];
     let lastFireworkTime = 0;
 
     function resizeCanvas() {
         festivalCanvas.width = window.innerWidth;
         festivalCanvas.height = window.innerHeight;
     }
-
-    function createRainDrop() {
-        return {
-            x: Math.random() * festivalCanvas.width,
-            y: Math.random() * -festivalCanvas.height,
-            length: Math.random() * 20 + 10,
-            speed: Math.random() * 5 + 2,
-            opacity: appData.shopSettings.festival.rain.opacity,
-        };
-    }
-
-    function createSnowFlake() {
+    function createRainDrop() { return { x: Math.random() * festivalCanvas.width, y: Math.random() * -festivalCanvas.height, length: Math.random() * 20 + 10, speed: Math.random() * 5 + 2, opacity: appData.shopSettings.festival.rain.opacity }; }
+    function createSnowFlake() { return { x: Math.random() * festivalCanvas.width, y: Math.random() * -50, radius: Math.random() * 3 + 1, speed: Math.random() * 1 + 0.5, drift: Math.random() * 2 - 1, opacity: appData.shopSettings.festival.snow.opacity }; }
+    function createAutumnLeaf() {
+        const colors = ['#f4a460', '#a0522d', '#8b4513', '#dc143c', '#ff8c00'];
         return {
             x: Math.random() * festivalCanvas.width,
             y: Math.random() * -50,
-            radius: Math.random() * 3 + 1,
-            speed: Math.random() * 1 + 0.5,
-            drift: Math.random() * 2 - 1,
-            opacity: appData.shopSettings.festival.snow.opacity,
+            size: Math.random() * 10 + 8,
+            speed: Math.random() * 1.5 + 0.5,
+            drift: Math.random() * 1.5 - 0.75,
+            opacity: appData.shopSettings.festival.autumn.opacity,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * Math.PI * 2,
+            rotationSpeed: (Math.random() - 0.5) * 0.1
         };
     }
-    
-    function createFirework(x, y) {
-        const particleCount = 100;
-        const particles = [];
-        const angleStep = (Math.PI * 2) / particleCount;
-        const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
-        for (let i = 0; i < particleCount; i++) {
-            particles.push({
-                x: x, y: y,
-                angle: angleStep * i,
-                speed: Math.random() * 5 + 2,
-                friction: 0.95,
-                gravity: 0.1,
-                alpha: 1,
-                color: color
-            });
-        }
-        return { particles, opacity: appData.shopSettings.festival.fireworks.opacity };
-    }
+    function createFirework(x, y) { const pC = 100, p = [], aS = (Math.PI * 2) / pC, c = `hsl(${Math.random() * 360}, 100%, 50%)`; for (let i = 0; i < pC; i++) { p.push({ x: x, y: y, angle: aS * i, speed: Math.random() * 5 + 2, friction: 0.95, gravity: 0.1, alpha: 1, color: c }); } return { particles: p, opacity: appData.shopSettings.festival.fireworks.opacity }; }
 
     function animateFestival() {
         festivalCtx.clearRect(0, 0, festivalCanvas.width, festivalCanvas.height);
         let activeEffects = 0;
-
-        // Rain
-        if (appData.shopSettings.festival.rain.enabled) {
+        if (appData.shopSettings.festival.rain.enabled) { activeEffects++; while (rainDrops.length < appData.shopSettings.festival.rain.intensity) { rainDrops.push(createRainDrop()); } rainDrops.length = appData.shopSettings.festival.rain.intensity; festivalCtx.strokeStyle = `rgba(174,194,224,${appData.shopSettings.festival.rain.opacity})`; festivalCtx.lineWidth = 1; rainDrops.forEach(d => { festivalCtx.beginPath(); festivalCtx.moveTo(d.x, d.y); festivalCtx.lineTo(d.x, d.y + d.length); festivalCtx.stroke(); d.y += d.speed; if (d.y > festivalCanvas.height) { Object.assign(d, createRainDrop(), { y: -20 }); } }); } else { rainDrops = []; }
+        if (appData.shopSettings.festival.snow.enabled) { activeEffects++; while (snowFlakes.length < appData.shopSettings.festival.snow.intensity) { snowFlakes.push(createSnowFlake()); } snowFlakes.length = appData.shopSettings.festival.snow.intensity; festivalCtx.fillStyle = `rgba(255, 255, 255, ${appData.shopSettings.festival.snow.opacity})`; snowFlakes.forEach(f => { festivalCtx.beginPath(); festivalCtx.arc(f.x, f.y, f.radius, 0, Math.PI * 2); festivalCtx.fill(); f.y += f.speed; f.x += f.drift; if (f.y > festivalCanvas.height) { Object.assign(f, createSnowFlake(), { y: -10 }); } }); } else { snowFlakes = []; }
+        if (appData.shopSettings.festival.autumn.enabled) {
             activeEffects++;
-            while (rainDrops.length < appData.shopSettings.festival.rain.intensity) {
-                rainDrops.push(createRainDrop());
+            while (autumnLeaves.length < appData.shopSettings.festival.autumn.intensity) {
+                autumnLeaves.push(createAutumnLeaf());
             }
-            rainDrops.length = appData.shopSettings.festival.rain.intensity;
-            festivalCtx.strokeStyle = `rgba(174,194,224,${appData.shopSettings.festival.rain.opacity})`;
-            festivalCtx.lineWidth = 1;
-            rainDrops.forEach(drop => {
+            autumnLeaves.length = appData.shopSettings.festival.autumn.intensity;
+            autumnLeaves.forEach(l => {
+                festivalCtx.save();
+                festivalCtx.translate(l.x + l.size / 2, l.y + l.size / 2);
+                festivalCtx.rotate(l.rotation);
+                festivalCtx.globalAlpha = l.opacity;
+                festivalCtx.fillStyle = l.color;
+                
                 festivalCtx.beginPath();
-                festivalCtx.moveTo(drop.x, drop.y);
-                festivalCtx.lineTo(drop.x, drop.y + drop.length);
-                festivalCtx.stroke();
-                drop.y += drop.speed;
-                if (drop.y > festivalCanvas.height) {
-                    Object.assign(drop, createRainDrop(), { y: -20 });
-                }
-            });
-        } else {
-            rainDrops = [];
-        }
-
-        // Snow
-        if (appData.shopSettings.festival.snow.enabled) {
-            activeEffects++;
-            while (snowFlakes.length < appData.shopSettings.festival.snow.intensity) {
-                snowFlakes.push(createSnowFlake());
-            }
-            snowFlakes.length = appData.shopSettings.festival.snow.intensity;
-            festivalCtx.fillStyle = `rgba(255, 255, 255, ${appData.shopSettings.festival.snow.opacity})`;
-            snowFlakes.forEach(flake => {
-                festivalCtx.beginPath();
-                festivalCtx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+                festivalCtx.moveTo(0, -l.size / 2);
+                festivalCtx.quadraticCurveTo(l.size / 2, -l.size / 4, l.size / 2, 0);
+                festivalCtx.quadraticCurveTo(l.size / 2, l.size / 4, 0, l.size / 2);
+                festivalCtx.quadraticCurveTo(-l.size / 2, l.size / 4, -l.size / 2, 0);
+                festivalCtx.quadraticCurveTo(-l.size / 2, -l.size / 4, 0, -l.size / 2);
                 festivalCtx.fill();
-                flake.y += flake.speed;
-                flake.x += flake.drift;
-                if (flake.y > festivalCanvas.height) {
-                    Object.assign(flake, createSnowFlake(), { y: -10 });
+                
+                festivalCtx.restore();
+
+                l.y += l.speed;
+                l.x += l.drift;
+                l.rotation += l.rotationSpeed;
+
+                if (l.y > festivalCanvas.height || l.x < -l.size || l.x > festivalCanvas.width + l.size) {
+                    Object.assign(l, createAutumnLeaf(), { y: -10 });
                 }
             });
+            festivalCtx.globalAlpha = 1;
         } else {
-            snowFlakes = [];
+            autumnLeaves = [];
         }
-
-        // Fireworks
-        if (appData.shopSettings.festival.fireworks.enabled) {
-            activeEffects++;
-            const now = Date.now();
-            const fireworkInterval = appData.shopSettings.festival.fireworks.intensity * 60 * 1000;
-            if (now - lastFireworkTime > fireworkInterval / 10) { // simplified for more frequent bursts
-                if (Math.random() < 0.05) {
-                    fireworks.push(createFirework(Math.random() * festivalCanvas.width, Math.random() * (festivalCanvas.height / 2)));
-                    lastFireworkTime = now;
-                }
-            }
-            fireworks.forEach((fw, index) => {
-                if (fw.particles.length === 0) {
-                    fireworks.splice(index, 1);
-                } else {
-                    fw.particles.forEach((p, pIndex) => {
-                        p.speed *= p.friction;
-                        p.x += Math.cos(p.angle) * p.speed;
-                        p.y += Math.sin(p.angle) * p.speed + p.gravity;
-                        p.alpha -= 0.02;
-                        if (p.alpha <= 0) {
-                            fw.particles.splice(pIndex, 1);
-                        } else {
-                            festivalCtx.globalAlpha = p.alpha * fw.opacity;
-                            festivalCtx.fillStyle = p.color;
-                            festivalCtx.fillRect(p.x, p.y, 2, 2);
-                        }
-                    });
-                    festivalCtx.globalAlpha = 1;
-                }
-            });
-        } else {
-            fireworks = [];
-        }
-
-
-        if (activeEffects > 0) {
-            animationFrameId = requestAnimationFrame(animateFestival);
-        } else {
-            cancelAnimationFrame(animationFrameId);
-            animationFrameId = null;
-        }
+        if (appData.shopSettings.festival.fireworks.enabled) { activeEffects++; const n = Date.now(), fI = appData.shopSettings.festival.fireworks.intensity * 60000; if (n - lastFireworkTime > fI / 10) { if (Math.random() < 0.05) { fireworks.push(createFirework(Math.random() * festivalCanvas.width, Math.random() * (festivalCanvas.height / 2))); lastFireworkTime = n; } } fireworks.forEach((fw, i) => { if (fw.particles.length === 0) { fireworks.splice(i, 1); } else { fw.particles.forEach((p, pI) => { p.speed *= p.friction; p.x += Math.cos(p.angle) * p.speed; p.y += Math.sin(p.angle) * p.speed + p.gravity; p.alpha -= 0.02; if (p.alpha <= 0) { fw.particles.splice(pI, 1); } else { festivalCtx.globalAlpha = p.alpha * fw.opacity; festivalCtx.fillStyle = p.color; festivalCtx.fillRect(p.x, p.y, 2, 2); } }); festivalCtx.globalAlpha = 1; } }); } else { fireworks = []; }
+        if (activeEffects > 0) { animationFrameId = requestAnimationFrame(animateFestival); } else { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
     }
 
     function initFestivalEffects() {
         cancelAnimationFrame(animationFrameId);
         const settings = appData.shopSettings.festival;
-        if (settings.rain.enabled || settings.snow.enabled || settings.fireworks.enabled) {
+        if (settings.rain.enabled || settings.snow.enabled || settings.fireworks.enabled || settings.autumn.enabled) {
             festivalCanvas.style.display = 'block';
             resizeCanvas();
             animateFestival();
@@ -1995,15 +2693,330 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    const renderLoadingBarPreviews = () => {
+        const container = document.getElementById('loading-bar-previews');
+        container.innerHTML = '';
+        for (let i = 1; i <= 10; i++) {
+            const item = document.createElement('div');
+            item.className = 'progress-bar-preview-item';
+            item.innerHTML = `
+                <p>Style ${i}</p>
+                <div class="progress-bar style-${i}"></div>
+            `;
+            container.appendChild(item);
+        }
+    };
+
+    const renderThemeModal = () => {
+        const grid = document.getElementById('theme-selection-grid');
+        grid.innerHTML = '';
+        for (const key in THEME_PRESETS) {
+            const theme = THEME_PRESETS[key];
+            const item = document.createElement('div');
+            item.className = 'theme-preview-item';
+            if (key === appData.shopSettings.themeName) {
+                item.classList.add('active');
+            }
+            item.dataset.theme = key;
+            item.innerHTML = `
+                <div class="color-swatches">
+                    <div class="swatch" style="background-color: ${theme.colors.primary};"></div>
+                    <div class="swatch" style="background-color: ${theme.colors.secondary};"></div>
+                    <div class="swatch" style="background-color: ${theme.colors.info};"></div>
+                </div>
+                <p>${theme.name}</p>
+            `;
+            item.addEventListener('click', async () => {
+                addLog('Theme Changed', `Theme set to ${theme.name}`);
+                appData.shopSettings.themeName = key;
+                applySystemTheme(key);
+                document.querySelectorAll('.theme-preview-item').forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+                await saveState();
+            });
+            grid.appendChild(item);
+        }
+    };
+
+    document.getElementById('open-theme-modal-btn').addEventListener('click', () => {
+        renderThemeModal();
+        document.getElementById('system-theme-modal').style.display = 'flex';
+    });
+    document.getElementById('close-theme-modal-btn').addEventListener('click', () => {
+        document.getElementById('system-theme-modal').style.display = 'none';
+    });
+
+    // NEW: Promotions functions
+    const renderPromotions = () => {
+        const list = document.getElementById('promo-code-list');
+        list.innerHTML = '';
+        appData.shopSettings.promotions.forEach(promo => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${promo.code}</td>
+                <td>${promo.discount}%</td>
+                <td>
+                    <button class="btn btn-danger btn-small btn-delete-promo" data-id="${promo.id}">ลบ</button>
+                </td>
+            `;
+            list.appendChild(row);
+        });
+    };
+
+    const setupPromotionListeners = () => {
+        document.getElementById('promo-code-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const codeInput = document.getElementById('promo-code');
+            const discountInput = document.getElementById('promo-discount');
+            const code = codeInput.value.trim().toUpperCase();
+            const discount = parseInt(discountInput.value);
+
+            if (!code || !discount || discount <= 0 || discount > 100) {
+                alert('กรุณากรอกข้อมูลให้ถูกต้อง (ส่วนลดต้องอยู่ระหว่าง 1-100)');
+                return;
+            }
+            if (appData.shopSettings.promotions.some(p => p.code === code)) {
+                alert('โค้ดนี้มีอยู่แล้วในระบบ');
+                return;
+            }
+            
+            const newPromo = { id: generateId(), code, discount };
+            appData.shopSettings.promotions.push(newPromo);
+            addLog('Promotion Created', `Code: ${code}, Discount: ${discount}%`);
+            await saveState();
+            renderPromotions();
+            codeInput.value = '';
+            discountInput.value = '';
+        });
+
+        document.getElementById('generate-promo-btn').addEventListener('click', () => {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 8; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('promo-code').value = result;
+        });
+
+        document.getElementById('promo-code-list').addEventListener('click', async (e) => {
+            if (e.target.classList.contains('btn-delete-promo')) {
+                const promoId = parseInt(e.target.dataset.id);
+                const promoToDelete = appData.shopSettings.promotions.find(p => p.id === promoId);
+                if (promoToDelete && confirm(`คุณต้องการลบโค้ด ${promoToDelete.code} ใช่หรือไม่?`)) {
+                    addLog('Promotion Deleted', `Code: ${promoToDelete.code}`);
+                    appData.shopSettings.promotions = appData.shopSettings.promotions.filter(p => p.id !== promoId);
+                    await saveState();
+                    renderPromotions();
+                }
+            }
+        });
+    };
+
+    // NEW: Log functions
+    const renderLogs = () => {
+        const list = document.getElementById('log-list');
+        list.innerHTML = '';
+        appData.analytics.logs.forEach(log => {
+            const row = document.createElement('tr');
+            const date = new Date(log.timestamp);
+            const formattedDate = `${date.toLocaleDateString('th-TH')} ${date.toLocaleTimeString('th-TH')}`;
+            row.innerHTML = `
+                <td>${formattedDate}</td>
+                <td>${log.user}</td>
+                <td>${log.action}</td>
+                <td>${log.details}</td>
+            `;
+            list.appendChild(row);
+        });
+    };
+
+    // NEW: Tax functions
+    const renderTaxView = () => {
+        const year = new Date().getFullYear();
+        document.getElementById('tax-year-select').value = appData.taxData.year || year;
+        
+        const shopIncome = appData.analytics.orders
+            .filter(o => new Date(o.timestamp).getFullYear() === appData.taxData.year && o.status !== 'cancelled')
+            .reduce((sum, o) => sum + o.total, 0);
+        document.getElementById('tax-shop-income').value = shopIncome.toLocaleString(undefined, {minimumFractionDigits: 2});
+        
+        document.getElementById('tax-other-income').value = appData.taxData.otherIncome;
+        document.getElementById(`expense-type-${appData.taxData.expenseType}`).checked = true;
+        
+        document.getElementById('tax-actual-cost').value = appData.taxData.actualExpenses.cost;
+        document.getElementById('tax-actual-transport').value = appData.taxData.actualExpenses.transport;
+        document.getElementById('tax-actual-ad').value = appData.taxData.actualExpenses.advertising;
+        document.getElementById('tax-actual-other').value = appData.taxData.actualExpenses.other;
+        
+        document.getElementById('deduction-spouse').value = appData.taxData.deductions.spouse;
+        document.getElementById('deduction-children').value = appData.taxData.deductions.children;
+        document.getElementById('deduction-social-security').value = appData.taxData.deductions.socialSecurity;
+        document.getElementById('deduction-insurance').value = appData.taxData.deductions.insurance;
+        document.getElementById('deduction-rmf').value = appData.taxData.deductions.rmf;
+        document.getElementById('deduction-ssf').value = appData.taxData.deductions.ssf;
+        document.getElementById('deduction-donations').value = appData.taxData.deductions.donations;
+        document.getElementById('deduction-home-interest').value = appData.taxData.deductions.homeInterest;
+
+        toggleActualExpenses();
+    };
+
+    const toggleActualExpenses = () => {
+        const actualContainer = document.getElementById('actual-expenses-container');
+        if (document.getElementById('expense-type-actual').checked) {
+            actualContainer.style.display = 'grid';
+        } else {
+            actualContainer.style.display = 'none';
+        }
+    };
+
+    const calculateTax = () => {
+        // 1. Collect Data
+        const taxYear = parseInt(document.getElementById('tax-year-select').value);
+        const shopIncome = appData.analytics.orders
+            .filter(o => new Date(o.timestamp).getFullYear() === taxYear && o.status !== 'cancelled')
+            .reduce((sum, o) => sum + o.total, 0);
+        const otherIncome = parseFloat(document.getElementById('tax-other-income').value) || 0;
+        const totalIncome = shopIncome + otherIncome;
+
+        let totalExpense = 0;
+        if (document.getElementById('expense-type-flat').checked) {
+            totalExpense = totalIncome * 0.6;
+        } else {
+            totalExpense += parseFloat(document.getElementById('tax-actual-cost').value) || 0;
+            totalExpense += parseFloat(document.getElementById('tax-actual-transport').value) || 0;
+            totalExpense += parseFloat(document.getElementById('tax-actual-ad').value) || 0;
+            totalExpense += parseFloat(document.getElementById('tax-actual-other').value) || 0;
+        }
+
+        let totalDeduction = 60000; // Personal
+        totalDeduction += parseFloat(document.getElementById('deduction-spouse').value) || 0;
+        totalDeduction += (parseFloat(document.getElementById('deduction-children').value) || 0) * 30000;
+        totalDeduction += Math.min(9000, parseFloat(document.getElementById('deduction-social-security').value) || 0);
+        totalDeduction += parseFloat(document.getElementById('deduction-insurance').value) || 0;
+        totalDeduction += parseFloat(document.getElementById('deduction-rmf').value) || 0;
+        totalDeduction += parseFloat(document.getElementById('deduction-ssf').value) || 0;
+        totalDeduction += parseFloat(document.getElementById('deduction-donations').value) || 0;
+        totalDeduction += parseFloat(document.getElementById('deduction-home-interest').value) || 0;
+
+        const netIncome = Math.max(0, totalIncome - totalExpense - totalDeduction);
+
+        // 2. Calculate Tax based on progressive rates
+        let taxPayable = 0;
+        if (netIncome > 5000000) taxPayable += (netIncome - 5000000) * 0.35;
+        if (netIncome > 2000000) taxPayable += (Math.min(netIncome, 5000000) - 2000000) * 0.30;
+        if (netIncome > 1000000) taxPayable += (Math.min(netIncome, 2000000) - 1000000) * 0.25;
+        if (netIncome > 750000)  taxPayable += (Math.min(netIncome, 1000000) - 750000) * 0.20;
+        if (netIncome > 500000)  taxPayable += (Math.min(netIncome, 750000) - 500000) * 0.15;
+        if (netIncome > 300000)  taxPayable += (Math.min(netIncome, 500000) - 300000) * 0.10;
+        if (netIncome > 150000)  taxPayable += (Math.min(netIncome, 300000) - 150000) * 0.05;
+
+        // 3. Calculate PND94 (ครึ่งปี)
+        const halfYearIncome = (appData.analytics.orders
+            .filter(o => new Date(o.timestamp).getFullYear() === taxYear && new Date(o.timestamp).getMonth() < 6 && o.status !== 'cancelled')
+            .reduce((sum, o) => sum + o.total, 0)) + (otherIncome / 2);
+        const halfYearExpense = document.getElementById('expense-type-flat').checked ? halfYearIncome * 0.6 : totalExpense / 2;
+        const halfYearDeduction = totalDeduction / 2;
+        const halfYearNetIncome = Math.max(0, halfYearIncome - halfYearExpense - halfYearDeduction);
+        
+        let pnd94Tax = 0;
+        if (halfYearNetIncome > 5000000) pnd94Tax += (halfYearNetIncome - 5000000) * 0.35;
+        if (halfYearNetIncome > 2000000) pnd94Tax += (Math.min(halfYearNetIncome, 5000000) - 2000000) * 0.30;
+        if (halfYearNetIncome > 1000000) pnd94Tax += (Math.min(halfYearNetIncome, 2000000) - 1000000) * 0.25;
+        if (halfYearNetIncome > 750000)  pnd94Tax += (Math.min(halfYearNetIncome, 1000000) - 750000) * 0.20;
+        if (halfYearNetIncome > 500000)  pnd94Tax += (Math.min(halfYearNetIncome, 750000) - 500000) * 0.15;
+        if (halfYearNetIncome > 300000)  pnd94Tax += (Math.min(halfYearNetIncome, 500000) - 300000) * 0.10;
+        if (halfYearNetIncome > 150000)  pnd94Tax += (Math.min(halfYearNetIncome, 300000) - 150000) * 0.05;
+
+        const finalTax = taxPayable - pnd94Tax;
+
+        // 4. Display Results
+        document.getElementById('summary-total-income').textContent = totalIncome.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('summary-total-expense').textContent = totalExpense.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('summary-total-deduction').textContent = totalDeduction.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('summary-net-income').textContent = netIncome.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('summary-tax-payable').textContent = taxPayable.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('summary-pnd94').textContent = pnd94Tax.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('summary-final-tax').textContent = finalTax.toLocaleString(undefined, {minimumFractionDigits: 2});
+
+        document.getElementById('tax-summary-container').style.display = 'block';
+    };
+
+    const setupTaxListeners = () => {
+        document.getElementById('tax-form').addEventListener('input', async () => {
+            // Save data on input change
+            appData.taxData.year = parseInt(document.getElementById('tax-year-select').value);
+            appData.taxData.otherIncome = parseFloat(document.getElementById('tax-other-income').value) || 0;
+            appData.taxData.expenseType = document.querySelector('input[name="expense-type"]:checked').value;
+            appData.taxData.actualExpenses = {
+                cost: parseFloat(document.getElementById('tax-actual-cost').value) || 0,
+                transport: parseFloat(document.getElementById('tax-actual-transport').value) || 0,
+                advertising: parseFloat(document.getElementById('tax-actual-ad').value) || 0,
+                other: parseFloat(document.getElementById('tax-actual-other').value) || 0,
+            };
+            appData.taxData.deductions = {
+                personal: 60000,
+                spouse: parseFloat(document.getElementById('deduction-spouse').value) || 0,
+                children: parseFloat(document.getElementById('deduction-children').value) || 0,
+                socialSecurity: parseFloat(document.getElementById('deduction-social-security').value) || 0,
+                insurance: parseFloat(document.getElementById('deduction-insurance').value) || 0,
+                rmf: parseFloat(document.getElementById('deduction-rmf').value) || 0,
+                ssf: parseFloat(document.getElementById('deduction-ssf').value) || 0,
+                donations: parseFloat(document.getElementById('deduction-donations').value) || 0,
+                homeInterest: parseFloat(document.getElementById('deduction-home-interest').value) || 0,
+            };
+            await saveState();
+        });
+
+        document.querySelectorAll('input[name="expense-type"]').forEach(radio => {
+            radio.addEventListener('change', toggleActualExpenses);
+        });
+
+        document.getElementById('calculate-tax-btn').addEventListener('click', calculateTax);
+    };
+
+
     const init = async () => {
         applyLoadingBackground();
         await loadState();
+
+        const storedLogin = localStorage.getItem('isAdminLoggedIn');
+        if (storedLogin === 'true') {
+            try {
+                const storedUser = JSON.parse(localStorage.getItem('loggedInUser'));
+                if (storedUser) {
+                    isAdminLoggedIn = true;
+                    loggedInUser = storedUser;
+                    switchView('adminPanel');
+                    renderAdminPanel();
+                } else {
+                    localStorage.clear();
+                    renderCustomerView();
+                }
+            } catch (e) {
+                console.error('Failed to parse stored user data', e);
+                localStorage.clear();
+                renderCustomerView();
+            }
+        } else {
+            renderCustomerView();
+        }
+
         if (appData.categories.length > 0) {
             if (!appData.categories.find(c => c.id === activeCategoryId)) activeCategoryId = appData.categories[0].id;
             adminActiveCategoryId = activeCategoryId;
         } else { activeCategoryId = null; adminActiveCategoryId = null; }
-        renderCustomerView();
-        document.getElementById('loader-overlay').style.display = 'none';
+        
+        setupStockDatabaseListeners();
+        setupSearchListeners();
+        setupStockSettingsListeners();
+        setupPromotionListeners();
+        setupTaxListeners();
+        
+        setTimeout(() => {
+            const loader = document.getElementById('loader-overlay');
+            loader.style.opacity = '0';
+            loader.addEventListener('transitionend', () => loader.style.display = 'none', { once: true });
+        }, 500);
     };
 
     window.addEventListener('resize', resizeCanvas);
