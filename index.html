@@ -164,13 +164,15 @@
                     </div>
                     <div id="admin-sub-system-fonts" class="admin-sub-content">
                         <h2 data-translate-key="systemFontsTitle">System Fonts</h2>
-                        <div class="form-group">
+                        <div class="form-group range-group">
                             <label for="shop-name-font-size" data-translate-key="shopNameFontSizeLabel">ขนาดฟอนต์ชื่อร้าน</label>
                             <input type="range" id="shop-name-font-size" min="1.5" max="4" step="0.1" value="2.5">
+                            <span class="range-value">2.5rem</span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group range-group">
                             <label for="slogan-font-size" data-translate-key="sloganFontSizeLabel">ขนาดฟอนต์สโลแกน</label>
                             <input type="range" id="slogan-font-size" min="0.8" max="2" step="0.1" value="1.2">
+                            <span class="range-value">1.2rem</span>
                         </div>
                         <div class="form-group">
                             <label for="shop-font" data-translate-key="shopNameFontLabel">ฟอนต์ชื่อร้าน</label>
@@ -191,13 +193,17 @@
                                 </label>
                             </div>
                             <div class="effect-controls" id="effect-controls-container" style="display: none;">
-                                <label><span data-translate-key="effectOffsetX">เงาแนวนอน (X)</span> <input type="range" id="effect-offset-x" min="-10" max="10" value="2"></label>
-                                <label><span data-translate-key="effectOffsetY">เงาแนวตั้ง (Y)</span> <input type="range" id="effect-offset-y" min="-10" max="10" value="2"></label>
-                                <label><span data-translate-key="effectBlur">ความเบลอ</span> <input type="range" id="effect-blur" min="0" max="20" value="4"></label>
+                                <div class="effect-control-item">
+                                    <label for="effect-text-color" data-translate-key="textColorLabel">สีตัวอักษร</label>
+                                    <input type="color" id="effect-text-color" value="#333333">
+                                </div>
                                 <div class="effect-control-item">
                                     <label for="effect-color" data-translate-key="effectColor">สีเงา</label>
                                     <input type="color" id="effect-color" value="#000000">
                                 </div>
+                                <div class="range-group"><label><span data-translate-key="effectOffsetX">เงาแนวนอน (X)</span></label><input type="range" id="effect-offset-x" min="-10" max="10" value="2"><span class="range-value">2px</span></div>
+                                <div class="range-group"><label><span data-translate-key="effectOffsetY">เงาแนวตั้ง (Y)</span></label><input type="range" id="effect-offset-y" min="-10" max="10" value="2"><span class="range-value">2px</span></div>
+                                <div class="range-group"><label><span data-translate-key="effectBlur">ความเบลอ</span></label><input type="range" id="effect-blur" min="0" max="20" value="4"><span class="range-value">4px</span></div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -209,9 +215,9 @@
                                 </label>
                             </div>
                             <div class="effect-controls" id="slogan-effect-controls-container" style="display: none;">
-                                <label><span data-translate-key="effectOffsetX">เงาแนวนอน (X)</span> <input type="range" id="slogan-effect-offset-x" min="-10" max="10" value="1"></label>
-                                <label><span data-translate-key="effectOffsetY">เงาแนวตั้ง (Y)</span> <input type="range" id="slogan-effect-offset-y" min="-10" max="10" value="1"></label>
-                                <label><span data-translate-key="effectBlur">ความเบลอ</span> <input type="range" id="slogan-effect-blur" min="0" max="20" value="2"></label>
+                                <div class="range-group"><label><span data-translate-key="effectOffsetX">เงาแนวนอน (X)</span></label><input type="range" id="slogan-effect-offset-x" min="-10" max="10" value="1"><span class="range-value">1px</span></div>
+                                <div class="range-group"><label><span data-translate-key="effectOffsetY">เงาแนวตั้ง (Y)</span></label><input type="range" id="slogan-effect-offset-y" min="-10" max="10" value="1"><span class="range-value">1px</span></div>
+                                <div class="range-group"><label><span data-translate-key="effectBlur">ความเบลอ</span></label><input type="range" id="slogan-effect-blur" min="0" max="20" value="2"><span class="range-value">2px</span></div>
                                 <div class="effect-control-item">
                                     <label for="slogan-effect-color" data-translate-key="effectColor">สีเงา</label>
                                     <input type="color" id="slogan-effect-color" value="#000000">
@@ -219,17 +225,20 @@
                             </div>
                         </div>
                         <hr>
-                         <div class="form-group">
+                         <div class="form-group range-group">
                             <label for="global-font-size-perc" data-translate-key="globalFontSizeLabel">ขนาดฟอนต์ทั้งระบบ (%)</label>
                             <input type="range" id="global-font-size-perc" min="1" max="100" step="1" value="50">
+                            <span class="range-value">50%</span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group range-group">
                             <label for="main-menu-font-size-perc" data-translate-key="mainMenuFontSizeLabel">ขนาดฟอนต์เมนูหลัก (%)</label>
                             <input type="range" id="main-menu-font-size-perc" min="1" max="100" step="1" value="50">
+                            <span class="range-value">50%</span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group range-group">
                             <label for="sub-menu-font-size-perc" data-translate-key="subMenuFontSizeLabel">ขนาดฟอนต์เมนูย่อย (%)</label>
                             <input type="range" id="sub-menu-font-size-perc" min="1" max="100" step="1" value="50">
+                            <span class="range-value">50%</span>
                         </div>
                         <div class="form-group">
                             <label for="shop-global-font" data-translate-key="globalFontLabel">ฟอนต์ระบบทั้งหมด</label>
@@ -255,8 +264,11 @@
                         <div class="form-group">
                             <label for="copyright-text" data-translate-key="copyrightTextLabel">ข้อความ Copyright</label>
                             <input type="text" id="copyright-text">
+                        </div>
+                        <div class="form-group range-group">
                             <label for="copyright-opacity" data-translate-key="copyrightOpacityLabel">ความคมชัด</label>
                             <input type="range" id="copyright-opacity" min="0" max="1" step="0.1" value="1">
+                            <span class="range-value">1</span>
                         </div>
                         <button id="save-system-fonts-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกการตั้งค่า</button>
                     </div>
@@ -266,10 +278,16 @@
                             <label for="bg-upload" data-translate-key="uploadBgLabel">อัปโหลดภาพพื้นหลัง</label>
                             <input type="file" id="bg-upload" accept="image/*">
                             <div id="bg-preview" class="bg-preview" style="display: none;"></div>
-                            <label for="bg-opacity" data-translate-key="bgOpacityLabel">ความโปร่งใส (จาง-ชัด)</label>
-                            <input type="range" id="bg-opacity" min="0.1" max="1" step="0.05" value="1">
-                            <label for="bg-blur" data-translate-key="bgBlurLabel">ความเบลอ (น้อย-มาก)</label>
-                            <input type="range" id="bg-blur" min="0" max="20" step="1" value="0">
+                            <div class="range-group">
+                                <label for="bg-opacity" data-translate-key="bgOpacityLabel">ความโปร่งใส (จาง-ชัด)</label>
+                                <input type="range" id="bg-opacity" min="0.1" max="1" step="0.05" value="1">
+                                <span class="range-value">1</span>
+                            </div>
+                            <div class="range-group">
+                                <label for="bg-blur" data-translate-key="bgBlurLabel">ความเบลอ (น้อย-มาก)</label>
+                                <input type="range" id="bg-blur" min="0" max="20" step="1" value="0">
+                                <span class="range-value">0px</span>
+                            </div>
                             <div class="btn-group" style="margin-top: 10px;">
                                 <button type="button" id="remove-bg-btn" class="btn btn-danger btn-small" data-translate-key="removeBgBtn">ลบพื้นหลัง</button>
                                 <button type="button" id="preview-bg-btn" class="btn btn-info btn-small" data-translate-key="previewBgBtn">ดูตัวอย่าง</button>
@@ -289,8 +307,11 @@
                             <label for="loading-bg-upload" data-translate-key="uploadLoadingBgLabel">อัปโหลดภาพพื้นหลัง</label>
                             <input type="file" id="loading-bg-upload" accept="image/*">
                             <div id="loading-bg-preview" class="bg-preview" style="display: none;"></div>
-                            <label for="loading-bg-opacity" data-translate-key="bgOpacityLabel">ความโปร่งใส (จาง-ชัด)</label>
-                            <input type="range" id="loading-bg-opacity" min="0.1" max="1" step="0.05" value="0.7">
+                            <div class="range-group">
+                                <label for="loading-bg-opacity" data-translate-key="bgOpacityLabel">ความโปร่งใส (จาง-ชัด)</label>
+                                <input type="range" id="loading-bg-opacity" min="0.1" max="1" step="0.05" value="0.7">
+                                <span class="range-value">0.7</span>
+                            </div>
                             <button type="button" id="remove-loading-bg-btn" class="btn btn-danger btn-small" data-translate-key="removeBgBtn" style="margin-top: 10px;">ลบพื้นหลัง</button>
                         </div>
                         <hr>
@@ -364,17 +385,25 @@
                         <label for="shop-closed-message-text" data-translate-key="shopClosedMessageLabel">ข้อความเมื่อปิดร้าน</label>
                         <textarea id="shop-closed-message-text" rows="3" placeholder="เช่น ปิดปรับปรุงชั่วคราว"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label data-translate-key="messageFontColorLabel">สีตัวอักษร</label>
-                        <input type="color" id="shop-closed-message-color" value="#FFFFFF">
+                    <div class="form-group" style="display: flex; gap: 20px; align-items: center;">
+                        <div class="effect-control-item">
+                            <label for="shop-closed-message-color" data-translate-key="textColorLabel">สีตัวอักษร</label>
+                            <input type="color" id="shop-closed-message-color" value="#FFFFFF">
+                        </div>
+                        <div class="effect-control-item">
+                            <label for="shop-closed-message-bg-color" data-translate-key="messageBgColorLabel">สีพื้นหลัง</label>
+                            <input type="color" id="shop-closed-message-bg-color" value="#333333">
+                        </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group range-group">
                         <label for="shop-closed-message-size" data-translate-key="messageFontSizeLabel">ขนาดตัวอักษร</label>
-                        <input type="range" id="shop-closed-message-size" min="12" max="30" value="20">
+                        <input type="range" id="shop-closed-message-size" min="12" max="40" value="20">
+                        <span class="range-value">20px</span>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group range-group">
                         <label for="marquee-speed" data-translate-key="marqueeSpeedLabel">ความเร็วตัวอักษรวิ่ง</label>
                         <input type="range" id="marquee-speed" min="5" max="50" value="20">
+                        <span class="range-value">20s</span>
                     </div>
                     <div class="form-group">
                         <div class="toggle-switch-container">
@@ -385,9 +414,9 @@
                             </label>
                         </div>
                         <div class="effect-controls" id="message-effect-controls-container" style="display: none;">
-                            <label><span data-translate-key="effectOffsetX">เงาแนวนอน (X)</span> <input type="range" id="message-effect-offset-x" min="-10" max="10" value="1"></label>
-                            <label><span data-translate-key="effectOffsetY">เงาแนวตั้ง (Y)</span> <input type="range" id="message-effect-offset-y" min="-10" max="10" value="1"></label>
-                            <label><span data-translate-key="effectBlur">ความเบลอ</span> <input type="range" id="message-effect-blur" min="0" max="20" value="2"></label>
+                            <div class="range-group"><label><span data-translate-key="effectOffsetX">เงาแนวนอน (X)</span></label><input type="range" id="message-effect-offset-x" min="-10" max="10" value="1"><span class="range-value">1px</span></div>
+                            <div class="range-group"><label><span data-translate-key="effectOffsetY">เงาแนวตั้ง (Y)</span></label><input type="range" id="message-effect-offset-y" min="-10" max="10" value="1"><span class="range-value">1px</span></div>
+                            <div class="range-group"><label><span data-translate-key="effectBlur">ความเบลอ</span></label><input type="range" id="message-effect-blur" min="0" max="20" value="2"><span class="range-value">2px</span></div>
                             <div class="effect-control-item">
                                 <label for="message-effect-color" data-translate-key="effectColor">สีเงา</label>
                                 <input type="color" id="message-effect-color" value="#000000">
@@ -399,13 +428,16 @@
                         </div>
                     </div>
                     <hr>
+                    <h3 data-translate-key="messagePresetsTitle">รูปแบบข้อความสำเร็จรูป</h3>
+                    <div id="message-preset-grid"></div>
+                    <hr>
                     <div class="festival-control">
                         <label data-translate-key="rainEffectLabel">เอฟเฟกต์ฝนตก</label>
                         <div class="control-group">
                             <label class="toggle-switch"><input type="checkbox" id="rain-effect-toggle"><span class="slider"></span></label>
                             <div class="range-controls">
-                                <label><span data-translate-key="rainIntensityLabel">ความหนัก</span> <input type="range" id="rain-intensity" min="1" max="100" value="20"></label>
-                                <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="rain-opacity" min="0.1" max="1" step="0.1" value="0.5"></label>
+                                <div class="range-group"><label><span data-translate-key="rainIntensityLabel">ความหนัก</span></label><input type="range" id="rain-intensity" min="1" max="100" value="20"><span class="range-value">20</span></div>
+                                <div class="range-group"><label><span data-translate-key="effectOpacityLabel">ความชัด</span></label><input type="range" id="rain-opacity" min="0.1" max="1" step="0.1" value="0.5"><span class="range-value">0.5</span></div>
                             </div>
                         </div>
                     </div>
@@ -414,8 +446,8 @@
                         <div class="control-group">
                             <label class="toggle-switch"><input type="checkbox" id="snow-effect-toggle"><span class="slider"></span></label>
                             <div class="range-controls">
-                                <label><span data-translate-key="snowIntensityLabel">ความหนัก</span> <input type="range" id="snow-intensity" min="1" max="100" value="20"></label>
-                                <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="snow-opacity" min="0.1" max="1" step="0.1" value="0.5"></label>
+                                <div class="range-group"><label><span data-translate-key="snowIntensityLabel">ความหนัก</span></label><input type="range" id="snow-intensity" min="1" max="100" value="20"><span class="range-value">20</span></div>
+                                <div class="range-group"><label><span data-translate-key="effectOpacityLabel">ความชัด</span></label><input type="range" id="snow-opacity" min="0.1" max="1" step="0.1" value="0.5"><span class="range-value">0.5</span></div>
                             </div>
                         </div>
                     </div>
@@ -424,8 +456,8 @@
                         <div class="control-group">
                             <label class="toggle-switch"><input type="checkbox" id="fireworks-effect-toggle"><span class="slider"></span></label>
                             <div class="range-controls">
-                                <label><span data-translate-key="fireworksIntensityLabel">ความถี่ (นาที)</span> <input type="range" id="fireworks-intensity" min="1" max="10" value="1"></label>
-                                <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="fireworks-opacity" min="0.1" max="1" step="0.1" value="0.8"></label>
+                                <div class="range-group"><label><span data-translate-key="fireworksIntensityLabel">ความถี่ (นาที)</span></label><input type="range" id="fireworks-intensity" min="1" max="10" value="1"><span class="range-value">1</span></div>
+                                <div class="range-group"><label><span data-translate-key="effectOpacityLabel">ความชัด</span></label><input type="range" id="fireworks-opacity" min="0.1" max="1" step="0.1" value="0.8"><span class="range-value">0.8</span></div>
                             </div>
                         </div>
                     </div>
@@ -434,8 +466,8 @@
                         <div class="control-group">
                             <label class="toggle-switch"><input type="checkbox" id="autumn-effect-toggle"><span class="slider"></span></label>
                             <div class="range-controls">
-                                <label><span data-translate-key="autumnIntensityLabel">ความหนัก</span> <input type="range" id="autumn-intensity" min="1" max="100" value="20"></label>
-                                <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="autumn-opacity" min="0.1" max="1" step="0.1" value="0.8"></label>
+                                <div class="range-group"><label><span data-translate-key="autumnIntensityLabel">ความหนัก</span></label><input type="range" id="autumn-intensity" min="1" max="100" value="20"><span class="range-value">20</span></div>
+                                <div class="range-group"><label><span data-translate-key="effectOpacityLabel">ความชัด</span></label><input type="range" id="autumn-opacity" min="0.1" max="1" step="0.1" value="0.8"><span class="range-value">0.8</span></div>
                             </div>
                         </div>
                     </div>
@@ -849,7 +881,7 @@
                 <!-- NEW: Logs Sub-menu Content -->
                 <div id="admin-sub-logs" class="admin-sub-content">
                     <div class="card admin-section">
-                        <h2 data-translate-key="logsTitle">ประวัติการเปลี่ยนแปลง</h2>
+                        <h2 data-translate-key="logsTitle">Log การทำงาน</h2>
                         <div class="table-wrapper" style="max-height: 60vh;">
                             <table>
                                 <thead>
