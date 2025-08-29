@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             logo: null,
             useLogo: false,
             darkMode: false,
-            shopNameEffect: { enabled: false, offsetX: 2, offsetY: 2, blur: 4, color: '#000000', textColor: '#28a745' },
+            shopNameEffect: { enabled: false, offsetX: 2, offsetY: 2, blur: 4, color: '#000000' },
             sloganEffect: { enabled: false, offsetX: 1, offsetY: 1, blur: 2, color: '#000000' },
             sloganFontFamily: "'Kanit', sans-serif",
             backgroundImage: null,
@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingBackgroundOpacity: 0.7,
             loadingBarStyle: '1',
             loadingMessageText: "กำลังดาวน์โหลดข้อมูลล่าสุด...",
+            // NEW: Loading animation setting
+            loadingAnimation: 'door-open-v',
             language: 'th',
             lowStockThreshold: 50, 
             dbCategoryLowStockThresholds: {},
@@ -48,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
             shopClosedMessage: {
                 text: "ร้านปิดปรับปรุงชั่วคราว",
                 color: "#FFFFFF",
-                backgroundColor: "rgba(0,0,0,0.3)",
                 size: 20,
                 speed: 20,
                 effect: { enabled: false, offsetX: 1, offsetY: 1, blur: 2, color: '#000000' }
@@ -90,6 +91,31 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
         menuOrder: ['dashboard', 'order-number', 'stock', 'admin', 'tax', 'festival', 'manage-account']
+    };
+
+    // NEW: Loading Animations Configuration
+    const LOADING_ANIMATIONS = {
+        'none': { name: 'ไม่มีอนิเมชั่น', duration: 500, html: '' },
+        'door-open-v': { name: 'เปิดประตู (แนวตั้ง)', duration: 1000, html: '<div class="left-door"></div><div class="right-door"></div>' },
+        'door-open-h': { name: 'เปิดประตู (แนวนอน)', duration: 1000, html: '<div class="top-door"></div><div class="bottom-door"></div>' },
+        'curtain-open': { name: 'เปิดม่าน', duration: 1200, html: '<div class="left-curtain"></div><div class="right-curtain"></div>' },
+        'fade-out': { name: 'จางหายไป', duration: 1000, html: '<div class="overlay"></div>' },
+        'zoom-out': { name: 'ซูมออก', duration: 1000, html: '<div class="overlay"></div>' },
+        'slide-up': { name: 'เลื่อนขึ้น', duration: 1000, html: '<div class="overlay"></div>' },
+        'slide-down': { name: 'เลื่อนลง', duration: 1000, html: '<div class="overlay"></div>' },
+        'slide-left': { name: 'เลื่อนไปทางซ้าย', duration: 1000, html: '<div class="overlay"></div>' },
+        'slide-right': { name: 'เลื่อนไปทางขวา', duration: 1000, html: '<div class="overlay"></div>' },
+        'circle-wipe': { name: 'วงกลม', duration: 1000, html: '<div class="overlay"></div>' },
+        'diag-wipe': { name: 'กวาดแนวทแยง', duration: 1000, html: '<div class="overlay"></div>' },
+        'blinds-v': { name: 'มู่ลี่ (แนวตั้ง)', duration: 1000, html: '<div class="blind"></div>'.repeat(5) },
+        'blinds-h': { name: 'มู่ลี่ (แนวนอน)', duration: 1000, html: '<div class="blind"></div>'.repeat(5) },
+        'pixelate': { name: 'แตกเป็นพิกเซล', duration: 1000, html: '<div class="overlay"></div>' },
+        'shrink-center': { name: 'หดตรงกลาง', duration: 1000, html: '<div class="overlay"></div>' },
+        'split-slide': { name: 'แยกและเลื่อน', duration: 1000, html: '<div class="top-half"></div><div class="bottom-half"></div>' },
+        'iris-out': { name: 'ม่านตา', duration: 1000, html: '<div class="overlay"></div>' },
+        'matrix': { name: 'เมทริกซ์', duration: 1500, html: '' }, // Special handling in JS
+        'unfold': { name: 'คลี่ออก', duration: 1000, html: '<div class="left-half"></div><div class="right-half"></div>' },
+        'glitch': { name: 'กลิตช์', duration: 1000, html: '<div class="overlay"></div><div class="overlay-2"></div>' }
     };
 
     const FONT_OPTIONS = [
@@ -154,10 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const translations = {
         th: {
-            loadingMessage: "ข้อความตอนโหลด",
-            textColorLabel: "สีตัวอักษร",
-            messageBgColorLabel: "สีพื้นหลัง",
-            messagePresetsTitle: "รูปแบบข้อความสำเร็จรูป",
+            loadingAnimationLabel: "รูปแบบอนิเมชั่น",
+            loadingMessage: "ข้อความตอนโหลด", // Key for the label
             closeBtn: "ปิด", cancelBtn: "ยกเลิก", confirmBtn: "ยืนยัน", saveBtn: "บันทึก", editBtn: "แก้ไข", deleteBtn: "ลบ",
             searchPlaceholder: "ค้นหาสินค้า...", itemsListTitle: "รายการสินค้า", tableHeaderItem: "สินค้า", tableHeaderLevel: "เลเวล", tableHeaderQuantity: "จำนวน", tableHeaderManage: "จัดการ",
             viewOrderBtn: "รายการสั่งซื้อ", confirmOrderBtn: "ยืนยันสั่งซื้อ", totalAmount: "ยอดรวม",
@@ -207,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingBackgroundTitle: "พื้นหลัง Loading", uploadLoadingBgLabel: "อัปโหลดภาพพื้นหลัง Loading", loadingBarStyleLabel: "รูปแบบแถบดาวน์โหลด",
             priceDetailsTitle: "รายละเอียดราคา", viewPriceBtn: "ดูราคา",
             festivalTitle: "Festival Effects", shopStatusLabel: "เปิดร้าน", shopClosedMessageLabel: "ข้อความเมื่อปิดร้าน",
-            messageFontSizeLabel: "ขนาดตัวอักษร",
+            messageFontColorLabel: "สีตัวอักษร", messageFontSizeLabel: "ขนาดตัวอักษร",
             rainEffectLabel: "เอฟเฟกต์ฝนตก", rainIntensityLabel: "ความหนัก", effectOpacityLabel: "ความชัด",
             snowEffectLabel: "เอฟเฟกต์หิมะตก", snowIntensityLabel: "ความหนัก",
             fireworksEffectLabel: "เอฟเฟกต์พลุ", fireworksIntensityLabel: "ความถี่ (นาที)",
@@ -234,8 +258,8 @@ document.addEventListener('DOMContentLoaded', () => {
             discountLabel: "ส่วนลด",
             grandTotalLabel: "ยอดรวมสุทธิ",
             invalidPromoCode: "โค้ดส่วนลดไม่ถูกต้อง",
-            menuLogs: "Log การทำงาน",
-            logsTitle: "Log การทำงาน",
+            menuLogs: "Log การเปลี่ยนแปลง",
+            logsTitle: "ประวัติการเปลี่ยนแปลง",
             tableHeaderTimestamp: "เวลา",
             tableHeaderAction: "การกระทำ",
             tableHeaderDetails: "รายละเอียด",
@@ -302,29 +326,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'manage-account': { 'accounts': 'manageAccountTitle', 'anomaly-check': 'anomalyCheckTitle', 'logs': 'menuLogs' }
     };
 
-    const MESSAGE_PRESETS = [
-        { text: "🚧 ปิดปรับปรุงระบบชั่วคราว 🚧", color: "#FFFFFF", backgroundColor: "#DC3545", effect: { enabled: true, offsetX: 1, offsetY: 1, blur: 2, color: "#000000" } },
-        { text: "✨ พบกันเร็วๆ นี้ ✨", color: "#000000", backgroundColor: "#FFC107", effect: { enabled: false } },
-        { text: "🌙 พักผ่อนก่อนน้าา แล้วมาเจอกัน 🌙", color: "#FFFFFF", backgroundColor: "#6F42C1", effect: { enabled: true, offsetX: 0, offsetY: 0, blur: 5, color: "#FFFFFF" } },
-        { text: "🎉 เตรียมพบกับโปรโมชั่นสุดปัง! 🎉", color: "#FFFFFF", backgroundColor: "linear-gradient(45deg, #F06292, #64B5F6)", effect: { enabled: true, offsetX: 1, offsetY: 1, blur: 1, color: "rgba(0,0,0,0.5)" } },
-        { text: "🔥 HOT ITEMS COMING SOON 🔥", color: "#FFFFFF", backgroundColor: "#FD7E14", effect: { enabled: true, offsetX: 2, offsetY: 2, blur: 0, color: "#000000" } },
-        { text: "😴 แอดมินขอตัวไปนอนก่อนนะคะ 😴", color: "#333", backgroundColor: "#E9ECEF", effect: { enabled: false } },
-        { text: "กำลังเติมสต็อกสินค้า... อดใจรอสักครู่", color: "#FFFFFF", backgroundColor: "#17A2B8", effect: { enabled: false } },
-        { text: "💚 ขอบคุณทุกออเดอร์ แล้วกลับมาใหม่นะ 💚", color: "#FFFFFF", backgroundColor: "#28A745", effect: { enabled: false } },
-        { text: "System Maintenance - Be Right Back!", color: "#FFFFFF", backgroundColor: "#343A40", effect: { enabled: false } },
-        { text: "รับออเดอร์อีกครั้งพรุ่งนี้ 09:00น.", color: "#000000", backgroundColor: "#FFFFFF", effect: { enabled: true, offsetX: 0, offsetY: 1, blur: 0, color: "rgba(0,0,0,0.2)" } },
-        { text: "⚡️ UPGRADING SERVER ⚡️", color: "#FFD700", backgroundColor: "#121212", effect: { enabled: true, offsetX: 0, offsetY: 0, blur: 8, color: "#FFD700" } },
-        { text: "🏖️ Gone Fishing! Back Soon. 🏖️", color: "#FFFFFF", backgroundColor: "#007BFF", effect: { enabled: false } },
-        { text: "เคลียร์ออเดอร์สักครู่ เดี๋ยวกลับมาเปิดจ้า", color: "#212529", backgroundColor: "#F8F9FA", effect: { enabled: false } },
-        { text: "🚀 PREPARING FOR LAUNCH... 🚀", color: "#FFFFFF", backgroundColor: "radial-gradient(circle, #4A00E0, #8E2DE2)", effect: { enabled: true, offsetX: 0, offsetY: 0, blur: 4, color: "#FFFFFF" } },
-        { text: "🔴 LIVE UPDATE IN PROGRESS 🔴", color: "#FFFFFF", backgroundColor: "#C82333", effect: { enabled: true, offsetX: 1, offsetY: 1, blur: 3, color: "#000000" } },
-        { text: "ถึงเวลาพัก... ขอบคุณที่ใช้บริการครับ", color: "#FFFFFF", backgroundColor: "#6C757D", effect: { enabled: false } },
-        { text: "🎁 restocking special items... 🎁", color: "#FFFFFF", backgroundColor: "#E83E8C", effect: { enabled: false } },
-        { text: "⚠️ Temporary Pause - Service will resume shortly ⚠️", color: "#000000", backgroundColor: "#FFC107", effect: { enabled: false } },
-        { text: "❄️ Cooling down the system... ❄️", color: "#000000", backgroundColor: "#81D4FA", effect: { enabled: false } },
-        { text: "Gearing up for the next big sale!", color: "#FFFFFF", backgroundColor: "#20C997", effect: { enabled: true, offsetX: 1, offsetY: 1, blur: 2, color: "rgba(0,0,0,0.4)" } }
-    ];
-
     const generateId = () => Date.now() + Math.floor(Math.random() * 1000);
 
     const addLog = (action, details) => {
@@ -389,7 +390,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!appData.shopSettings.shopClosedMessage.effect) {
                 appData.shopSettings.shopClosedMessage.effect = defaultSettings.shopClosedMessage.effect;
             }
-            appData.shopSettings.shopNameEffect = {...defaultSettings.shopNameEffect, ...appData.shopSettings.shopNameEffect};
             appData.shopSettings.sloganEffect = {...defaultSettings.sloganEffect, ...appData.shopSettings.sloganEffect};
             if (!appData.shopSettings.dbCategoryLowStockThresholds) {
                 appData.shopSettings.dbCategoryLowStockThresholds = {};
@@ -486,6 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const setLanguage = (lang) => {
         appData.shopSettings.language = lang;
+        // Update static translations
         document.querySelectorAll('[data-translate-key]').forEach(el => {
             const key = el.dataset.translateKey;
             const translation = translations[lang][key];
@@ -494,6 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 else el.textContent = translation;
             }
         });
+        // Update dynamic loading text
         document.getElementById('loading-text').textContent = appData.shopSettings.loadingMessageText;
         langToggleBtn.textContent = '🌎';
     };
@@ -561,13 +563,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sloganElement.textContent = appData.shopSettings.slogan;
         
         const nameEffect = appData.shopSettings.shopNameEffect;
-        if (nameEffect.enabled) {
-            shopNameDisplay.style.color = nameEffect.textColor;
-            shopNameDisplay.style.textShadow = `${nameEffect.offsetX}px ${nameEffect.offsetY}px ${nameEffect.blur}px ${nameEffect.color}`;
-        } else {
-            shopNameDisplay.style.color = 'var(--primary-color)';
-            shopNameDisplay.style.textShadow = '1px 1px 2px rgba(0,0,0,0.1)';
-        }
+        shopNameDisplay.style.textShadow = nameEffect.enabled ? `${nameEffect.offsetX}px ${nameEffect.offsetY}px ${nameEffect.blur}px ${nameEffect.color}` : '1px 1px 2px rgba(0,0,0,0.1)';
 
         const sloganEffect = appData.shopSettings.sloganEffect;
         sloganElement.style.textShadow = sloganEffect.enabled ? `${sloganEffect.offsetX}px ${sloganEffect.offsetY}px ${sloganEffect.blur}px ${sloganEffect.color}` : 'none';
@@ -615,17 +611,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateShopStatusView = () => {
         const marqueeContainer = document.getElementById('shop-closed-marquee');
         const marqueeText = document.getElementById('marquee-text');
-        const msgSettings = appData.shopSettings.shopClosedMessage;
 
         if (!appData.shopSettings.shopEnabled) {
+            const msgSettings = appData.shopSettings.shopClosedMessage;
             marqueeText.textContent = msgSettings.text;
             marqueeText.style.color = msgSettings.color;
             marqueeText.style.fontSize = `${msgSettings.size}px`;
             
             const effect = msgSettings.effect;
             marqueeText.style.textShadow = effect.enabled ? `${effect.offsetX}px ${effect.offsetY}px ${effect.blur}px ${effect.color}` : 'none';
-            
-            marqueeContainer.style.background = msgSettings.backgroundColor;
+
             document.documentElement.style.setProperty('--marquee-duration', `${msgSettings.speed}s`);
             marqueeContainer.style.display = 'block';
         } else {
@@ -1207,7 +1202,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(appData.shopSettings.logo) document.getElementById('logo-preview').src = appData.shopSettings.logo;
                 const nameEffect = appData.shopSettings.shopNameEffect;
                 document.getElementById('effect-toggle').checked = nameEffect.enabled;
-                document.getElementById('effect-text-color').value = nameEffect.textColor;
                 document.getElementById('effect-offset-x').value = nameEffect.offsetX;
                 document.getElementById('effect-offset-y').value = nameEffect.offsetY;
                 document.getElementById('effect-blur').value = nameEffect.blur;
@@ -1235,10 +1229,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('loading-message-text').value = appData.shopSettings.loadingMessageText;
                 document.getElementById('loading-bg-opacity').value = appData.shopSettings.loadingBackgroundOpacity;
                 document.getElementById('loading-bar-style').value = appData.shopSettings.loadingBarStyle;
+                document.getElementById('loading-animation-style').value = appData.shopSettings.loadingAnimation;
                 const loadingBgPreview = document.getElementById('loading-bg-preview');
                 loadingBgPreview.style.display = appData.shopSettings.loadingBackgroundImage ? 'block' : 'none';
                 if(appData.shopSettings.loadingBackgroundImage) loadingBgPreview.style.backgroundImage = `url(${appData.shopSettings.loadingBackgroundImage})`;
                 renderLoadingBarPreviews();
+                renderLoadingAnimationPreviews();
             } else if (activeSub === 'promotions') {
                 renderPromotions();
             }
@@ -1248,7 +1244,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const msgSettings = appData.shopSettings.shopClosedMessage;
             document.getElementById('shop-closed-message-text').value = msgSettings.text;
             document.getElementById('shop-closed-message-color').value = msgSettings.color;
-            document.getElementById('shop-closed-message-bg-color').value = msgSettings.backgroundColor;
             document.getElementById('shop-closed-message-size').value = msgSettings.size;
             document.getElementById('marquee-speed').value = msgSettings.speed;
             document.getElementById('message-effect-toggle').checked = msgSettings.effect.enabled;
@@ -1256,7 +1251,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('message-effect-offset-y').value = msgSettings.effect.offsetY;
             document.getElementById('message-effect-blur').value = msgSettings.effect.blur;
             document.getElementById('message-effect-color').value = msgSettings.effect.color;
-            renderMessagePresets();
             updateMessagePreview();
 
             document.getElementById('rain-effect-toggle').checked = appData.shopSettings.festival.rain.enabled;
@@ -1329,7 +1323,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        setupRangeInputListeners();
     };
 
     const renderDashboard = () => {
@@ -1660,13 +1653,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateFontPreviewEffect = () => {
         const nameEffect = {
             enabled: document.getElementById('effect-toggle').checked,
-            textColor: document.getElementById('effect-text-color').value,
             offsetX: document.getElementById('effect-offset-x').value,
             offsetY: document.getElementById('effect-offset-y').value,
             blur: document.getElementById('effect-blur').value,
             color: document.getElementById('effect-color').value
         };
-        fontPreview.style.color = nameEffect.enabled ? nameEffect.textColor : 'var(--text-color)';
         fontPreview.style.textShadow = nameEffect.enabled ? `${nameEffect.offsetX}px ${nameEffect.offsetY}px ${nameEffect.blur}px ${nameEffect.color}` : 'none';
 
         const sloganEffect = {
@@ -1718,7 +1709,6 @@ document.addEventListener('DOMContentLoaded', () => {
         appData.shopSettings.useLogo = document.getElementById('logo-toggle').checked;
         appData.shopSettings.shopNameEffect = {
             enabled: document.getElementById('effect-toggle').checked,
-            textColor: document.getElementById('effect-text-color').value,
             offsetX: document.getElementById('effect-offset-x').value,
             offsetY: document.getElementById('effect-offset-y').value,
             blur: document.getElementById('effect-blur').value,
@@ -1755,9 +1745,14 @@ document.addEventListener('DOMContentLoaded', () => {
         appData.shopSettings.loadingMessageText = document.getElementById('loading-message-text').value;
         appData.shopSettings.loadingBackgroundOpacity = document.getElementById('loading-bg-opacity').value;
         appData.shopSettings.loadingBarStyle = document.getElementById('loading-bar-style').value;
+        appData.shopSettings.loadingAnimation = document.getElementById('loading-animation-style').value;
         if (loadingBgFile) appData.shopSettings.loadingBackgroundImage = await readFileAsBase64(loadingBgFile);
+        
         await saveState();
-        applyTheme();
+        
+        // Apply changes immediately for live preview effect
+        applyLoadingBackground();
+        applyLoadingAnimation();
     });
     
     document.getElementById('save-festival-settings-btn').addEventListener('click', async (e) => {
@@ -1765,7 +1760,6 @@ document.addEventListener('DOMContentLoaded', () => {
         addLog('Festival Settings Updated', 'Festival effects and shop closed message changed.');
         appData.shopSettings.shopClosedMessage.text = document.getElementById('shop-closed-message-text').value;
         appData.shopSettings.shopClosedMessage.color = document.getElementById('shop-closed-message-color').value;
-        appData.shopSettings.shopClosedMessage.backgroundColor = document.getElementById('shop-closed-message-bg-color').value;
         appData.shopSettings.shopClosedMessage.size = parseInt(document.getElementById('shop-closed-message-size').value);
         appData.shopSettings.shopClosedMessage.speed = parseInt(document.getElementById('marquee-speed').value);
         appData.shopSettings.shopClosedMessage.effect = {
@@ -1796,66 +1790,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateMessagePreview = () => {
         const previewContainer = document.getElementById('message-preview-container');
         const previewBox = document.getElementById('message-preview-box');
-        const text = document.getElementById('shop-closed-message-text').value;
-        const color = document.getElementById('shop-closed-message-color').value;
-        const bgColor = document.getElementById('shop-closed-message-bg-color').value;
-        const size = document.getElementById('shop-closed-message-size').value;
         const isEffectEnabled = document.getElementById('message-effect-toggle').checked;
 
-        previewBox.textContent = text || "ตัวอย่างข้อความ";
-        previewBox.style.color = color;
-        previewBox.style.backgroundColor = bgColor;
-        previewBox.style.fontSize = `${size}px`;
-        
         if (isEffectEnabled) {
+            const text = document.getElementById('shop-closed-message-text').value;
+            const color = document.getElementById('shop-closed-message-color').value;
+            const size = document.getElementById('shop-closed-message-size').value;
             const offsetX = document.getElementById('message-effect-offset-x').value;
             const offsetY = document.getElementById('message-effect-offset-y').value;
             const blur = document.getElementById('message-effect-blur').value;
             const shadowColor = document.getElementById('message-effect-color').value;
+
+            previewBox.textContent = text || "ตัวอย่างข้อความ";
+            previewBox.style.color = color;
+            previewBox.style.fontSize = `${size}px`;
             previewBox.style.textShadow = `${offsetX}px ${offsetY}px ${blur}px ${shadowColor}`;
+            
+            previewContainer.style.display = 'block';
         } else {
-            previewBox.style.textShadow = 'none';
+            previewContainer.style.display = 'none';
         }
-        previewContainer.style.display = 'block';
     };
 
     document.getElementById('admin-menu-festival').addEventListener('input', updateMessagePreview);
     document.getElementById('message-effect-toggle').addEventListener('change', updateMessagePreview);
-
-    const renderMessagePresets = () => {
-        const grid = document.getElementById('message-preset-grid');
-        grid.innerHTML = '';
-        MESSAGE_PRESETS.forEach(preset => {
-            const item = document.createElement('div');
-            item.className = 'message-preset-item';
-            item.textContent = preset.text;
-            item.style.color = preset.color;
-            item.style.background = preset.backgroundColor; // Handles both color and gradient
-            if (preset.effect.enabled) {
-                item.style.textShadow = `${preset.effect.offsetX}px ${preset.effect.offsetY}px ${preset.effect.blur}px ${preset.effect.color}`;
-            }
-            item.addEventListener('click', () => {
-                document.getElementById('shop-closed-message-text').value = preset.text;
-                document.getElementById('shop-closed-message-color').value = preset.color;
-                // Note: Can't set background-color input to a gradient, so we set it to a solid color from the preset
-                document.getElementById('shop-closed-message-bg-color').value = typeof preset.backgroundColor === 'string' && preset.backgroundColor.startsWith('#') ? preset.backgroundColor : '#333333';
-                
-                const effectToggle = document.getElementById('message-effect-toggle');
-                effectToggle.checked = preset.effect.enabled;
-                effectToggle.dispatchEvent(new Event('change')); // Trigger change to show/hide controls
-
-                if (preset.effect.enabled) {
-                    document.getElementById('message-effect-offset-x').value = preset.effect.offsetX;
-                    document.getElementById('message-effect-offset-y').value = preset.effect.offsetY;
-                    document.getElementById('message-effect-blur').value = preset.effect.blur;
-                    document.getElementById('message-effect-color').value = preset.effect.color;
-                }
-                updateMessagePreview();
-                setupRangeInputListeners(); // Re-apply listeners to update values
-            });
-            grid.appendChild(item);
-        });
-    };
 
 
     document.getElementById('shop-enabled-toggle').addEventListener('change', async (e) => {
@@ -3009,9 +2967,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('summary-net-income').textContent = netIncome.toLocaleString(undefined, {minimumFractionDigits: 2});
         document.getElementById('summary-tax-payable').textContent = taxPayable.toLocaleString(undefined, {minimumFractionDigits: 2});
         document.getElementById('summary-pnd94').textContent = pnd94Tax.toLocaleString(undefined, {minimumFractionDigits: 2});
-        
-        document.getElementById('summary-tax-payable-pnd90').textContent = taxPayable.toLocaleString(undefined, {minimumFractionDigits: 2});
-        document.getElementById('summary-pnd94-paid').textContent = pnd94Tax.toLocaleString(undefined, {minimumFractionDigits: 2});
         document.getElementById('summary-final-tax').textContent = finalTax.toLocaleString(undefined, {minimumFractionDigits: 2});
 
         document.getElementById('tax-summary-container').style.display = 'block';
@@ -3050,29 +3005,120 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('calculate-tax-btn').addEventListener('click', calculateTax);
     };
 
-    const setupRangeInputListeners = () => {
-        document.querySelectorAll('.range-group input[type="range"]').forEach(input => {
-            const valueSpan = input.nextElementSibling;
-            if (valueSpan && valueSpan.classList.contains('range-value')) {
-                const updateValue = () => {
-                    let unit = '';
-                    if (input.id.includes('font-size')) unit = 'rem';
-                    else if (input.id.includes('blur')) unit = 'px';
-                    else if (input.id.includes('offset')) unit = 'px';
-                    else if (input.id.includes('speed')) unit = 's';
-                    else if (input.id.includes('perc')) unit = '%';
-                    valueSpan.textContent = `${input.value}${unit}`;
-                };
-                updateValue(); // Initial update
-                input.addEventListener('input', updateValue);
-            }
-        });
+    // NEW: Loading Animation Functions
+    const populateLoadingAnimationSelector = () => {
+        const select = document.getElementById('loading-animation-style');
+        select.innerHTML = '';
+        for (const key in LOADING_ANIMATIONS) {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = LOADING_ANIMATIONS[key].name;
+            select.appendChild(option);
+        }
     };
 
+    const renderLoadingAnimationPreviews = () => {
+        const container = document.getElementById('loading-animation-previews');
+        container.innerHTML = '';
+        for (const key in LOADING_ANIMATIONS) {
+            const anim = LOADING_ANIMATIONS[key];
+            const item = document.createElement('div');
+            item.className = 'loader-animation-preview';
+            if (key === appData.shopSettings.loadingAnimation) {
+                item.classList.add('active');
+            }
+            item.dataset.animKey = key;
+            item.innerHTML = `<p>${anim.name}</p><div class="animation-viewport"></div>`;
+            container.appendChild(item);
+
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.loader-animation-preview').forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+                document.getElementById('loading-animation-style').value = key;
+
+                const viewport = item.querySelector('.animation-viewport');
+                viewport.innerHTML = anim.html;
+                viewport.className = `animation-viewport anim-${key}`;
+                
+                if (key === 'matrix') {
+                    // Special handling for matrix preview
+                    for (let i = 0; i < 10; i++) {
+                        const col = document.createElement('div');
+                        col.className = 'matrix-col';
+                        col.textContent = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('').sort(() => 0.5 - Math.random()).join('');
+                        col.style.left = `${Math.random() * 100}%`;
+                        col.style.animationDuration = `${Math.random() * 2 + 1}s`;
+                        col.style.animationDelay = `${Math.random() * 1}s`;
+                        viewport.appendChild(col);
+                    }
+                }
+
+                setTimeout(() => viewport.classList.add('play'), 100);
+                setTimeout(() => {
+                    viewport.classList.remove('play');
+                    viewport.innerHTML = '';
+                }, anim.duration + 500);
+            });
+        }
+    };
+
+    const applyLoadingAnimation = () => {
+        const container = document.getElementById('loader-animation-container');
+        const animKey = appData.shopSettings.loadingAnimation || 'none';
+        const anim = LOADING_ANIMATIONS[animKey];
+        if (!anim) return;
+
+        container.innerHTML = anim.html;
+        container.className = `anim-${animKey}`;
+
+        if (animKey === 'matrix') {
+            for (let i = 0; i < 50; i++) {
+                const col = document.createElement('div');
+                col.className = 'matrix-col';
+                col.textContent = 'WARISHAYDAY0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').sort(() => 0.5 - Math.random()).join('');
+                col.style.left = `${Math.random() * 100}%`;
+                col.style.fontSize = `${Math.random() * 15 + 10}px`;
+                col.style.animationDuration = `${Math.random() * 5 + 3}s`;
+                col.style.animationDelay = `${Math.random() * 2}s`;
+                container.appendChild(col);
+            }
+        }
+    };
+
+    const hideLoader = () => {
+        const loader = document.getElementById('loader-overlay');
+        const loaderContent = loader.querySelector('.loader-content');
+        const animationContainer = document.getElementById('loader-animation-container');
+        const animKey = appData.shopSettings.loadingAnimation || 'none';
+        const anim = LOADING_ANIMATIONS[animKey];
+
+        // Hide spinner and show animation
+        loaderContent.classList.remove('visible');
+        
+        setTimeout(() => {
+            animationContainer.classList.add('play');
+        }, 100); // Short delay to ensure transition triggers
+
+        // Wait for animation to finish, then hide overlay
+        setTimeout(() => {
+            loader.style.opacity = '0';
+            loader.style.visibility = 'hidden';
+            loader.addEventListener('transitionend', () => {
+                loader.style.display = 'none';
+            }, { once: true });
+        }, anim.duration);
+    };
+
+
     const init = async () => {
+        // 1. Apply loading screen styles immediately
         applyLoadingBackground();
+        applyLoadingAnimation(); // Set up the animation HTML
+
+        // 2. Fetch data from server
         await loadState();
 
+        // 3. Prepare main content based on login state
         const storedLogin = localStorage.getItem('isAdminLoggedIn');
         if (storedLogin === 'true') {
             try {
@@ -3100,18 +3146,23 @@ document.addEventListener('DOMContentLoaded', () => {
             adminActiveCategoryId = activeCategoryId;
         } else { activeCategoryId = null; adminActiveCategoryId = null; }
         
+        // 4. Setup all event listeners for the admin panel
+        populateLoadingAnimationSelector();
         setupStockDatabaseListeners();
         setupSearchListeners();
         setupStockSettingsListeners();
         setupPromotionListeners();
         setupTaxListeners();
-        setupRangeInputListeners();
         
-        setTimeout(() => {
-            const loader = document.getElementById('loader-overlay');
-            loader.style.opacity = '0';
-            loader.addEventListener('transitionend', () => loader.style.display = 'none', { once: true });
-        }, 500);
+        // 5. Show main content and hide loader
+        const mainContainer = document.querySelector('.container');
+        mainContainer.classList.add('loaded');
+        
+        const loaderContent = document.getElementById('loader-overlay').querySelector('.loader-content');
+        loaderContent.classList.add('visible'); // Show spinner/text
+        
+        // Use a small timeout to ensure the loading bar is visible before starting the hide sequence
+        setTimeout(hideLoader, 500); 
     };
 
     window.addEventListener('resize', resizeCanvas);
