@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingBackgroundOpacity: 0.7,
             loadingBarStyle: '1',
             loadingMessageText: "กำลังดาวน์โหลดข้อมูลล่าสุด...",
-            // NEW: Loading animation setting
             loadingAnimation: 'door-open-v',
             language: 'th',
             lowStockThreshold: 50, 
@@ -93,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
         menuOrder: ['dashboard', 'order-number', 'stock', 'admin', 'tax', 'festival', 'manage-account']
     };
 
-    // NEW: Loading Animations Configuration
     const LOADING_ANIMATIONS = {
         'none': { name: 'ไม่มีอนิเมชั่น', duration: 500, html: '' },
         'door-open-v': { name: 'เปิดประตู (แนวตั้ง)', duration: 1000, html: '<div class="left-door"></div><div class="right-door"></div>' },
@@ -181,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const translations = {
         th: {
             loadingAnimationLabel: "รูปแบบอนิเมชั่น",
-            loadingMessage: "ข้อความตอนโหลด", // Key for the label
+            loadingMessage: "ข้อความตอนโหลด",
             closeBtn: "ปิด", cancelBtn: "ยกเลิก", confirmBtn: "ยืนยัน", saveBtn: "บันทึก", editBtn: "แก้ไข", deleteBtn: "ลบ",
             searchPlaceholder: "ค้นหาสินค้า...", itemsListTitle: "รายการสินค้า", tableHeaderItem: "สินค้า", tableHeaderLevel: "เลเวล", tableHeaderQuantity: "จำนวน", tableHeaderManage: "จัดการ",
             viewOrderBtn: "รายการสั่งซื้อ", confirmOrderBtn: "ยืนยันสั่งซื้อ", totalAmount: "ยอดรวม",
@@ -298,10 +296,134 @@ document.addEventListener('DOMContentLoaded', () => {
             taxPnd90Label: "ภ.ง.ด. 90 (ภาษีทั้งปีที่ต้องชำระภายใน มี.ค. ปีถัดไป)",
             taxPaidPnd94: "ภาษีครึ่งปีที่ชำระแล้ว (ภ.ง.ด.94)",
             taxFinalPayable: "ภาษีที่ต้องชำระเพิ่มเติมปลายปี",
-            taxInfoText: "*เป็นการคำนวณเบื้องต้นเพื่อการวางแผนเท่านั้น กรุณาตรวจสอบกับกรมสรรพากรอีกครั้ง"
+            taxInfoText: "*เป็นการคำนวณเบื้องต้นเพื่อการวางแผนเท่านั้น กรุณาตรวจสอบกับกรมสรรพากรอีกครั้ง",
+            themeLabel: "ธีม",
+            themeLight: "Light",
+            themeDark: "Dark"
         },
         en: {
-            // ... (Existing English translations) ...
+            loadingAnimationLabel: "Animation Style",
+            loadingMessage: "Loading Message",
+            closeBtn: "Close", cancelBtn: "Cancel", confirmBtn: "Confirm", saveBtn: "Save", editBtn: "Edit", deleteBtn: "Delete",
+            searchPlaceholder: "Search for products...", itemsListTitle: "Product List", tableHeaderItem: "Item", tableHeaderLevel: "Level", tableHeaderQuantity: "Quantity", tableHeaderManage: "Manage",
+            viewOrderBtn: "View Order", confirmOrderBtn: "Confirm Order", totalAmount: "Total",
+            adminLoginTitle: "Admin Login", pinLabel: "PIN", loginBtn: "Login", backToShopBtn: "Back to Shop", invalidPinError: "Invalid PIN!",
+            pinAttemptsLeft: "{attemptsLeft} attempts left", pinLocked: "Login failed more than 5 times. System is locked.", pinUnlockCode: "Unlock with code 1340900210406",
+            adminPanelTitle: "Admin Panel", viewShopBtn: "View Shop", logoutBtn: "Logout",
+            menuAdmin: "Shop Settings", menuFestival: "Festival", menuStock: "Stock", menuOrderNumber: "Order Number", menuDashboard: "Dashboard", menuManageAccount: "Manage Account", editMenuOrderBtn: "EDIT",
+            menuTax: "Tax Check",
+            shopInfoTitle: "Shop Info", shopLinkTitle: "Link for Customers", shopLinkInfo: "Share this link with customers for direct access to the shop (no Admin button).", copyLinkBtn: "Copy",
+            systemFontsTitle: "System Fonts", fontPreviewText: "System Font Preview",
+            shopNameLabel: "Shop Name", shopSloganLabel: "Slogan", managerNameLabel: "System Manager Name", shareholderNameLabel: "Major Shareholder Name",
+            globalFontLabel: "Global Font", shopNameFontLabel: "Shop Name Font", sloganFontLabel: "Slogan Font",
+            globalFontSizeLabel: "Global Font Size (%)", shopNameFontSizeLabel: "Shop Name Font Size", sloganFontSizeLabel: "Slogan Font Size",
+            mainMenuFontSizeLabel: "Main Menu Font Size (%)", subMenuFontSizeLabel: "Sub Menu Font Size (%)",
+            enableEffectLabel: "Enable Shop Name Effect", enableSloganEffectLabel: "Enable Slogan Effect",
+            effectOffsetX: "Shadow Offset X", effectOffsetY: "Shadow Offset Y", effectBlur: "Blur", effectColor: "Shadow Color",
+            orderFormatLabel: "Order Number Format", useLogoLabel: "Use Logo", uploadLogoLabel: "Upload Logo (PNG)",
+            backgroundSettingsTitle: "Background Settings", uploadBgLabel: "Upload Background Image", bgOpacityLabel: "Opacity (Transparent-Opaque)", bgBlurLabel: "Blur (Low-High)",
+            removeBgBtn: "Remove Background", previewBgBtn: "Preview", saveSettingsBtn: "Save Settings",
+            copyrightTextLabel: "Copyright Text", copyrightOpacityLabel: "Opacity",
+            changePinTitle: "Change Password", newPinLabel: "New PIN", saveNewPinBtn: "Save New PIN",
+            manageCategoriesTitle: "Manage Categories", categoryNameLabel: "Category Name", categoryIconLabel: "Category Icon (PNG file)", minOrderLabel: "Minimum Order Quantity",
+            setPriceLabel: "Set Price", setPerPiecePriceBtn: "Set Per-Piece Price", saveCategoryBtn: "Add/Save Category", categoryListTitle: "Category List",
+            tableHeaderIcon: "Icon", tableHeaderName: "Name", tableHeaderMinOrder: "Min. Order", tableHeaderPrice: "Price",
+            manageProductsTitle: "Manage Products", productNameLabel: "Product Name", levelLabel: "Level", stockQuantityLabel: "Stock Quantity", categoryLabel: "Category",
+            productIconLabel: "Product Icon (PNG file)", productAvailableLabel: "Enable this product for sale", saveProductBtn: "Save Product", cancelEditBtn: "Cancel Edit",
+            tableHeaderStock: "Stock", tableHeaderStatus: "Status", statusAvailable: "Available", statusUnavailable: "Unavailable",
+            stockDatabaseTitle: "Stock Database", searchCategoryLabel: "Search Category", searchProductLabel: "Search Product", pullBtn: "Pull Data",
+            selectDateLabel: "Select Date:", resetDataBtn: "Reset Data",
+            confirmOrdersTitle: "New Orders", activeOrdersTitle: "Active Orders", cancelledOrdersTitle: "Cancelled Orders",
+            tableHeaderOrderNo: "Order No.", tableHeaderDateTime: "Date/Time", tableHeaderTotal: "Total", viewDetailsBtn: "View Details", cancelOrderBtn: "Cancel",
+            dashboardTitle: "Shop Overview", monthlyProfitTitle: "This Month's Profit", dailyOrdersTitle: "Today's Orders", monthlyOrdersTitle: "This Month's Orders", yearlySalesTitle: "Total Sales (This Year)",
+            lowStockAlertTitle: "Low Stock Alert",
+            menuStockSettings: "Stock Settings",
+            lowStockSettingsTitle: "Stock Settings",
+            lowStockSettingsInfo: "Set minimum stock quantities for each category (from the database) to receive alerts on the Dashboard.",
+            noLowStockItems: "No items are running low on stock", categorySalesTitle: "Sales by Category", topSellingTitle: "Top 5 Selling Items",
+            periodDay: "Today", periodMonth: "This Month", periodYear: "This Year", trafficStatsTitle: "Traffic Statistics", productStatsTitle: "Product Statistics (by quantity ordered)",
+            manageAccountTitle: "Manage Accounts", subAdminLimitInfo: "Maximum of 20 sub-users allowed.", usernameLabel: "Username", addUserBtn: "Add User", subAdminListTitle: "Sub-User List",
+            anomalyCheckTitle: "Anomaly Check", anomalyCheckInfo: "The system will log failed login attempts.", tableHeaderUser: "User", tableHeaderAttempts: "Failed Attempts", tableHeaderLockout: "Lockout Status",
+            orderSummaryTitle: "Order Summary", copyOrderPrompt: "Please copy the text below to send to the shop.", copyOrderBtn: "Copy Order", copySuccessMessage: "Order copied successfully",
+            yourOrderListTitle: "Your Order List", confirmPinTitle: "Confirm PIN", enterPinPrompt: "Enter PIN to confirm",
+            confirmResetTitle: "Confirm Data Reset", selectResetPeriodPrompt: "Please select the period for which you want to reset data.", periodWeek: "This Week", periodAll: "All Data",
+            setPerPiecePriceTitle: "Set Per-Piece Price", setPerPiecePriceInfo: "Define the price for every 10 pieces.", savePriceBtn: "Save Prices",
+            reorderMenuTitle: "Reorder Menu", reorderMenuInfo: "Drag and drop to reorder the menu as desired.", saveOrderBtn: "Save Order",
+            setPermissionsTitle: "Set Access Permissions", savePermissionsBtn: "Save Permissions",
+            loadingBackgroundTitle: "Loading Background", uploadLoadingBgLabel: "Upload Loading Background Image", loadingBarStyleLabel: "Loading Bar Style",
+            priceDetailsTitle: "Price Details", viewPriceBtn: "View Price",
+            festivalTitle: "Festival Effects", shopStatusLabel: "Shop Open", shopClosedMessageLabel: "Message When Shop is Closed",
+            messageFontColorLabel: "Font Color", messageFontSizeLabel: "Font Size",
+            rainEffectLabel: "Rain Effect", rainIntensityLabel: "Intensity", effectOpacityLabel: "Opacity",
+            snowEffectLabel: "Snow Effect", snowIntensityLabel: "Intensity",
+            fireworksEffectLabel: "Fireworks Effect", fireworksIntensityLabel: "Frequency (minutes)",
+            autumnEffectLabel: "Autumn Effect", autumnIntensityLabel: "Intensity",
+            saveSuccessMessage: "Saved successfully!",
+            systemThemeLabel: "System Theme", selectThemeBtn: "Select Theme", systemThemeTitle: "Select System Theme",
+            previewLabel: "Preview", marqueeSpeedLabel: "Marquee Speed",
+            stockDatabaseManageCats: "Manage Categories (Database)", stockDatabaseManageProds: "Manage Products (Database)",
+            addCategoryBtn: "Add Category", addProductBtn: "Add Product",
+            searchFromDb: "Search from Database", searchModalTitle: "Search from Database",
+            enableMessageEffectLabel: "Enable Text Effect",
+            stockDbInfo: "This is the main database for storing all product and category items. You can add/edit/delete data here and then use it on the shop's stock management page.",
+            menuPromotions: "Promotions",
+            promotionsTitle: "Manage Discount Codes",
+            promoCodeLabel: "Discount Code",
+            promoDiscountLabel: "Discount (%)",
+            addPromoBtn: "Add Code",
+            generatePromoBtn: "Generate Random Code",
+            promoListTitle: "Discount Code List",
+            tableHeaderCode: "Code",
+            tableHeaderDiscount: "Discount",
+            promoCodeInputLabel: "Enter discount code",
+            applyPromoBtn: "Apply",
+            discountLabel: "Discount",
+            grandTotalLabel: "Grand Total",
+            invalidPromoCode: "Invalid discount code",
+            menuLogs: "Change Log",
+            logsTitle: "Change History",
+            tableHeaderTimestamp: "Timestamp",
+            tableHeaderAction: "Action",
+            tableHeaderDetails: "Details",
+            menuTax: "Tax Check",
+            taxTitle: "Personal Income Tax Estimation",
+            taxYearLabel: "For tax year:",
+            taxIncomeTitle: "1. Income (Assessable Income)",
+            taxShopIncomeLabel: "Income from shop (auto-fetched)",
+            taxOtherIncomeLabel: "Other Income",
+            taxExpenseTitle: "2. Expenses",
+            taxExpenseTypeLabel: "Select expense deduction type",
+            taxExpenseFlatRate: "60% flat rate deduction",
+            taxExpenseActual: "Deduct actual expenses",
+            taxActualCostLabel: "Cost of goods",
+            taxActualTransportLabel: "Transportation costs",
+            taxActualAdLabel: "Advertising costs",
+            taxActualOtherLabel: "Other expenses",
+            taxDeductionTitle: "3. Allowances",
+            taxDeductionPersonalLabel: "Personal",
+            taxDeductionSpouseLabel: "Spouse (no income)",
+            taxDeductionChildrenLabel: "Children (30,000 each)",
+            taxDeductionSocialSecurityLabel: "Social Security (max 9,000)",
+            taxDeductionInsuranceLabel: "Life/Health Insurance Premium",
+            taxDeductionRmfLabel: "RMF",
+            taxDeductionSsfLabel: "SSF",
+            taxDeductionDonationsLabel: "Donations",
+            taxDeductionHomeInterestLabel: "Home Loan Interest",
+            calculateTaxBtn: "Calculate Tax",
+            taxSummaryTitle: "4. Tax Estimation Summary",
+            taxTotalIncome: "Total Income",
+            taxTotalExpense: "Total Expenses",
+            taxTotalDeduction: "Total Allowances",
+            taxNetIncome: "Net Income",
+            taxPayable: "Tax Payable",
+            taxPnd94Label: "P.N.D. 94 (Mid-year tax due by Sept.)",
+            taxPnd90Label: "P.N.D. 90 (Full-year tax due by Mar. of next year)",
+            taxPaidPnd94: "Mid-year tax paid (P.N.D. 94)",
+            taxFinalPayable: "Additional year-end tax payable",
+            taxInfoText: "*This is a preliminary calculation for planning purposes only. Please verify with the Revenue Department.",
+            themeLabel: "Theme",
+            themeLight: "Light",
+            themeDark: "Dark"
         }
     };
 
@@ -323,6 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'stock-settings': 'menuStockSettings' 
         },
         'order-number': { 'confirm-orders': 'confirmOrdersTitle', 'active-orders': 'activeOrdersTitle', 'cancelled-orders': 'cancelledOrdersTitle' },
+        'festival': { 'festival-effects': 'festivalTitle' },
         'manage-account': { 'accounts': 'manageAccountTitle', 'anomaly-check': 'anomalyCheckTitle', 'logs': 'menuLogs' }
     };
 
@@ -461,7 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const festivalCtx = festivalCanvas.getContext('2d');
     
     let activeAdminMenu = 'dashboard';
-    let activeAdminSubMenus = { admin: 'shop-info', stock: 'categories', 'order-number': 'confirm-orders', 'manage-account': 'accounts' };
+    let activeAdminSubMenus = { admin: 'shop-info', stock: 'categories', 'order-number': 'confirm-orders', 'manage-account': 'accounts', festival: 'festival-effects' };
     let activeCategoryId = null;
     let adminActiveCategoryId = null;
     let editingProductId = null;
@@ -486,7 +609,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const setLanguage = (lang) => {
         appData.shopSettings.language = lang;
-        // Update static translations
         document.querySelectorAll('[data-translate-key]').forEach(el => {
             const key = el.dataset.translateKey;
             const translation = translations[lang][key];
@@ -495,7 +617,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 else el.textContent = translation;
             }
         });
-        // Update dynamic loading text
         document.getElementById('loading-text').textContent = appData.shopSettings.loadingMessageText;
         langToggleBtn.textContent = '🌎';
     };
@@ -503,6 +624,12 @@ document.addEventListener('DOMContentLoaded', () => {
     langToggleBtn.addEventListener('click', async () => {
         const newLang = appData.shopSettings.language === 'th' ? 'en' : 'th';
         setLanguage(newLang);
+        // We re-render to update any dynamic text that doesn't use data-translate-key
+        if(views.customer.classList.contains('active')) {
+            renderCustomerView();
+        } else if (views.adminPanel.classList.contains('active')) {
+            renderAdminPanel();
+        }
         await saveState();
     });
 
@@ -521,16 +648,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const applyLoadingBackground = () => {
         const loaderBg = document.getElementById('loader-background');
-        const loaderOverlay = document.getElementById('loader-overlay');
         const progressBar = document.getElementById('progress-bar-container');
         document.getElementById('loading-text').textContent = appData.shopSettings.loadingMessageText;
 
         if (appData.shopSettings.loadingBackgroundImage) {
             loaderBg.style.backgroundImage = `url(${appData.shopSettings.loadingBackgroundImage})`;
-            loaderOverlay.style.backgroundColor = `rgba(0, 0, 0, ${appData.shopSettings.loadingBackgroundOpacity})`;
+            loaderBg.style.opacity = appData.shopSettings.loadingBackgroundOpacity;
         } else {
             loaderBg.style.backgroundImage = 'none';
-            loaderOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            loaderBg.style.opacity = 1;
         }
         progressBar.className = `progress-bar style-${appData.shopSettings.loadingBarStyle}`;
     };
@@ -543,10 +669,18 @@ document.addEventListener('DOMContentLoaded', () => {
         root.style.setProperty('--secondary-color', theme.colors.secondary);
         root.style.setProperty('--info-color', theme.colors.info);
     };
-
-    const applyTheme = () => {
+    
+    const applyTheme = (isPreview = false) => {
         const root = document.documentElement;
+        
         applySystemTheme(appData.shopSettings.themeName);
+        if (appData.shopSettings.darkMode) {
+            document.body.classList.add('dark-mode');
+            themeToggleBtn.textContent = '☀️';
+        } else {
+            document.body.classList.remove('dark-mode');
+            themeToggleBtn.textContent = '🌙';
+        }
         
         const calculateFontSize = (base, percentage) => base * (percentage / 50);
 
@@ -582,19 +716,13 @@ document.addEventListener('DOMContentLoaded', () => {
             sloganElement.style.marginTop = '-15px';
         }
 
-        if (appData.shopSettings.darkMode) {
-            document.body.classList.add('dark-mode');
-            themeToggleBtn.textContent = '☀️';
-        } else {
-            document.body.classList.remove('dark-mode');
-            themeToggleBtn.textContent = '🌙';
-        }
-
         copyrightFooter.textContent = appData.shopSettings.copyrightText;
         copyrightFooter.style.opacity = appData.shopSettings.copyrightOpacity;
 
-        applyBackground();
-        applyLoadingBackground();
+        if (!isPreview) {
+            applyBackground();
+            applyLoadingBackground();
+        }
         setLanguage(appData.shopSettings.language);
         updateShopStatusView();
         initFestivalEffects();
@@ -663,14 +791,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderProducts = (searchTerm = '') => {
         productTableBody.innerHTML = '';
         let productsToDisplay = [];
+        const lang = appData.shopSettings.language;
         
         if (searchTerm) {
             productsToDisplay = appData.products.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
-            currentCategoryName.textContent = `ผลการค้นหาสำหรับ: "${searchTerm}"`;
+            currentCategoryName.textContent = (lang === 'th' ? `ผลการค้นหาสำหรับ: "${searchTerm}"` : `Search results for: "${searchTerm}"`);
         } else {
             const activeCategory = appData.categories.find(c => c.id === activeCategoryId);
             if (!activeCategory) {
-                productTableBody.innerHTML = '<tr><td colspan="4">กรุณาเลือกหมวดหมู่</td></tr>';
+                productTableBody.innerHTML = `<tr><td colspan="4">${lang === 'th' ? 'กรุณาเลือกหมวดหมู่' : 'Please select a category'}</td></tr>`;
                 currentCategoryName.textContent = '';
                 return;
             }
@@ -679,7 +808,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (productsToDisplay.length === 0) {
-             productTableBody.innerHTML = '<tr><td colspan="4">ไม่พบสินค้าที่ตรงกับเงื่อนไข</td></tr>';
+             productTableBody.innerHTML = `<tr><td colspan="4">${lang === 'th' ? 'ไม่พบสินค้าที่ตรงกับเงื่อนไข' : 'No products found'}</td></tr>`;
         } else {
             productsToDisplay.forEach(prod => {
                 const quantity = appData.cart[prod.id] || 0;
@@ -687,7 +816,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isUnavailableByAdmin = !prod.isAvailable;
                 const row = document.createElement('tr');
                 if (isUnavailableByAdmin || isPhysicallyOutOfStock) row.classList.add('product-unavailable');
-                let quantityAndManageCells = isUnavailableByAdmin ? `<td colspan="2" class="status-cell">สินค้าหมดชั่วคราว</td>` : `
+                let quantityAndManageCells = isUnavailableByAdmin ? `<td colspan="2" class="status-cell">${lang === 'th' ? 'สินค้าหมดชั่วคราว' : 'Temporarily Out of Stock'}</td>` : `
                     <td><span class="quantity-display">${quantity}</span></td>
                     <td>
                         <div class="quantity-controls">
@@ -763,7 +892,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const category = appData.categories.find(c => c.id == categoryId);
             if (!category) continue;
             if (total > 0 && total < category.minOrderQuantity) {
-                minOrderMessages.push(`<div class="validation-link" data-cat-id="${categoryId}">➡️ หมวด "${category.name}" ขั้นต่ำ ${category.minOrderQuantity} ชิ้น (ขาด ${category.minOrderQuantity - total} ชิ้น)</div>`);
+                const message = lang === 'th' 
+                    ? `➡️ หมวด "${category.name}" ขั้นต่ำ ${category.minOrderQuantity} ชิ้น (ขาด ${category.minOrderQuantity - total} ชิ้น)`
+                    : `➡️ Category "${category.name}" requires a minimum of ${category.minOrderQuantity} items (short by ${category.minOrderQuantity - total})`;
+                minOrderMessages.push(`<div class="validation-link" data-cat-id="${categoryId}">${message}</div>`);
             }
             const priceResult = calculatePrice(parseInt(categoryId), total);
             totalOrderPrice += priceResult.price;
@@ -776,16 +908,18 @@ document.addEventListener('DOMContentLoaded', () => {
             grandTotal = totalOrderPrice - discountAmount;
         }
 
+        const currencySuffix = lang === 'th' ? 'บาท' : 'THB';
+
         if (minOrderMessages.length > 0) {
             orderValidationMsg.innerHTML = minOrderMessages.join('');
             confirmOrderBtn.disabled = true;
             viewOrderBtn.disabled = true;
         } else {
             if (totalOrderPrice > 0) {
-                let summaryHTML = `<span style="font-weight: bold;">${translations[lang].totalAmount}: ${totalOrderPrice.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท</span>`;
+                let summaryHTML = `<span style="font-weight: bold;">${translations[lang].totalAmount}: ${totalOrderPrice.toLocaleString(undefined, {minimumFractionDigits: 2})} ${currencySuffix}</span>`;
                 if (discountAmount > 0) {
-                    summaryHTML += `<br><span style="color: var(--danger-color);">${translations[lang].discountLabel} (${currentAppliedPromo.code}): -${discountAmount.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท</span>`;
-                    summaryHTML += `<br><span style="font-weight: bold; font-size: 1.1em; color: var(--primary-color);">${translations[lang].grandTotalLabel}: ${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท</span>`;
+                    summaryHTML += `<br><span style="color: var(--danger-color);">${translations[lang].discountLabel} (${currentAppliedPromo.code}): -${discountAmount.toLocaleString(undefined, {minimumFractionDigits: 2})} ${currencySuffix}</span>`;
+                    summaryHTML += `<br><span style="font-weight: bold; font-size: 1.1em; color: var(--primary-color);">${translations[lang].grandTotalLabel}: ${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})} ${currencySuffix}</span>`;
                 }
                 orderValidationMsg.innerHTML = summaryHTML;
                 confirmOrderBtn.disabled = false;
@@ -823,8 +957,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const createOrderSummaryText = (orderNumber = null) => {
+        const lang = appData.shopSettings.language;
         let summaryText = `${appData.shopSettings.shopName}\n`;
-        if (orderNumber) summaryText += `เลขที่ออเดอร์: ${orderNumber}\n\n`;
+        if (orderNumber) summaryText += `${lang === 'th' ? 'เลขที่ออเดอร์' : 'Order No.'}: ${orderNumber}\n\n`;
+        
         const itemsByCategory = {};
         let totalOrderPrice = 0;
         appData.categories.forEach(cat => { itemsByCategory[cat.id] = { name: cat.name, items: [], totalQuantity: 0 }; });
@@ -838,36 +974,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
+        
+        const currencySuffix = lang === 'th' ? 'บาท' : 'THB';
+
         for (const categoryId in itemsByCategory) {
             const categoryData = itemsByCategory[categoryId];
             if (categoryData.items.length > 0) {
-                summaryText += `--- หมวดหมู่: ${categoryData.name} ---\n${categoryData.items.join('\n')}\n`;
+                summaryText += `--- ${lang === 'th' ? 'หมวดหมู่' : 'Category'}: ${categoryData.name} ---\n${categoryData.items.join('\n')}\n`;
                 const priceResult = calculatePrice(parseInt(categoryId), categoryData.totalQuantity);
                 if (priceResult.price > 0) {
-                    summaryText += `ราคาหมวดหมู่: ${priceResult.price} บาท\n`;
+                    summaryText += `${lang === 'th' ? 'ราคาหมวดหมู่' : 'Category Price'}: ${priceResult.price} ${currencySuffix}\n`;
                     totalOrderPrice += priceResult.price;
                 }
                 summaryText += '\n';
             }
         }
-        summaryText += `ยอดรวม: ${totalOrderPrice.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท\n`;
+        
+        summaryText += `${translations[lang].totalAmount}: ${totalOrderPrice.toLocaleString(undefined, {minimumFractionDigits: 2})} ${currencySuffix}\n`;
         
         if (currentAppliedPromo) {
             const discountAmount = totalOrderPrice * (currentAppliedPromo.discount / 100);
             const grandTotal = totalOrderPrice - discountAmount;
-            summaryText += `ส่วนลด (${currentAppliedPromo.code} -${currentAppliedPromo.discount}%): -${discountAmount.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท\n`;
-            summaryText += `ยอดรวมสุทธิ: ${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท`;
+            summaryText += `${translations[lang].discountLabel} (${currentAppliedPromo.code} -${currentAppliedPromo.discount}%): -${discountAmount.toLocaleString(undefined, {minimumFractionDigits: 2})} ${currencySuffix}\n`;
+            summaryText += `${translations[lang].grandTotalLabel}: ${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})} ${currencySuffix}`;
         } else {
-            summaryText += `ยอดรวมทั้งหมด: ${totalOrderPrice.toLocaleString(undefined, {minimumFractionDigits: 2})} บาท`;
+            summaryText += `${lang === 'th' ? 'ยอดรวมทั้งหมด' : 'Total Amount'}: ${totalOrderPrice.toLocaleString(undefined, {minimumFractionDigits: 2})} ${currencySuffix}`;
         }
 
-        return (totalOrderPrice === 0 && Object.values(appData.cart).every(q => q === 0)) ? 'ไม่มีสินค้าในรายการสั่งซื้อ' : summaryText;
+        return (totalOrderPrice === 0 && Object.values(appData.cart).every(q => q === 0)) ? (lang === 'th' ? 'ไม่มีสินค้าในรายการสั่งซื้อ' : 'No items in the order') : summaryText;
     };
     
     const handleOrderAction = (isConfirm) => {
         if (isConfirm) {
             checkOrderValidation(); 
-            if (orderValidationMsg.innerHTML.includes('ต้องสั่งขั้นต่ำ') || confirmOrderBtn.disabled) return;
+            if (orderValidationMsg.innerHTML.includes('ขั้นต่ำ') || orderValidationMsg.innerHTML.includes('minimum') || confirmOrderBtn.disabled) return;
         }
 
         const promoContainer = document.getElementById('promo-code-container');
@@ -878,7 +1018,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (isConfirm) {
-            document.getElementById('order-modal-title').textContent = 'สรุปออเดอร์';
+            document.getElementById('order-modal-title').dataset.translateKey = "orderSummaryTitle";
             document.getElementById('order-modal-prompt').style.display = 'block';
             document.getElementById('copy-order-btn').style.display = 'inline-block';
             const orderNumber = generateOrderNumber();
@@ -886,9 +1026,10 @@ document.addEventListener('DOMContentLoaded', () => {
             orderDetails.dataset.orderNumber = orderNumber;
             orderModal.style.display = 'flex';
         } else {
-            cartDetails.textContent = createOrderSummaryText();
+            document.getElementById('cart-details').textContent = createOrderSummaryText();
             cartModal.style.display = 'flex';
         }
+        setLanguage(appData.shopSettings.language);
     };
 
     confirmOrderBtn.addEventListener('click', () => handleOrderAction(true));
@@ -902,12 +1043,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (promo) {
             currentAppliedPromo = promo;
-            alert(`ใช้โค้ด ${promo.code} สำเร็จ! ได้รับส่วนลด ${promo.discount}%`);
+            alert((lang === 'th' ? `ใช้โค้ด ${promo.code} สำเร็จ! ได้รับส่วนลด ${promo.discount}%` : `Code ${promo.code} applied! You get a ${promo.discount}% discount.`));
         } else {
             currentAppliedPromo = null;
             alert(translations[lang].invalidPromoCode);
         }
-        // Recalculate and update the order details within the modal
         orderDetails.textContent = createOrderSummaryText(orderDetails.dataset.orderNumber);
     });
 
@@ -919,7 +1059,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const orderText = orderDetails.textContent;
         try {
             await navigator.clipboard.writeText(orderText);
-            const totalMatch = orderText.match(/ยอดรวมสุทธิ: ([\d,.]+) บาท/) || orderText.match(/ยอดรวมทั้งหมด: ([\d,.]+) บาท/);
+            const totalMatch = orderText.match(/ยอดรวมสุทธิ: ([\d,.]+) /) || orderText.match(/Grand Total: ([\d,.]+) /) || orderText.match(/ยอดรวมทั้งหมด: ([\d,.]+) /) || orderText.match(/Total Amount: ([\d,.]+) /);
             const totalOrderPrice = totalMatch ? parseFloat(totalMatch[1].replace(/,/g, '')) : 0;
             
             if (!isNaN(totalOrderPrice) && totalOrderPrice >= 0) {
@@ -967,12 +1107,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('close-order-modal-btn').addEventListener('click', () => orderModal.style.display = 'none');
     document.getElementById('close-cart-modal-btn').addEventListener('click', () => cartModal.style.display = 'none');
     document.getElementById('reset-cart-btn').addEventListener('click', () => {
-         if (confirm('คุณต้องการรีเซ็ทรายการสั่งซื้อทั้งหมดหรือไม่?')) {
+        const lang = appData.shopSettings.language;
+         if (confirm(lang === 'th' ? 'คุณต้องการรีเซ็ทรายการสั่งซื้อทั้งหมดหรือไม่?' : 'Are you sure you want to reset your entire order?')) {
             appData.cart = {};
             currentAppliedPromo = null;
             document.getElementById('promo-code-input').value = '';
             renderCustomerView();
-            alert('รีเซ็ทรายการสั่งซื้อเรียบร้อยแล้ว!');
+            alert(lang === 'th' ? 'รีเซ็ทรายการสั่งซื้อเรียบร้อยแล้ว!' : 'Order has been reset!');
         }
     });
 
@@ -1241,6 +1382,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (activeAdminMenu === 'festival' && canAccess('festival')) {
             const container = document.getElementById('admin-menu-festival');
             container.style.display = 'block';
+            document.getElementById('festival-tabs').style.display = 'none';
+            container.querySelectorAll('.admin-sub-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('admin-sub-festival-effects').classList.add('active');
+
             const msgSettings = appData.shopSettings.shopClosedMessage;
             document.getElementById('shop-closed-message-text').value = msgSettings.text;
             document.getElementById('shop-closed-message-color').value = msgSettings.color;
@@ -1265,6 +1410,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('autumn-effect-toggle').checked = appData.shopSettings.festival.autumn.enabled;
             document.getElementById('autumn-intensity').value = appData.shopSettings.festival.autumn.intensity;
             document.getElementById('autumn-opacity').value = appData.shopSettings.festival.autumn.opacity;
+
         } else if (activeAdminMenu === 'stock' && canAccess('stock')) {
             const container = document.getElementById('admin-menu-stock');
             container.style.display = 'block';
@@ -1750,7 +1896,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         await saveState();
         
-        // Apply changes immediately for live preview effect
         applyLoadingBackground();
         applyLoadingAnimation();
     });
@@ -2968,13 +3113,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('summary-tax-payable').textContent = taxPayable.toLocaleString(undefined, {minimumFractionDigits: 2});
         document.getElementById('summary-pnd94').textContent = pnd94Tax.toLocaleString(undefined, {minimumFractionDigits: 2});
         document.getElementById('summary-final-tax').textContent = finalTax.toLocaleString(undefined, {minimumFractionDigits: 2});
+        
+        document.getElementById('summary-tax-payable-pnd90').textContent = taxPayable.toLocaleString(undefined, { minimumFractionDigits: 2 });
+        document.getElementById('summary-pnd94-paid').textContent = pnd94Tax.toLocaleString(undefined, { minimumFractionDigits: 2 });
+
 
         document.getElementById('tax-summary-container').style.display = 'block';
     };
 
     const setupTaxListeners = () => {
         document.getElementById('tax-form').addEventListener('input', async () => {
-            // Save data on input change
             appData.taxData.year = parseInt(document.getElementById('tax-year-select').value);
             appData.taxData.otherIncome = parseFloat(document.getElementById('tax-other-income').value) || 0;
             appData.taxData.expenseType = document.querySelector('input[name="expense-type"]:checked').value;
@@ -3005,7 +3153,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('calculate-tax-btn').addEventListener('click', calculateTax);
     };
 
-    // NEW: Loading Animation Functions
     const populateLoadingAnimationSelector = () => {
         const select = document.getElementById('loading-animation-style');
         select.innerHTML = '';
@@ -3041,7 +3188,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 viewport.className = `animation-viewport anim-${key}`;
                 
                 if (key === 'matrix') {
-                    // Special handling for matrix preview
                     for (let i = 0; i < 10; i++) {
                         const col = document.createElement('div');
                         col.className = 'matrix-col';
@@ -3087,38 +3233,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const hideLoader = () => {
         const loader = document.getElementById('loader-overlay');
-        const loaderContent = loader.querySelector('.loader-content');
-        const animationContainer = document.getElementById('loader-animation-container');
-        const animKey = appData.shopSettings.loadingAnimation || 'none';
-        const anim = LOADING_ANIMATIONS[animKey];
-
-        // Hide spinner and show animation
-        loaderContent.classList.remove('visible');
-        
-        setTimeout(() => {
-            animationContainer.classList.add('play');
-        }, 100); // Short delay to ensure transition triggers
-
-        // Wait for animation to finish, then hide overlay
-        setTimeout(() => {
-            loader.style.opacity = '0';
-            loader.style.visibility = 'hidden';
-            loader.addEventListener('transitionend', () => {
-                loader.style.display = 'none';
-            }, { once: true });
-        }, anim.duration);
+        loader.style.transition = 'opacity 0.3s ease-out, visibility 0.3s ease-out';
+        loader.style.opacity = '0';
+        loader.style.visibility = 'hidden';
+        loader.addEventListener('transitionend', () => {
+            loader.style.display = 'none';
+        }, { once: true });
     };
 
-
     const init = async () => {
-        // 1. Apply loading screen styles immediately
         applyLoadingBackground();
-        applyLoadingAnimation(); // Set up the animation HTML
 
-        // 2. Fetch data from server
         await loadState();
+        
+        applyTheme();
 
-        // 3. Prepare main content based on login state
         const storedLogin = localStorage.getItem('isAdminLoggedIn');
         if (storedLogin === 'true') {
             try {
@@ -3146,7 +3275,6 @@ document.addEventListener('DOMContentLoaded', () => {
             adminActiveCategoryId = activeCategoryId;
         } else { activeCategoryId = null; adminActiveCategoryId = null; }
         
-        // 4. Setup all event listeners for the admin panel
         populateLoadingAnimationSelector();
         setupStockDatabaseListeners();
         setupSearchListeners();
@@ -3154,15 +3282,10 @@ document.addEventListener('DOMContentLoaded', () => {
         setupPromotionListeners();
         setupTaxListeners();
         
-        // 5. Show main content and hide loader
         const mainContainer = document.querySelector('.container');
         mainContainer.classList.add('loaded');
         
-        const loaderContent = document.getElementById('loader-overlay').querySelector('.loader-content');
-        loaderContent.classList.add('visible'); // Show spinner/text
-        
-        // Use a small timeout to ensure the loading bar is visible before starting the hide sequence
-        setTimeout(hideLoader, 500); 
+        hideLoader(); 
     };
 
     window.addEventListener('resize', resizeCanvas);
