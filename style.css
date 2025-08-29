@@ -123,7 +123,7 @@ body.dark-mode .loader-animation-preview p {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: transparent; /* Changed */
     z-index: 9999;
     display: flex;
     justify-content: center;
@@ -131,8 +131,7 @@ body.dark-mode .loader-animation-preview p {
     flex-direction: column;
     color: white;
     font-family: 'Kanit', sans-serif;
-    backdrop-filter: blur(5px);
-    transition: opacity 0.5s ease, visibility 0.5s ease;
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
 }
 #loader-background {
     position: absolute;
@@ -152,14 +151,9 @@ body.dark-mode .loader-animation-preview p {
     background-color: rgba(0,0,0,0.5);
     padding: 20px;
     border-radius: 15px;
-    visibility: hidden; /* Hide spinner and text initially */
-    opacity: 0;
-    transition: visibility 0.3s, opacity 0.3s;
-}
-
-.loader-content.visible {
-    visibility: visible;
-    opacity: 1;
+    visibility: visible; 
+    opacity: 1; 
+    transition: opacity 0.3s; 
 }
 
 
@@ -447,7 +441,6 @@ input[type="color"]::-webkit-color-swatch { border: 1px solid var(--border-color
 table {
     width: 100%;
     border-collapse: collapse;
-    /* min-width: 600px; /* Removed for better mobile handling */
 }
 th, td {
     padding: 12px 15px;
@@ -629,20 +622,38 @@ body.dark-mode .copyright-footer {
     max-width: 400px;
     margin: 50px auto;
 }
+/* MODIFIED: Admin Header Styles */
 .admin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    flex-wrap: wrap;
+    flex-wrap: wrap; 
     gap: 15px;
 }
-.admin-header .shop-status-toggle {
-    margin-right: auto;
+
+.admin-header h2 {
+    margin-bottom: 0; 
+    flex-grow: 1; 
+}
+
+.admin-main-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
+    flex-wrap: wrap; 
+    justify-content: flex-end;
 }
+
+.admin-main-controls .toggle-switch-container {
+    margin-bottom: 0; 
+}
+
+.admin-main-controls .btn {
+    width: auto; 
+    flex-shrink: 0;
+}
+
 
 /* UPDATED: Admin Main Menu Styles */
 .admin-menu {
@@ -1115,11 +1126,7 @@ body.dark-mode .product-unavailable {
     grid-template-columns: 1fr; /* Default to single column */
     gap: 20px;
 }
-@media (min-width: 992px) {
-    .stock-db-grid {
-        grid-template-columns: 1fr 1fr; /* Two columns on larger screens */
-    }
-}
+
 .stock-db-section {
     border: 1px solid var(--border-color);
     border-radius: 12px;
@@ -1490,17 +1497,23 @@ body.dark-mode .product-unavailable {
 /* ================================================= */
 
 
-/* ================================================= */
-/* ===== END: NEW & UPDATED STYLES            ====== */
-/* ================================================= */
-
-
 @media (max-width: 768px) {
     .container { padding: 10px; }
     h1 { font-size: calc(var(--shop-name-font-size) * 0.8); }
     .btn { width: 100%; }
     .quantity-controls .btn { width: auto; }
-    .admin-header { flex-direction: column; align-items: stretch; }
+    
+    .admin-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .admin-main-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .admin-main-controls .btn {
+        width: 100%;
+    }
     
     .order-buttons { flex-direction: row; }
 
@@ -1523,6 +1536,11 @@ body.dark-mode .product-unavailable {
     }
     .control-group {
         width: 100%;
+        flex-wrap: wrap;
+    }
+    .range-controls {
+        flex-grow: 1;
+        width: 100%;
     }
 
     .pnd-summary {
@@ -1530,5 +1548,19 @@ body.dark-mode .product-unavailable {
     }
     #actual-expenses-container, .deduction-grid {
         grid-template-columns: 1fr;
+    }
+
+    /* Fix for stock management forms */
+    .input-with-button {
+        flex-wrap: wrap;
+    }
+    .stock-db-section {
+        padding: 15px;
+    }
+}
+
+@media (min-width: 992px) {
+    .stock-db-grid {
+        grid-template-columns: 1fr 1fr;
     }
 }
