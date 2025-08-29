@@ -7,7 +7,7 @@
     --secondary-color: #ffc107;
     --background-color: #f0f2f5;
     --surface-color: #ffffff;
-    --text-color: #212529; /* Darker text for better contrast */
+    --text-color: #333;
     --danger-color: #dc3545;
     --border-color: #dee2e6;
     --shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -29,8 +29,8 @@
 body.dark-mode {
     --background-color: #121212;
     --surface-color: #1e1e1e;
-    --text-color: #f8f9fa; /* Lighter text for better contrast */
-    --border-color: #444; /* Slightly lighter border */
+    --text-color: #e0e0e0;
+    --border-color: #333;
     --shadow: 0 4px 8px rgba(0,0,0,0.5);
     --hover-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
@@ -105,15 +105,12 @@ body.dark-mode .pnd-box {
     background-color: #2a2a2a;
     border-color: #444;
 }
-/* NEW: Dark mode styles for range sliders */
-body.dark-mode input[type="range"] {
-    background: #444;
+body.dark-mode .loader-animation-preview {
+    border-color: #444;
+    background-color: #2a2a2a;
 }
-body.dark-mode input[type="range"]::-webkit-slider-thumb {
-    background: #f0f2f5;
-}
-body.dark-mode input[type="range"]::-moz-range-thumb {
-    background: #f0f2f5;
+body.dark-mode .loader-animation-preview p {
+    color: #e0e0e0;
 }
 
 
@@ -135,7 +132,7 @@ body.dark-mode input[type="range"]::-moz-range-thumb {
     color: white;
     font-family: 'Kanit', sans-serif;
     backdrop-filter: blur(5px);
-    transition: opacity 0.5s ease;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 #loader-background {
     position: absolute;
@@ -155,13 +152,16 @@ body.dark-mode input[type="range"]::-moz-range-thumb {
     background-color: rgba(0,0,0,0.5);
     padding: 20px;
     border-radius: 15px;
+    visibility: hidden; /* Hide spinner and text initially */
+    opacity: 0;
+    transition: visibility 0.3s, opacity 0.3s;
 }
 
-/* NEW: Improved loading text visibility */
-#loading-text {
-    font-weight: 500;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+.loader-content.visible {
+    visibility: visible;
+    opacity: 1;
 }
+
 
 .spinner {
     width: 50px;
@@ -260,7 +260,6 @@ body {
     margin-top: 10px;
     background-color: rgba(0,0,0,0.3);
     border-radius: 8px;
-    transition: background-color 0.3s;
 }
 .marquee-text {
     display: inline-block;
@@ -270,7 +269,6 @@ body {
     padding-left: 100%;
     font-size: 1.2rem;
     font-weight: 500;
-    transition: color 0.3s, text-shadow 0.3s;
 }
 @keyframes marquee-scroll {
     0%   { transform: translate(0, 0); }
@@ -282,7 +280,18 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    /* FOUC Fix: Hide container initially */
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
 }
+
+/* FOUC Fix: Class to show container when loaded */
+.container.loaded {
+    visibility: visible;
+    opacity: 1;
+}
+
 
 h1, h2, h3, h4 {
     text-align: center;
@@ -293,7 +302,7 @@ h1, h2, h3, h4 {
 h1 {
     font-size: var(--shop-name-font-size);
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    transition: font-size 0.3s ease, color 0.3s ease;
+    transition: font-size 0.3s ease;
 }
 
 #slogan {
@@ -303,9 +312,6 @@ h1 {
     margin-bottom: 20px;
     color: #6c757d;
     transition: font-size 0.3s ease;
-}
-body.dark-mode #slogan {
-    color: #adb5bd;
 }
 
 .view { display: none; }
@@ -358,7 +364,6 @@ input[type="color"] {
     height: 40px;
     border-radius: 8px;
     cursor: pointer;
-    background-color: transparent;
 }
 input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
 input[type="color"]::-webkit-color-swatch { border: 1px solid var(--border-color); border-radius: 8px; }
@@ -436,12 +441,13 @@ input[type="color"]::-webkit-color-swatch { border: 1px solid var(--border-color
 .table-wrapper {
     max-height: 500px;
     overflow-y: auto;
+    overflow-x: auto; /* Responsiveness Fix */
     -webkit-overflow-scrolling: touch;
 }
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px;
+    /* min-width: 600px; /* Removed for better mobile handling */
 }
 th, td {
     padding: 12px 15px;
@@ -688,35 +694,6 @@ body.dark-mode .admin-menu .btn.active {
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
 
-/* NEW: Range Slider Group with Value Display */
-.range-group {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-.range-group label {
-    flex-basis: 100%;
-}
-.range-group input[type="range"] {
-    flex-grow: 1;
-    margin: 0;
-}
-.range-group .range-value {
-    font-weight: 500;
-    background-color: #e9ecef;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.9em;
-    min-width: 50px;
-    text-align: center;
-}
-body.dark-mode .range-group .range-value {
-    background-color: #333;
-}
-
-
 input[type="range"] {
     -webkit-appearance: none;
     width: 100%;
@@ -724,7 +701,7 @@ input[type="range"] {
     background: #ddd;
     outline: none;
     opacity: 0.7;
-    transition: opacity .2s, background .3s;
+    transition: opacity .2s;
     border-radius: 5px;
 }
 input[type="range"]:hover { opacity: 1; }
@@ -736,7 +713,6 @@ input[type="range"]::-webkit-slider-thumb {
     background: var(--primary-color);
     cursor: pointer;
     border-radius: 50%;
-    transition: background .3s;
 }
 input[type="range"]::-moz-range-thumb {
     width: 20px;
@@ -744,7 +720,6 @@ input[type="range"]::-moz-range-thumb {
     background: var(--primary-color);
     cursor: pointer;
     border-radius: 50%;
-    transition: background .3s;
 }
 
 
@@ -1134,16 +1109,22 @@ body.dark-mode .product-unavailable {
     margin: 0;
 }
 
-/* NEW: Stock Database Section Styles */
+/* NEW: Stock Database Section Styles (Responsiveness Fix) */
 .stock-db-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: 1fr; /* Default to single column */
     gap: 20px;
+}
+@media (min-width: 992px) {
+    .stock-db-grid {
+        grid-template-columns: 1fr 1fr; /* Two columns on larger screens */
+    }
 }
 .stock-db-section {
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 20px;
+    overflow: hidden; /* Prevent content from breaking out */
 }
 .stock-db-section h3 {
     text-align: left;
@@ -1328,34 +1309,186 @@ body.dark-mode .product-unavailable {
     margin-top: 20px;
 }
 
-/* NEW: Message Preset Styles */
-#message-preset-grid {
+/* NEW: Loading Animation Container and Previews */
+#loader-animation-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+#loading-animation-previews {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
-    max-height: 300px;
-    overflow-y: auto;
-    padding: 10px;
+    margin-top: 15px;
+}
+.loader-animation-preview {
     border: 1px solid var(--border-color);
     border-radius: 8px;
-}
-.message-preset-item {
-    padding: 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s;
-    border: 1px solid transparent;
-    font-weight: 500;
+    padding: 10px;
     text-align: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+    height: 150px;
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #f8f9fa;
 }
-.message-preset-item:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--hover-shadow);
+.loader-animation-preview.active {
     border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.4);
 }
+.loader-animation-preview p {
+    margin: 0;
+    font-weight: 500;
+    background: rgba(255,255,255,0.7);
+    padding: 2px 5px;
+    border-radius: 4px;
+    z-index: 1;
+}
+.loader-animation-preview .animation-viewport {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* ================================================= */
+/* ===== START: 20 Loading Animations         ====== */
+/* ================================================= */
+
+/* --- 1. Door Open (Vertical) --- */
+.anim-door-open-v .left-door, .anim-door-open-v .right-door {
+    position: absolute;
+    width: 50.5%; height: 100%; top: 0; background-color: #333; transition: transform 1s ease-in-out;
+}
+.anim-door-open-v .left-door { left: 0; transform-origin: left; }
+.anim-door-open-v .right-door { right: 0; transform-origin: right; }
+.anim-door-open-v.play .left-door { transform: perspective(1200px) rotateY(-90deg); }
+.anim-door-open-v.play .right-door { transform: perspective(1200px) rotateY(90deg); }
+
+/* --- 2. Door Open (Horizontal) --- */
+.anim-door-open-h .top-door, .anim-door-open-h .bottom-door {
+    position: absolute;
+    width: 100%; height: 50.5%; left: 0; background-color: #4a4a4a; transition: transform 1s ease-in-out;
+}
+.anim-door-open-h .top-door { top: 0; transform-origin: top; }
+.anim-door-open-h .bottom-door { bottom: 0; transform-origin: bottom; }
+.anim-door-open-h.play .top-door { transform: perspective(1200px) rotateX(90deg); }
+.anim-door-open-h.play .bottom-door { transform: perspective(1200px) rotateX(-90deg); }
+
+/* --- 3. Curtain Open --- */
+.anim-curtain-open .left-curtain, .anim-curtain-open .right-curtain {
+    position: absolute;
+    width: 50%; height: 100%; top: 0; background-color: #8B0000; transition: width 1.2s ease-out;
+    box-shadow: inset -10px 0 15px rgba(0,0,0,0.3);
+}
+.anim-curtain-open .left-curtain { left: 0; }
+.anim-curtain-open .right-curtain { right: 0; }
+.anim-curtain-open.play .left-curtain, .anim-curtain-open.play .right-curtain { width: 0; }
+
+/* --- 4. Fade Out --- */
+.anim-fade-out .overlay { position: absolute; width: 100%; height: 100%; background-color: #111; transition: opacity 1s; }
+.anim-fade-out.play .overlay { opacity: 0; }
+
+/* --- 5. Zoom Out --- */
+.anim-zoom-out .overlay { position: absolute; width: 100%; height: 100%; background-color: #222; transition: transform 1s; transform: scale(1); }
+.anim-zoom-out.play .overlay { transform: scale(3); opacity: 0; }
+
+/* --- 6. Slide Up --- */
+.anim-slide-up .overlay { position: absolute; width: 100%; height: 100%; background-color: var(--primary-color); transition: transform 1s; }
+.anim-slide-up.play .overlay { transform: translateY(-100%); }
+
+/* --- 7. Slide Down --- */
+.anim-slide-down .overlay { position: absolute; width: 100%; height: 100%; background-color: var(--secondary-color); transition: transform 1s; }
+.anim-slide-down.play .overlay { transform: translateY(100%); }
+
+/* --- 8. Slide Left --- */
+.anim-slide-left .overlay { position: absolute; width: 100%; height: 100%; background-color: var(--info-color); transition: transform 1s; }
+.anim-slide-left.play .overlay { transform: translateX(-100%); }
+
+/* --- 9. Slide Right --- */
+.anim-slide-right .overlay { position: absolute; width: 100%; height: 100%; background-color: var(--danger-color); transition: transform 1s; }
+.anim-slide-right.play .overlay { transform: translateX(100%); }
+
+/* --- 10. Circle Wipe --- */
+.anim-circle-wipe .overlay { position: absolute; width: 100%; height: 100%; background-color: #333; clip-path: circle(150% at 50% 50%); transition: clip-path 1s; }
+.anim-circle-wipe.play .overlay { clip-path: circle(0% at 50% 50%); }
+
+/* --- 11. Diagonal Wipe --- */
+.anim-diag-wipe .overlay { position: absolute; width: 100%; height: 100%; background-color: #553c9a; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transition: clip-path 1s; }
+.anim-diag-wipe.play .overlay { clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%); }
+
+/* --- 12. Blinds (Vertical) --- */
+.anim-blinds-v { display: flex; }
+.anim-blinds-v .blind { flex-grow: 1; background-color: #2d3748; transition: transform 1s; }
+.anim-blinds-v.play .blind:nth-child(odd) { transform: translateY(-100%); }
+.anim-blinds-v.play .blind:nth-child(even) { transform: translateY(100%); }
+
+/* --- 13. Blinds (Horizontal) --- */
+.anim-blinds-h { display: flex; flex-direction: column; }
+.anim-blinds-h .blind { flex-grow: 1; background-color: #2d3748; transition: transform 1s; }
+.anim-blinds-h.play .blind:nth-child(odd) { transform: translateX(-100%); }
+.anim-blinds-h.play .blind:nth-child(even) { transform: translateX(100%); }
+
+/* --- 14. Pixelate --- */
+@keyframes pixelate-out {
+    from { filter: blur(0px); }
+    to { filter: blur(20px); opacity: 0; }
+}
+.anim-pixelate .overlay { position: absolute; width: 100%; height: 100%; background: radial-gradient(var(--primary-color) 20%, transparent 20%) 0 0, radial-gradient(var(--primary-color) 20%, transparent 20%) 4px 4px, radial-gradient(rgba(255,255,255,.1) 20%, transparent 25%) 0 1px, radial-gradient(rgba(255,255,255,.1) 20%, transparent 25%) 4px 5px; background-color: #2d3748; background-size: 8px 8px; }
+.anim-pixelate.play .overlay { animation: pixelate-out 1s forwards; }
+
+/* --- 15. Shrink Center --- */
+.anim-shrink-center .overlay { position: absolute; width: 100%; height: 100%; background-color: #000; transition: transform 1s; }
+.anim-shrink-center.play .overlay { transform: scale(0); }
+
+/* --- 16. Split & Slide --- */
+.anim-split-slide .top-half, .anim-split-slide .bottom-half { position: absolute; width: 100%; height: 50%; background-color: #1a202c; transition: transform 1s; }
+.anim-split-slide .top-half { top: 0; }
+.anim-split-slide .bottom-half { bottom: 0; }
+.anim-split-slide.play .top-half { transform: translateX(-100%); }
+.anim-split-slide.play .bottom-half { transform: translateX(100%); }
+
+/* --- 17. Iris Out --- */
+.anim-iris-out .overlay { position: absolute; width: 100%; height: 100%; background-color: #000; clip-path: circle(100%); transition: clip-path 1s; }
+.anim-iris-out.play .overlay { clip-path: circle(0%); }
+
+/* --- 18. Matrix --- */
+@keyframes matrix-fall { to { transform: translateY(100%); } }
+.anim-matrix { background: #000; overflow: hidden; }
+.anim-matrix .matrix-col { position: absolute; top: -100%; writing-mode: vertical-rl; text-orientation: upright; white-space: nowrap; user-select: none; font-size: 16px; color: #0f0; text-shadow: 0 0 5px #0f0; }
+.anim-matrix.play .matrix-col { animation: matrix-fall linear forwards; }
+
+/* --- 19. Unfold --- */
+.anim-unfold .left-half, .anim-unfold .right-half { position: absolute; width: 50%; height: 100%; top: 0; background-color: #4a5568; transition: transform 1s; transform-style: preserve-3d; }
+.anim-unfold .left-half { left: 0; transform-origin: right; }
+.anim-unfold .right-half { right: 0; transform-origin: left; }
+.anim-unfold.play .left-half { transform: perspective(1000px) rotateY(90deg); }
+.anim-unfold.play .right-half { transform: perspective(1000px) rotateY(-90deg); }
+
+/* --- 20. Glitch --- */
+@keyframes glitch-anim {
+    0% { clip-path: inset(45% 0 45% 0); } 20% { clip-path: inset(10% 0 80% 0); } 40% { clip-path: inset(70% 0 10% 0); }
+    60% { clip-path: inset(30% 0 60% 0); } 80% { clip-path: inset(90% 0 5% 0); } 100% { clip-path: inset(50% 0 50% 0); opacity: 0; }
+}
+.anim-glitch .overlay, .anim-glitch .overlay-2 { position: absolute; width: 100%; height: 100%; background-color: #000; }
+.anim-glitch.play .overlay { animation: glitch-anim 1s steps(2, end) forwards; }
+.anim-glitch.play .overlay-2 { animation: glitch-anim 1s steps(2, end) reverse forwards; }
+
+/* ================================================= */
+/* ===== END: 20 Loading Animations           ====== */
+/* ================================================= */
+
 
 /* ================================================= */
 /* ===== END: NEW & UPDATED STYLES            ====== */
@@ -1377,7 +1510,6 @@ body.dark-mode .product-unavailable {
     th, td { padding: 8px 10px; font-size: 0.9rem; }
     td img { width: 24px; height: 24px; }
     .dashboard-grid { grid-template-columns: 1fr; }
-    table { min-width: 100%; }
     
     .admin-menu {
         grid-template-columns: 1fr 1fr;
@@ -1391,10 +1523,6 @@ body.dark-mode .product-unavailable {
     }
     .control-group {
         width: 100%;
-    }
-
-    .stock-db-grid {
-        grid-template-columns: 1fr;
     }
 
     .pnd-summary {
