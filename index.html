@@ -103,17 +103,15 @@
         
         <div id="admin-panel-view" class="view">
             <div class="admin-header">
-                <div class="admin-header-left">
-                     <div class="toggle-switch-container">
+                 <h2 data-translate-key="adminPanelTitle">Admin Panel</h2>
+                 <div class="admin-main-controls">
+                    <div class="toggle-switch-container">
                         <label data-translate-key="shopStatusLabel">เปิดร้าน</label>
                         <label class="toggle-switch">
                             <input type="checkbox" id="shop-enabled-toggle">
                             <span class="slider"></span>
                         </label>
                     </div>
-                </div>
-                <h2 data-translate-key="adminPanelTitle">Admin Panel</h2>
-                <div class="admin-header-right">
                     <button id="view-shop-btn" class="btn btn-secondary" data-translate-key="viewShopBtn">มุมมองหน้าร้าน</button>
                     <button id="logout-btn" class="btn btn-danger" data-translate-key="logoutBtn">ออกจากระบบ</button>
                 </div>
@@ -368,90 +366,95 @@
 
             <!-- Admin Content: Festival -->
             <div id="admin-menu-festival" class="admin-menu-content" style="display: none;">
-                <div class="card">
-                    <h2 data-translate-key="festivalTitle">Festival Effects</h2>
-                    <div class="form-group">
-                        <label for="shop-closed-message-text" data-translate-key="shopClosedMessageLabel">ข้อความเมื่อปิดร้าน</label>
-                        <textarea id="shop-closed-message-text" rows="3" placeholder="เช่น ปิดปรับปรุงชั่วคราว"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label data-translate-key="messageFontColorLabel">สีตัวอักษร</label>
-                        <input type="color" id="shop-closed-message-color" value="#FFFFFF">
-                    </div>
-                    <div class="form-group">
-                        <label for="shop-closed-message-size" data-translate-key="messageFontSizeLabel">ขนาดตัวอักษร</label>
-                        <input type="range" id="shop-closed-message-size" min="12" max="30" value="20">
-                    </div>
-                    <div class="form-group">
-                        <label for="marquee-speed" data-translate-key="marqueeSpeedLabel">ความเร็วตัวอักษรวิ่ง</label>
-                        <input type="range" id="marquee-speed" min="5" max="50" value="20">
-                    </div>
-                    <div class="form-group">
-                        <div class="toggle-switch-container">
-                            <label data-translate-key="enableMessageEffectLabel">เปิดใช้เอฟเฟกต์ตัวอักษร</label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="message-effect-toggle">
-                                <span class="slider"></span>
-                            </label>
+                <div class="tab-group-container" id="festival-tabs"></div>
+                <!-- Sub-content for Festival Effects -->
+                <div id="admin-sub-festival-effects" class="admin-sub-content">
+                    <div class="card">
+                        <h2 data-translate-key="festivalTitle">Festival Effects</h2>
+                        <div class="form-group">
+                            <label for="shop-closed-message-text" data-translate-key="shopClosedMessageLabel">ข้อความเมื่อปิดร้าน</label>
+                            <textarea id="shop-closed-message-text" rows="3" placeholder="เช่น ปิดปรับปรุงชั่วคราว"></textarea>
                         </div>
-                        <div class="effect-controls" id="message-effect-controls-container" style="display: none;">
-                            <label><span data-translate-key="effectOffsetX">เงาแนวนอน (X)</span> <input type="range" id="message-effect-offset-x" min="-10" max="10" value="1"></label>
-                            <label><span data-translate-key="effectOffsetY">เงาแนวตั้ง (Y)</span> <input type="range" id="message-effect-offset-y" min="-10" max="10" value="1"></label>
-                            <label><span data-translate-key="effectBlur">ความเบลอ</span> <input type="range" id="message-effect-blur" min="0" max="20" value="2"></label>
-                            <div class="effect-control-item">
-                                <label for="message-effect-color" data-translate-key="effectColor">สีเงา</label>
-                                <input type="color" id="message-effect-color" value="#000000">
+                        <div class="form-group">
+                            <label data-translate-key="messageFontColorLabel">สีตัวอักษร</label>
+                            <input type="color" id="shop-closed-message-color" value="#FFFFFF">
+                        </div>
+                        <div class="form-group">
+                            <label for="shop-closed-message-size" data-translate-key="messageFontSizeLabel">ขนาดตัวอักษร</label>
+                            <input type="range" id="shop-closed-message-size" min="12" max="30" value="20">
+                        </div>
+                        <div class="form-group">
+                            <label for="marquee-speed" data-translate-key="marqueeSpeedLabel">ความเร็วตัวอักษรวิ่ง</label>
+                            <input type="range" id="marquee-speed" min="5" max="50" value="20">
+                        </div>
+                        <div class="form-group">
+                            <div class="toggle-switch-container">
+                                <label data-translate-key="enableMessageEffectLabel">เปิดใช้เอฟเฟกต์ตัวอักษร</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="message-effect-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="effect-controls" id="message-effect-controls-container" style="display: none;">
+                                <label><span data-translate-key="effectOffsetX">เงาแนวนอน (X)</span> <input type="range" id="message-effect-offset-x" min="-10" max="10" value="1"></label>
+                                <label><span data-translate-key="effectOffsetY">เงาแนวตั้ง (Y)</span> <input type="range" id="message-effect-offset-y" min="-10" max="10" value="1"></label>
+                                <label><span data-translate-key="effectBlur">ความเบลอ</span> <input type="range" id="message-effect-blur" min="0" max="20" value="2"></label>
+                                <div class="effect-control-item">
+                                    <label for="message-effect-color" data-translate-key="effectColor">สีเงา</label>
+                                    <input type="color" id="message-effect-color" value="#000000">
+                                </div>
+                            </div>
+                            <div id="message-preview-container" style="display: none;">
+                                <label data-translate-key="previewLabel">ตัวอย่าง</label>
+                                <div id="message-preview-box"></div>
                             </div>
                         </div>
-                        <div id="message-preview-container" style="display: none;">
-                            <label data-translate-key="previewLabel">ตัวอย่าง</label>
-                            <div id="message-preview-box"></div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="festival-control">
-                        <label data-translate-key="rainEffectLabel">เอฟเฟกต์ฝนตก</label>
-                        <div class="control-group">
-                            <label class="toggle-switch"><input type="checkbox" id="rain-effect-toggle"><span class="slider"></span></label>
-                            <div class="range-controls">
-                                <label><span data-translate-key="rainIntensityLabel">ความหนัก</span> <input type="range" id="rain-intensity" min="1" max="100" value="20"></label>
-                                <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="rain-opacity" min="0.1" max="1" step="0.1" value="0.5"></label>
+                        <hr>
+                        <div class="festival-control">
+                            <label data-translate-key="rainEffectLabel">เอฟเฟกต์ฝนตก</label>
+                            <div class="control-group">
+                                <label class="toggle-switch"><input type="checkbox" id="rain-effect-toggle"><span class="slider"></span></label>
+                                <div class="range-controls">
+                                    <label><span data-translate-key="rainIntensityLabel">ความหนัก</span> <input type="range" id="rain-intensity" min="1" max="100" value="20"></label>
+                                    <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="rain-opacity" min="0.1" max="1" step="0.1" value="0.5"></label>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="festival-control">
-                        <label data-translate-key="snowEffectLabel">เอฟเฟกต์หิมะตก</label>
-                        <div class="control-group">
-                            <label class="toggle-switch"><input type="checkbox" id="snow-effect-toggle"><span class="slider"></span></label>
-                            <div class="range-controls">
-                                <label><span data-translate-key="snowIntensityLabel">ความหนัก</span> <input type="range" id="snow-intensity" min="1" max="100" value="20"></label>
-                                <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="snow-opacity" min="0.1" max="1" step="0.1" value="0.5"></label>
+                        <div class="festival-control">
+                            <label data-translate-key="snowEffectLabel">เอฟเฟกต์หิมะตก</label>
+                            <div class="control-group">
+                                <label class="toggle-switch"><input type="checkbox" id="snow-effect-toggle"><span class="slider"></span></label>
+                                <div class="range-controls">
+                                    <label><span data-translate-key="snowIntensityLabel">ความหนัก</span> <input type="range" id="snow-intensity" min="1" max="100" value="20"></label>
+                                    <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="snow-opacity" min="0.1" max="1" step="0.1" value="0.5"></label>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="festival-control">
-                        <label data-translate-key="fireworksEffectLabel">เอฟเฟกต์พลุ</label>
-                        <div class="control-group">
-                            <label class="toggle-switch"><input type="checkbox" id="fireworks-effect-toggle"><span class="slider"></span></label>
-                            <div class="range-controls">
-                                <label><span data-translate-key="fireworksIntensityLabel">ความถี่ (นาที)</span> <input type="range" id="fireworks-intensity" min="1" max="10" value="1"></label>
-                                <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="fireworks-opacity" min="0.1" max="1" step="0.1" value="0.8"></label>
+                        <div class="festival-control">
+                            <label data-translate-key="fireworksEffectLabel">เอฟเฟกต์พลุ</label>
+                            <div class="control-group">
+                                <label class="toggle-switch"><input type="checkbox" id="fireworks-effect-toggle"><span class="slider"></span></label>
+                                <div class="range-controls">
+                                    <label><span data-translate-key="fireworksIntensityLabel">ความถี่ (นาที)</span> <input type="range" id="fireworks-intensity" min="1" max="10" value="1"></label>
+                                    <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="fireworks-opacity" min="0.1" max="1" step="0.1" value="0.8"></label>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="festival-control">
-                        <label data-translate-key="autumnEffectLabel">เอฟเฟกต์ฤดูใบไม้ร่วง</label>
-                        <div class="control-group">
-                            <label class="toggle-switch"><input type="checkbox" id="autumn-effect-toggle"><span class="slider"></span></label>
-                            <div class="range-controls">
-                                <label><span data-translate-key="autumnIntensityLabel">ความหนัก</span> <input type="range" id="autumn-intensity" min="1" max="100" value="20"></label>
-                                <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="autumn-opacity" min="0.1" max="1" step="0.1" value="0.8"></label>
+                        <div class="festival-control">
+                            <label data-translate-key="autumnEffectLabel">เอฟเฟกต์ฤดูใบไม้ร่วง</label>
+                            <div class="control-group">
+                                <label class="toggle-switch"><input type="checkbox" id="autumn-effect-toggle"><span class="slider"></span></label>
+                                <div class="range-controls">
+                                    <label><span data-translate-key="autumnIntensityLabel">ความหนัก</span> <input type="range" id="autumn-intensity" min="1" max="100" value="20"></label>
+                                    <label><span data-translate-key="effectOpacityLabel">ความชัด</span> <input type="range" id="autumn-opacity" min="0.1" max="1" step="0.1" value="0.8"></label>
+                                </div>
                             </div>
                         </div>
+                        <button id="save-festival-settings-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกการตั้งค่า</button>
                     </div>
-                    <button id="save-festival-settings-btn" class="btn btn-primary" data-translate-key="saveSettingsBtn">บันทึกการตั้งค่า</button>
                 </div>
             </div>
+
 
             <!-- Admin Content: Stock -->
             <div id="admin-menu-stock" class="admin-menu-content" style="display: none;">
